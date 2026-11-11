@@ -98,7 +98,7 @@ Units: **3189**
 ## Known limitations
 
 - GPU parity (G3) not executed: no NVIDIA device on this host; `flexkit gate gpu --all` reports `skipped:no-gpu`.
-- 69 of 84 D3D solver shaders are not reconstructed: HLSL must be authored from D3D assembly, and the original bytecode was produced by Microsoft fxc/dxc while the only offline compiler here is vkd3d-shader, so opcode-level equality is unattainable on this host.
+- D3D solver shaders: 44/84 structurally matched, 8 blocked with a recorded front-end limit, 32 still unreconstructed (indices [24, 25, 27, 28, 31, 33, 35, 36, 42, 45, 46, 48, 49, 50, 51, 52, 54, 56, 57, 58, 61, 62, 65, 68, 70, 75, 76, 77, 78, 81, 82, 83]). HLSL is compiled by vkd3d-shader while the originals come from Microsoft fxc/dxc, so opcode-level equality is unattainable here; the gate therefore checks the shader interface.
 - nvflex: 39 strong symbols absent, all internal `__global__` launch wrappers: with `-rdc=true` (required for the shared `__constant__ gParams`/`gBounds`) nvcc 13 device-links them as local symbols, while CUDA 9.2 exported them `GLOBAL DEFAULT`. The public `NvFlex*` surface and every `__device_stub__` are exported, so the consumer-visible ABI is complete.
 - nvflexext: 2 strong symbol(s) absent; the Ext device kernel launch wrappers are `GLOBAL HIDDEN` under nvcc 13 for the verbatim shipped source, while CUDA 9.2 exported them `GLOBAL DEFAULT`.
 - 2 unit(s) blocked with recorded evidence (see below).
@@ -115,4 +115,4 @@ Units: **3189**
 - headers_identical: `True`
 - vendored_untouched: `True`
 - gpu_gate: `skipped:no-gpu (FLEX_GPU!=1)`
-- dxbc: `{'shaders': 84, 'matched': 14, 'not_reconstructed': 69}`
+- dxbc: `{'shaders': 84, 'matched': 44, 'blocked_with_evidence': 8, 'blocked_indices': [1, 5, 6, 8, 9, 16, 18, 32], 'not_reconstructed': 32, 'not_reconstructed_indices': [24, 25, 27, 28, 31, 33, 35, 36, 42, 45, 46, 48, 49, 50, 51, 52, 54, 56, 57, 58, 61, 62, 65, 68, 70, 75, 76, 77, 78, 81, 82, 83]}`

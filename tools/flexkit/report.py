@@ -36,11 +36,13 @@ def _limitations(blocked: list[dict], exports: dict, dxbc: dict, gpu: dict) -> l
     if gpu.get("detail", "").startswith("skipped"):
         out.append("GPU parity (G3) not executed: no NVIDIA device on this host; "
                    "`flexkit gate gpu --all` reports `skipped:no-gpu`.")
-    if dxbc.get("not_reconstructed"):
-        out.append(f"{dxbc['not_reconstructed']} of {dxbc.get('shaders')} D3D solver shaders are not "
-                   "reconstructed: HLSL must be authored from D3D assembly, and the original "
-                   "bytecode was produced by Microsoft fxc/dxc while the only offline compiler here "
-                   "is vkd3d-shader, so opcode-level equality is unattainable on this host.")
+    if dxbc.get("_") is None and dxbc.get("shaders"):
+        out.append(f"D3D solver shaders: {dxbc['matched']}/{dxbc['shaders']} structurally matched, "
+                   f"{dxbc.get('blocked_with_evidence', 0)} blocked with a recorded front-end limit, "
+                   f"{dxbc.get('not_reconstructed', 0)} still unreconstructed "
+                   f"(indices {dxbc.get('not_reconstructed_indices', [])}). HLSL is compiled by "
+                   "vkd3d-shader while the originals come from Microsoft fxc/dxc, so opcode-level "
+                   "equality is unattainable here; the gate therefore checks the shader interface.")
     for lib, rec in sorted(exports.items()):
         missing = rec["counts"]["missing"]
         if not missing:
@@ -185,8 +187,23 @@ def build() -> dict:
     try:
         from . import gate_dxbc
         dx = gate_dxbc.run("NvFlexReleaseD3D_x64.dll")
+        notes = RECON / ".." / "units" / "nvflexd3d"
+        blocked_idx, unreconstructed = [], []
+        for res in dx["results"]:
+            if res.get("ok"):
+                continue
+            idx = res["index"]
+            note = list(notes.glob(f"{idx:03d}_cs_5_0.md")) + \
+                   list(notes.glob(f"{idx:03d}.md"))
+            if res.get("detail") == "not_reconstructed":
+                (blocked_idx if note else unreconstructed).append(idx)
+            else:
+                blocked_idx.append(idx)
         dxbc = {"shaders": dx["shaders"], "matched": dx["passed"],
-                "not_reconstructed": dx["not_reconstructed"]}
+                "blocked_with_evidence": len(blocked_idx),
+                "blocked_indices": blocked_idx,
+                "not_reconstructed": len(unreconstructed),
+                "not_reconstructed_indices": unreconstructed}
     except Exception as e:  # noqa: BLE001
         dxbc = {"error": str(e)}
 
