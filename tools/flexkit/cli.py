@@ -122,6 +122,18 @@ def cmd_pdb(args):
     return 0
 
 
+def cmd_d3dinv(args):
+    from . import pdbd3d
+    r = pdbd3d.parse()
+    if args.json:
+        jprint(r)
+    else:
+        print(f"d3d backend: {r.get('functions')} functions in {r.get('objects')} objects")
+        for obj, n in sorted(r.get("per_object", {}).items(), key=lambda kv: -kv[1]):
+            print(f"  {obj:22s} {n:5d}")
+    return 0 if r.get("functions") else 1
+
+
 def cmd_dxheaders(args):
     from . import dxheaders
     r = dxheaders.generate()
@@ -283,6 +295,14 @@ def cmd_gate(args):
         else:
             print(gate_diff.render(r))
         return 0 if r.get("ok") else 1
+    if gate == "dll":
+        from . import gate_dll
+        r = gate_dll.gate()
+        if args.json:
+            jprint(r)
+        else:
+            print(gate_dll.render(r))
+        return 0 if r.get("ok") else 1
     if gate == "dxbc":
         from . import gate_dxbc
         r = gate_dxbc.run(args.dll, args.index)
@@ -365,6 +385,10 @@ def build_parser() -> argparse.ArgumentParser:
     s.add_argument("--json", action="store_true")
     s.set_defaults(func=cmd_pdb)
 
+    s = sub.add_parser("d3dinv", help="per-object D3D function inventory from PDB")
+    s.add_argument("--json", action="store_true")
+    s.set_defaults(func=cmd_d3dinv)
+
     s = sub.add_parser("dxheaders", help="recover D3D type map from PDB")
     s.add_argument("--json", action="store_true")
     s.set_defaults(func=cmd_dxheaders)
@@ -426,6 +450,12 @@ def build_parser() -> argparse.ArgumentParser:
     s = sub.add_parser("gate", help="run parity gates")
     s.add_argument("--json", action="store_true")
     gsub = s.add_subparsers(dest="gate_cmd", required=True)
+    g = gsub.add_parser("dll")
+    g.add_argument("--unit")
+    g.add_argument("--module")
+    g.add_argument("--all", action="store_true")
+    g.add_argument("--iterations", type=int, default=0)
+    g.add_argument("--verbose", action="store_true")
     g = gsub.add_parser("dxbc")
     g.add_argument("--dll", default="NvFlexReleaseD3D_x64.dll")
     g.add_argument("--index", type=int, default=None)

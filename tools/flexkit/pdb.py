@@ -11,6 +11,7 @@ from .util import ensure, have, jwrite, run, sha256_file
 
 RECORD_RE = re.compile(r"^\s*0x([0-9A-Fa-f]+)\s+\|\s+(LF_\w+)\s*(?:\[size = (\d+)\])?\s*(?:`([^'`]*)`)?")
 FIELD_LIST_RE = re.compile(r"field list:\s+0x([0-9A-Fa-f]+)")
+FWD_RE = re.compile(r"forward ref \(-> 0x([0-9A-Fa-f]+)\)")
 MEMBER_RE = re.compile(r"^\s*-\s+LF_MEMBER \[name = `([^'`]*)`, Type = 0x([0-9A-Fa-f]+)(?: \(([^)]*)\))?, offset = (\d+)")
 BASE_RE = re.compile(r"^\s*-\s+LF_BCLASS \[.*?offset = (\d+)")
 ENUM_RE = re.compile(r"^\s*-\s+LF_ENUMERATE \[([^\]=]+?)\s*=?\s*([^\]]*)\]")
@@ -41,7 +42,7 @@ def dump_pdb(pdb: Path) -> dict:
                 field_lists[cur_id] = []
             elif cur_kind in ("LF_STRUCTURE", "LF_CLASS", "LF_UNION", "LF_INTERFACE"):
                 struct_names[cur_id] = (m.group(4) or "", int(m.group(3) or 0), cur_kind)
-                struct_meta[cur_id] = {"field_list": None}
+                struct_meta[cur_id] = {"field_list": None, "forward": None}
             continue
         if cur_kind == "LF_FIELDLIST":
             mm = MEMBER_RE.match(line)
@@ -65,6 +66,34 @@ def dump_pdb(pdb: Path) -> dict:
             fl = FIELD_LIST_RE.search(line)
             if fl and struct_meta.get(cur_id, {}).get("field_list") is None:
                 struct_meta[cur_id]["field_list"] = int(fl.group(1), 16)
+            fw = FWD_RE.search(line)
+            if fw and struct_meta.get(cur_id, {}).get("forward") is None:
+                struct_meta[cur_id]["forward"] = int(fw.group(1), 16)
+
+    # resolve `forward ref (-> 0xNNNN)` records to their real definition
+    for rid in list(struct_names):
+        seen = set()
+        cur = rid
+        while True:
+            meta = struct_meta.get(cur, {})
+            if meta.get("field_list") is not None:
+                break
+            nxt = meta.get("forward")
+            if not nxt or nxt in seen or nxt not in struct_names:
+                break
+            seen.add(nxt)
+            name, size, kind = struct_names[cur]
+            rname, rsize, rkind = struct_names[nxt]
+            # keep the forwarding record's name, take the definition's body
+            struct_names[cur] = (name or rname, size or rsize, kind)
+            struct_meta[cur]["field_list"] = None
+            struct_meta[cur]["forward"] = nxt
+            cur = nxt
+        # point the record at the resolved field list
+        if struct_meta.get(cur, {}).get("field_list") is not None:
+            struct_meta[rid]["field_list"] = struct_meta[cur]["field_list"]
+            struct_meta[rid]["forward"] = None
+            struct_names[rid] = (struct_names[rid][0], struct_names[rid][1] or struct_names[cur][1], struct_names[rid][2])
 
     structs: dict[str, dict] = {}
     for rid, (name, size, kind) in struct_names.items():
