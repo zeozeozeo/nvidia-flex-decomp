@@ -32,6 +32,9 @@ target_include_directories(nvflexd3d PRIVATE
 
 target_compile_options(nvflexd3d PRIVATE -O2 -g -ffp-contract=off -fvisibility=default)
 target_link_libraries(nvflexd3d PRIVATE d3d11 d3d12 dxgi dxguid d3dcompiler user32)
+# Link the mingw runtime statically: the shipped tree carries no libgcc/libstdc++
+# DLLs, and the drop-in harness only copies FleX's own binaries.
+target_link_options(nvflexd3d PRIVATE -static-libgcc -static-libstdc++ -static)
 
 # Export surface.  While the reconstruction is incomplete the DLL exports
 # everything it defines (`--export-all-symbols`); `recon/dx/exports.def` holds the
