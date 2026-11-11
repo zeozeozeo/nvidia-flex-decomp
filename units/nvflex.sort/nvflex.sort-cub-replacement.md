@@ -25,8 +25,9 @@ ptxas ... error : Instruction 'shfl' without '.sync' is not supported on .target
 * host dispatcher `cub::DeviceRadixSort::SortPairs<int,int>` with the identical mangled name
   (`_ZN3cub15DeviceRadixSort9SortPairsIiiEE9cudaErrorPvRmRNS_12DoubleBufferIT_EERNS5_IT0_EEiiiP11CUstream_stb`),
   forced out of line (`noinline, noclone`) exactly like the shipped weak symbol;
-* kernel entry points declared `extern "C"` with the original mangled names, so the fatbin `.entry`
-  set and the host stub symbols are byte-identical to `cudasort.o`:
+* kernel entry points declared `extern "C" __global__ __attribute__((visibility("default")))` with
+  the original mangled names (nvcc 13 marks launch wrappers hidden while the shipped 9.2 objects
+  export them), so the fatbin `.entry` set and the host stub symbols match `cudasort.o`:
   `cub::EmptyKernel<void>`, `cub::RadixSortScanKernel<...PtxScanPolicy,int>`,
   `cub::RadixSortUpsweepKernel<...PtxUpsweepPolicy,...>`, `<...PtxAltUpsweepPolicy,...>`,
   `cub::RadixSortDownsweepKernel<...PtxDownsweepPolicy,...>`, `<...PtxAltDownsweepPolicy,...>`;
@@ -49,6 +50,11 @@ upsweep/scan/downsweep code (including the `GridEvenShare` block partitioning an
 cap) sorts 73 vectors bit-identically to a stable reference sort — n in {0,1,2,3,17,255,256,1023,
 1024,1025,5000,200000} x num_bits in {5,10,32} x {distinct, heavily duplicated} keys plus one
 non-zero begin_bit case. This validates the algorithm and offsets, not CUDA execution.
+
+Exported-set note: the six kernel entries are exported `GLOBAL DEFAULT` as in the shipped object.
+The generated `__device_stub__` launch thunks are also exported (7 symbols) for the same reason;
+the shipped object kept only one of them, so `libnvflex.so` carries these extra thunks. Their
+mangled names are unique to this TU, so they cannot collide with the original set.
 
 Every piece of ABI that external code can observe (host symbols, `DoubleBuffer`/`GridEvenShare`
 layout, kernel parameter list, selector protocol, temp-storage query) is identical to the original.

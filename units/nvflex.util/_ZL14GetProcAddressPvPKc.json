@@ -2,7 +2,7 @@
   "unit": "nvflex.util#_ZL14GetProcAddressPvPKc",
   "symbol": "_ZL14GetProcAddressPvPKc",
   "signature": "GetProcAddress(void*, char const*)",
-  "parity": "pure-cpu",
+  "parity": "needs-gpu",
   "iterations": 8,
   "seed": 1234,
   "params": [
@@ -30,5 +30,6 @@
     "buffer:0",
     "buffer:1"
   ],
-  "mode": "bitwise"
+  "mode": "bitwise",
+  "parity_note": "G1 only: the symbol is local (`t`) in the shipped objects, so it is not exported by either parity library and `dlsym` cannot resolve it for a differential run (driver reports symbol_missing on both sides), and the release object has no out-of-line copy at all (-O3 folds the wrapper into the six CudaSafeDelayLoad call sites). No CUDA API involved."
 }

@@ -212,10 +212,10 @@ def build(force: bool = False) -> dict:
                 if cur:
                     # repair classification of untouched rows (e.g. a symbol that
                     # is now recognised as compiler-generated); never touch work
-                    if cur["status"] == "open" and r["status"] == "waived":
+                    if cur["status"] in ("open", "blocked") and r["status"] == "waived":
                         conn.execute(
-                            "UPDATE units SET status='waived', kind=?, notes=? WHERE id=?",
-                            (r["kind"], r["notes"], r["id"]))
+                            "UPDATE units SET status='waived', kind=?, notes=COALESCE(notes, ?) "
+                            "WHERE id=?", (r["kind"], r["notes"], r["id"]))
                         repaired += 1
                     continue
                 conn.execute(

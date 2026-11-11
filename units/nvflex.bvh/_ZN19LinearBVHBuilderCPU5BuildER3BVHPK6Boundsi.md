@@ -18,9 +18,11 @@ with `kEpsilon = 0.001f`, per-item 10-bit Morton key from the midpoint, `std::so
 
 - `allow_missing_strings: ["vector::reserve"]` — that literal is GCC 4.8's
   `std::__throw_length_error` message; this toolchain spells the reserve failure differently.
-- `outputs: []` — the produced `BVH` holds device pointers, so its bytes are not comparable
-  across two address spaces; the vectors prove both sides execute the same path without
-  diverging.
+- `ignore_offsets: [[0,40]]` — the produced `BVH` holds device pointers, so those bytes are
+  masked; `mNumNodes`/`mMaxNodes`/`mMaxDepth` are compared. The BVH argument is spelled `BVH*`
+  for that (the harness implements masking for pointer arguments only; the ABI is identical).
+  `gate diff` is 64/64 bitwise; node-array equality was additionally verified out of tree over
+  2000 random builds (Morton codes, sort order and tree shape byte-identical).
 
 ## Evidence
 

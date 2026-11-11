@@ -10,28 +10,27 @@
     },
     {
       "arg": 1,
-      "base": "void",
+      "base": "NvFlexSolverDesc",
       "count": 8,
       "init": "zero",
-      "type": "void*"
+      "type": "NvFlexSolverDesc*"
     }
   ],
   "byte_size": 31,
   "iterations": 64,
   "mode": "bitwise",
-  "notes": "harness uses void*/NvFlexBuffer* ABI-equivalent spellings because recovered.h does not declare NvFlexSolverDesc / NvFlexCopyDesc (public NvFlex.h is not included by nvflex/all.h)",
   "outputs": [
     "buffer:1"
   ],
   "params": [
     "NvFlexSolver*",
-    "void*"
+    "NvFlexSolverDesc*"
   ],
   "parity": "pure-cpu",
   "ret": "void",
   "scalars": {},
   "seed": 1234,
-  "signature": "NvFlexGetSolverDesc(NvFlexSolver*, void*)",
+  "signature": "NvFlexGetSolverDesc(NvFlexSolver*, NvFlexSolverDesc*)",
   "source": "src/cuda/flex.cu:5187",
   "symbol": "NvFlexGetSolverDesc",
   "unit": "nvflex.flex#NvFlexGetSolverDesc"

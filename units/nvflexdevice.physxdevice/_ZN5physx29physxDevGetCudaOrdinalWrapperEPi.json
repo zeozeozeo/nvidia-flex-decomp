@@ -1,28 +1,35 @@
 {
-  "unit": "nvflexdevice.physxdevice#_ZN5physx29physxDevGetCudaOrdinalWrapperEPi",
-  "symbol": "_ZN5physx29physxDevGetCudaOrdinalWrapperEPi",
-  "signature": "physx::PHYSX_DEV_STATUS physx::physxDevGetCudaOrdinalWrapper(int*)",
-  "parity": "pure-cpu",
-  "iterations": 64,
-  "seed": 1234,
-  "params": [
-    "int*"
+  "allow_static_divergence": [
+    "calls"
   ],
-  "ret": "int",
-  "scalars": {},
+  "baseline": "dbg",
+  "baseline_reason": "device objects: the reconstructable body matches the debug object's codegen; the release object differs only by inlining",
   "buffers": [
     {
       "arg": 0,
-      "type": "int*",
       "base": "int",
       "count": 1,
-      "init": "zero"
+      "init": "zero",
+      "type": "int*"
     }
   ],
+  "divergence_reason": "device glue: cross-module call into physxdevice + -O0/-O3 codegen difference; behaviour covered by gate diff",
+  "iterations": 64,
+  "mode": "bitwise",
   "outputs": [
     "ret",
     "buffer:0"
   ],
-  "mode": "bitwise",
-  "self_type": null
+  "params": [
+    "int*"
+  ],
+  "parity": "pure-cpu",
+  "reason": "",
+  "ret": "int",
+  "scalars": {},
+  "seed": 1234,
+  "self_type": null,
+  "signature": "physx::PHYSX_DEV_STATUS physx::physxDevGetCudaOrdinalWrapper(int*)",
+  "symbol": "_ZN5physx29physxDevGetCudaOrdinalWrapperEPi",
+  "unit": "nvflexdevice.physxdevice#_ZN5physx29physxDevGetCudaOrdinalWrapperEPi"
 }

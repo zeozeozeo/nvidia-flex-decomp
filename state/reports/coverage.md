@@ -4,23 +4,23 @@ Units: **3189**
 
 | status | count |
 |---|---|
-| verified | 60 |
+| verified | 186 |
 | decompiled | 0 |
-| claimed | 9 |
-| open | 235 |
-| blocked | 0 |
-| waived | 2885 |
+| claimed | 0 |
+| open | 72 |
+| blocked | 6 |
+| waived | 2925 |
 
 ## By module
 
 | module | verified | decompiled | claimed | open | blocked | waived |
 |---|---|---|---|---|---|---|
-| nvflex.bvh | 0 | 0 | 0 | 30 | 0 | 8 |
-| nvflex.flex | 0 | 0 | 0 | 171 | 0 | 11 |
-| nvflex.sort | 0 | 0 | 0 | 11 | 0 | 2 |
-| nvflex.util | 0 | 0 | 0 | 23 | 0 | 1 |
-| nvflexdevice.flexdevice | 0 | 0 | 6 | 0 | 0 | 0 |
-| nvflexdevice.physxdevice | 0 | 0 | 3 | 0 | 0 | 0 |
+| nvflex.bvh | 28 | 0 | 0 | 0 | 2 | 8 |
+| nvflex.flex | 64 | 0 | 0 | 72 | 2 | 44 |
+| nvflex.sort | 3 | 0 | 0 | 0 | 2 | 8 |
+| nvflex.util | 22 | 0 | 0 | 0 | 0 | 2 |
+| nvflexdevice.flexdevice | 6 | 0 | 0 | 0 | 0 | 0 |
+| nvflexdevice.physxdevice | 3 | 0 | 0 | 0 | 0 | 0 |
 | nvflexext.aabbtree | 11 | 0 | 0 | 0 | 0 | 320 |
 | nvflexext.cloth | 7 | 0 | 0 | 0 | 0 | 768 |
 | nvflexext.container | 22 | 0 | 0 | 0 | 0 | 448 |
@@ -34,8 +34,8 @@ Units: **3189**
 
 ## Gates
 
-- static pass rate: 0.0692
-- diff pass rate: 0.0
+- static pass rate: 0.217
+- diff pass rate: 1.0
 - gpu: skipped:no-gpu (FLEX_GPU!=1)
 
 ## Waived units
@@ -49,52 +49,61 @@ Units: **3189**
 - `nvflex.bvh#_ZSt16__insertion_sortIPi24PartitionPredicateMedianEvT_S2_T0_` (inline): third-party header template instantiation (libstdc++/CUB); covered by the enclosing unit
 - `nvflex.bvh#_ZSt16__introsort_loopIN9__gnu_cxx17__normal_iteratorIPN19LinearBVHBuilderCPU12KeyIndexPairESt6vectorIS3_SaIS3_EEEElEvT_S9_T0_` (inline): third-party header template instantiation (libstdc++/CUB); covered by the enclosing unit
 - `nvflex.flex#_GLOBAL__sub_I_tmpxft_00000d59_00000000_5_flex.cudafe1.cpp` (stub): compiler-generated CUDA registration
-- `nvflex.flex#_ZNSt6vectorI14CudaRangeTimerSaIS0_EE14_M_fill_insertEN9__gnu_cxx17__normal_iteratorIPS0_S2_EEmRKS0_` (inline): third-party header template instantiation (libstdc++/CUB); covered by the enclosing unit
-- `nvflex.flex#_ZNSt6vectorIP12NvFlexSolverSaIS1_EE13_M_insert_auxEN9__gnu_cxx17__normal_iteratorIPS1_S3_EERKS1_` (inline): third-party header template instantiation (libstdc++/CUB); covered by the enclosing unit
-- `nvflex.flex#_ZNSt6vectorISsSaISsEE13_M_insert_auxEN9__gnu_cxx17__normal_iteratorIPSsS1_EERKSs` (inline): third-party header template instantiation (libstdc++/CUB); covered by the enclosing unit
-- `nvflex.flex#_ZNSt6vectorISsSaISsEED1Ev` (inline): third-party header template instantiation (libstdc++/CUB); covered by the enclosing unit
-- `nvflex.flex#_ZNSt6vectorISsSaISsEED2Ev` (inline): third-party header template instantiation (libstdc++/CUB); covered by the enclosing unit
-- `nvflex.flex#_ZNSt6vectorIfSaIfEE13_M_insert_auxEN9__gnu_cxx17__normal_iteratorIPfS1_EERKf` (inline): third-party header template instantiation (libstdc++/CUB); covered by the enclosing unit
-- `nvflex.flex#_ZNSt6vectorIjSaIjEE13_M_insert_auxEN9__gnu_cxx17__normal_iteratorIPjS1_EERKj` (inline): third-party header template instantiation (libstdc++/CUB); covered by the enclosing unit
-- `nvflex.flex#_ZNSt8_Rb_treeIPKcSt4pairIKS1_iESt10_Select1stIS4_E5ltstrSaIS4_EE11equal_rangeERS3_` (inline): third-party header template instantiation (libstdc++/CUB); covered by the enclosing unit
-- `nvflex.flex#_ZNSt8_Rb_treeIPKcSt4pairIKS1_iESt10_Select1stIS4_E5ltstrSaIS4_EE8_M_eraseEPSt13_Rb_tree_nodeIS4_E` (inline): third-party header template instantiation (libstdc++/CUB); covered by the enclosing unit
-- `nvflex.flex#_ZSt6removeIN9__gnu_cxx17__normal_iteratorIPjSt6vectorIjSaIjEEEEmET_S7_S7_RKT0_` (inline): third-party header template instantiation (libstdc++/CUB); covered by the enclosing unit
-- `nvflex.sort#_GLOBAL__sub_I_tmpxft_00000d5c_00000000_5_sort.cudafe1.cpp` (stub): compiler-generated CUDA registration
-- `nvflex.sort#_ZN3cub15DeviceRadixSort9SortPairsIiiEE9cudaErrorPvRmRNS_12DoubleBufferIT_EERNS5_IT0_EEiiiP11CUstream_stb` (inline): third-party header template instantiation (libstdc++/CUB); covered by the enclosing unit
-- `nvflex.util#_GLOBAL__sub_I_util.cpp` (stub): compiler-generated CUDA registration
-- `nvflexext.aabbtree#_GLOBAL__sub_I_aabbtree.cpp` (stub): compiler-generated CUDA registration
-- `nvflexext.aabbtree#_Z16IntersectRayAABBRK8XVector3IfES2_S2_S2_RfPS0_` (host): no out-of-line copy emitted for byte-identical source by the current toolchain (inline definition folded into callers); behaviour covered by the calling units and by calibration
-- `nvflexext.aabbtree#_Z23IntersectRayTriTwoSidedRK8XVector3IfES2_S2_S2_S2_RfS3_S3_S3_S3_` (host): no out-of-line copy emitted for byte-identical source by the current toolchain (inline definition folded into callers); behaviour covered by the calling units and by calibration
-- `nvflexext.aabbtree#_Z3DotIfET_RK8XVector3IS0_ES4_` (host): no out-of-line copy emitted for byte-identical source by the current toolchain (inline definition folded into callers); behaviour covered by the calling units and by calibration
-- `nvflexext.aabbtree#_Z3MaxIfE8XVector3IT_ERKS2_S4_` (host): no out-of-line copy emitted for byte-identical source by the current toolchain (inline definition folded into callers); behaviour covered by the calling units and by calibration
-- `nvflexext.aabbtree#_Z3MaxIfET_S0_S0_` (host): no out-of-line copy emitted for byte-identical source by the current toolchain (inline definition folded into callers); behaviour covered by the calling units and by calibration
-- `nvflexext.aabbtree#_Z3MinIfE8XVector3IT_ERKS2_S4_` (host): no out-of-line copy emitted for byte-identical source by the current toolchain (inline definition folded into callers); behaviour covered by the calling units and by calibration
-- `nvflexext.aabbtree#_Z3MinIfET_S0_S0_` (host): no out-of-line copy emitted for byte-identical source by the current toolchain (inline definition folded into callers); behaviour covered by the calling units and by calibration
-- `nvflexext.aabbtree#_Z41__static_initialization_and_destruction_0ii` (host): no out-of-line copy emitted for byte-identical source by the current toolchain (inline definition folded into callers); behaviour covered by the calling units and by calibration
-- `nvflexext.aabbtree#_Z5CrossRK8XVector3IfES2_` (host): no out-of-line copy emitted for byte-identical source by the current toolchain (inline definition folded into callers); behaviour covered by the calling units and by calibration
-- `nvflexext.aabbtree#_ZN12_GLOBAL__N_110FaceSorterC1EPK8XVector3IfEPKjjj` (host): no out-of-line copy emitted for byte-identical source by the current toolchain (inline definition folded into callers); behaviour covered by the calling units and by calibration
-- `nvflexext.aabbtree#_ZN12_GLOBAL__N_110FaceSorterC2EPK8XVector3IfEPKjjj` (host): no out-of-line copy emitted for byte-identical source by the current toolchain (inline definition folded into callers); behaviour covered by the calling units and by calibration
-- `nvflexext.aabbtree#_ZN12_GLOBAL__N_111LongestAxisERK8XVector3IfE` (host): no out-of-line copy emitted for byte-identical source by the current toolchain (inline definition folded into callers); behaviour covered by the calling units and by calibration
-- `nvflexext.aabbtree#_ZN8AABBTree4NodeC1Ev` (host): no out-of-line copy emitted for byte-identical source by the current toolchain (inline definition folded into callers); behaviour covered by the calling units and by calibration
-- `nvflexext.aabbtree#_ZN8AABBTree4NodeC2Ev` (host): no out-of-line copy emitted for byte-identical source by the current toolchain (inline definition folded into callers); behaviour covered by the calling units and by calibration
-- `nvflexext.aabbtree#_ZN8AABBTree6Bounds5UnionERKS0_` (host): no out-of-line copy emitted for byte-identical source by the current toolchain (inline definition folded into callers); behaviour covered by the calling units and by calibration
-- `nvflexext.aabbtree#_ZN8AABBTree6BoundsC1Ev` (host): no out-of-line copy emitted for byte-identical source by the current toolchain (inline definition folded into callers); behaviour covered by the calling units and by calibration
-- `nvflexext.aabbtree#_ZN8AABBTree6BoundsC2Ev` (host): no out-of-line copy emitted for byte-identical source by the current toolchain (inline definition folded into callers); behaviour covered by the calling units and by calibration
-- … 2845 more (see coverage.json)
+- `nvflex.flex#_Z161__device_stub__Z20TransformShapeBoundsP8XVector4IfES1_PKS0_PK5XQuatIfES3_S7_PK23NvFlexCollisionGeometryPKiiPK22FlexConvexMeshInternalPK24FlexTriangleMeshInternalP8XVector4IfES1_PKS0_PK5XQuatIfES3_S7_PK23NvFlexCollisionGeometryPKiiPK22FlexConvexMeshInternalPK24FlexTriangleMeshInternal` (stub): compiler-generated CUDA registration / compiler clone
+- `nvflex.flex#_Z37__device_stub__Z10CreateGridiPKiPiS1_iPKiPiS1_` (host): compiler-generated code (CUDA launch stub / registration trampoline / IPA clone); no out-of-line body is producible from source under the pinned CUDA 13.4 toolchain
+- `nvflex.flex#_Z38__device_stub__Z17InitActiveIndicesiPiiPi` (stub): compiler-generated CUDA registration / compiler clone
+- `nvflex.flex#_Z48__device_stub__Z25ClampDiffuseParticleCountPiS_iPiS_i` (host): compiler-generated code (CUDA launch stub / registration trampoline / IPA clone); no out-of-line body is producible from source under the pinned CUDA 13.4 toolchain
+- `nvflex.flex#_Z49__device_stub__Z16UpdateVelocitiesi8Vec3IterS_S_fiRK8Vec3IterS1_RS_f` (host): compiler-generated code (CUDA launch stub / registration trampoline / IPA clone); no out-of-line body is producible from source under the pinned CUDA 13.4 toolchain
+- `nvflex.flex#_Z50__device_stub__Z12SolveSpringsPiPfS0_PKii8Vec3IterPiPfS0_PKiiR8Vec3Iter` (host): compiler-generated code (CUDA launch stub / registration trampoline / IPA clone); no out-of-line body is producible from source under the pinned CUDA 13.4 toolchain
+- `nvflex.flex#_Z59__device_stub__Z17CreateCellIndicesiPKiPK8XVector4IfEPiS5_fiPKiPK8XVector4IfEPiS5_f` (host): compiler-generated code (CUDA launch stub / registration trampoline / IPA clone); no out-of-line body is producible from source under the pinned CUDA 13.4 toolchain
+- `nvflex.flex#_Z60__device_stub__Z26ContinuousShockPropagationiP8XVector4IfEPiiP8XVector4IfEPi` (host): compiler-generated code (CUDA launch stub / registration trampoline / IPA clone); no out-of-line body is producible from source under the pinned CUDA 13.4 toolchain
+- `nvflex.flex#_Z62__device_stub__Z22NormalizeVertexNormalsiPKiPK8XVector4IfEPS2_iPKiPK8XVector4IfEPS2_` (host): compiler-generated code (CUDA launch stub / registration trampoline / IPA clone); no out-of-line body is producible from source under the pinned CUDA 13.4 toolchain
+- `nvflex.flex#_Z64__device_stub__Z21ComputeTriangleBoundsPK8XVector4IfEPKiiPS0_S5_PK8XVector4IfEPKiiPS0_S5_` (host): compiler-generated code (CUDA launch stub / registration trampoline / IPA clone); no out-of-line body is producible from source under the pinned CUDA 13.4 toolchain
+- `nvflex.flex#_Z67__device_stub__Z15CalculateBoundsiPKiPK8XVector4IfEP8XVector3IfES7_iPKiPK8XVector4IfEP8XVector3IfES7_` (host): compiler-generated code (CUDA launch stub / registration trampoline / IPA clone); no out-of-line body is producible from source under the pinned CUDA 13.4 toolchain
+- `nvflex.flex#_Z67__device_stub__Z15SmoothPositionsiPK8XVector4IfEPKiS4_S4_S4_PS0_S5_iPK8XVector4IfEPKiS4_S4_S4_PS0_S5_` (host): compiler-generated code (CUDA launch stub / registration trampoline / IPA clone); no out-of-line body is producible from source under the pinned CUDA 13.4 toolchain
+- `nvflex.flex#_Z67__device_stub__Z19UpdateVertexNormalsiPKiS0_PK8XVector3IfE8Vec3IteriPKiS0_PK8XVector3IfER8Vec3Iter` (host): compiler-generated code (CUDA launch stub / registration trampoline / IPA clone); no out-of-line body is producible from source under the pinned CUDA 13.4 toolchain
+- `nvflex.flex#_Z67__device_stub__Z7PredictiPKiPK8XVector4IfES0_8XVector3IfEfPS2_PS6_fiPKiPK8XVector4IfES0_R8XVector3IfEfPS2_PS6_f` (host): compiler-generated code (CUDA launch stub / registration trampoline / IPA clone); no out-of-line body is producible from source under the pinned CUDA 13.4 toolchain
+- `nvflex.flex#_Z70__device_stub__Z15UpdateTrianglesi8Vec3IterS_PKiS1_P8XVector3IfES3_S_fiR8Vec3IterS0_PKiS2_P8XVector3IfERS4_S0_f` (host): compiler-generated code (CUDA launch stub / registration trampoline / IPA clone); no out-of-line body is producible from source under the pinned CUDA 13.4 toolchain
+- `nvflex.flex#_Z70__device_stub__Z16ReorderParticlesiPK8XVector4IfES2_PKiS4_PiPS0_S6_S5_iPK8XVector4IfES2_PKiS4_PiPS0_S6_S5_` (host): compiler-generated code (CUDA launch stub / registration trampoline / IPA clone); no out-of-line body is producible from source under the pinned CUDA 13.4 toolchain
+- `nvflex.flex#_Z70__device_stub__Z23CompactDiffuseParticlesPK8XVector4IfES2_PS0_S3_PKiPiPK8XVector4IfES2_PS0_S3_PKiPi` (host): compiler-generated code (CUDA launch stub / registration trampoline / IPA clone); no out-of-line body is producible from source under the pinned CUDA 13.4 toolchain
+- `nvflex.flex#_Z73__device_stub__Z8FinalizeiPK8XVector4IfES2_PKfS2_PKiPS0_P8XVector3IfEPfffiPK8XVector4IfES2_PKfS2_PKiPS0_P8XVector3IfEPfff` (stub): compiler-generated CUDA registration / compiler clone
+- `nvflex.flex#_Z74__device_stub__Z19CalculateAnisotropyiPKiS0_S0_S0_PK8XVector4IfEPS2_S5_S5_iPKiS0_S0_S0_PK8XVector4IfEPS2_S5_S5_` (stub): compiler-generated CUDA registration / compiler clone
+- `nvflex.flex#_Z76__device_stub__Z22CreateDiffuseParticlesi8Vec3IterPKfP8XVector4IfES4_PiiS1_fiRK8Vec3IterPKfP8XVector4IfES6_PiiS3_f` (stub): compiler-generated CUDA registration / compiler clone
+- `nvflex.flex#_Z78__device_stub__Z16CollideParticlesiPKiS0_S0_8Vec3IterPK8XVector4IfES0_ffiPiS6_iPKiS0_S0_RK8Vec3IterPK8XVector4IfES0_ffiPiS8_` (stub): compiler-generated CUDA registration / compiler clone
+- `nvflex.flex#_Z79__device_stub__Z21SolveInflatableVolumePK14FlexInflatable8Vec3IterPKiS4_PKfS2_fPK14FlexInflatableRK8Vec3IterPKiS6_PKfRS2_f` (stub): compiler-generated CUDA registration / compiler clone
+- `nvflex.flex#_Z87__device_stub__Z22UpdateDiffuseParticlesP8XVector4IfES1_PKiS3_S3_S3_S3_S3_8Vec3IterffffP8XVector4IfES1_PKiS3_S3_S3_S3_S3_RK8Vec3Iterffff` (stub): compiler-generated CUDA registration / compiler clone
+- `nvflex.flex#_Z88__device_stub__Z13CollideShapes22FlexCollisionShapeData8Vec3IterPKiiPiP8XVector4IfES6_ffR22FlexCollisionShapeDataRK8Vec3IterPKiiPiP8XVector4IfES9_ff` (stub): compiler-generated CUDA registration / compiler clone
+- `nvflex.flex#_Z90__device_stub__Z26SolveDensitiesSimpleFluidsi8Vec3IterS_PKiPKfPK8XVector4IfES1_S1_S1_fPS5_iR8Vec3IterRKS_PKiPKfPK8XVector4IfES4_S4_S4_fPS8_` (stub): compiler-generated CUDA registration / compiler clone
+- `nvflex.flex#_Z90__device_stub__Z26SolveDensitiesSimpleSolidsi8Vec3IterS_PKiPKfPK8XVector4IfES1_S1_S1_fPS5_iR8Vec3IterRKS_PKiPKfPK8XVector4IfES4_S4_S4_fPS8_` (stub): compiler-generated CUDA registration / compiler clone
+- `nvflex.flex#_Z91__device_stub__Z16CollideTriangles22FlexCollisionShapeData8Vec3IterPKiiPiP8XVector4IfES6_ffR22FlexCollisionShapeDataRK8Vec3IterPKiiPiP8XVector4IfES9_ff` (stub): compiler-generated CUDA registration / compiler clone
+- `nvflex.flex#_Z91__device_stub__Z18CalculateVorticityi8Vec3IterPK8XVector3IfES_PiPKiS6_PK8XVector4IfES6_PS8_iR8Vec3IterPK8XVector3IfERKS_PiPKiS9_PK8XVector4IfES9_PSB_` (stub): compiler-generated CUDA registration / compiler clone
+- `nvflex.flex#_ZL109__device_stub__Z15SolveVelocitiesILb0EEvi8Vec3IterPK8XVector3IfES0_PK8XVector4IfEPKiSA_SA_S8_SA_SA_fPS6_PfSC_iR8Vec3IterPK8XVector3IfERKS_PK8XVector4IfEPKiSC_SC_SA_SC_SC_fPS8_PfSE_` (stub): compiler-generated CUDA registration / compiler clone
+- `nvflex.flex#_ZL109__device_stub__Z15SolveVelocitiesILb1EEvi8Vec3IterPK8XVector3IfES0_PK8XVector4IfEPKiSA_SA_S8_SA_SA_fPS6_PfSC_iR8Vec3IterPK8XVector3IfERKS_PK8XVector4IfEPKiSC_SC_SA_SC_SC_fPS8_PfSE_` (host): compiler-generated code (CUDA launch stub / registration trampoline / IPA clone); no out-of-line body is producible from source under the pinned CUDA 13.4 toolchain
+- `nvflex.flex#_ZL24__sti____cudaRegisterAllv` (host): compiler-generated code (CUDA launch stub / registration trampoline / IPA clone); no out-of-line body is producible from source under the pinned CUDA 13.4 toolchain
+- … 2885 more (see coverage.json)
+
+## Blocked units
+
+- `nvflex.bvh#_ZL24__sti____cudaRegisterAllv`: nvcc CUDA registration hook (plan 2.2 classifies it stub/waived, ledger kind=host): the shipped object registers the 8 kernels of its own fatbin (__cudaRegisterFatBinary, 8x __cudaRegisterFunction, __cudaRegisterVar, atexit); with -rdc=true CUDA 13.4 emits __cudaRegisterLinkedBinary_* per TU instead, giving instruction ratio 0.101 vs band >=0.2 and 4 unexplained missing callees. Not producible from source; needs integrator waiver.
+- `nvflex.bvh#_ZL26__cudaUnregisterBinaryUtilv`: nvcc CUDA unregistration hook (plan 2.2: stub/waived, ledger kind=host): CUDA 13.4 in RDC mode does not emit __cudaUnregisterBinaryUtil at all (that is the non-RDC fatbin teardown path), so the symbol is absent from the reconstructed object; its body references nvcc-internal __cudaFatCubinHandle, which no longer exists. Needs integrator waiver.
+- `nvflex.flex#_Z11SolveShapesILb0EEvPKiS1_PKfS3_S3_S1_P8XVector3IfEP8XVector4IfE8Vec3IterSA_P5XQuatIfES6_S9_SA_if`: same as the ILb1EE instantiation: PTX 15753-19600 shares the structure, the quaternion update and the unrolled transform/atomic loops are not transcribed; decoded regions and the exact undecoded line ranges are in units/nvflex.flex/_Z11SolveShapesILb0EEvPKiS1_PKfS3_S3_S1_P8XVector3IfEP8XVector4IfE8Vec3IterSA_P5XQuatIfES6_S9_SA_if.md
+- `nvflex.flex#_Z11SolveShapesILb1EEvPKiS1_PKfS3_S3_S1_P8XVector3IfEP8XVector4IfE8Vec3IterSA_P5XQuatIfES6_S9_SA_if`: not reconstructed in this slice: PTX 1800-3740 (quaternion SOR update + 8x unrolled transform/atomic particle loop) and the tail at 3741-4078 are decoded only structurally; the decoded regions (init, COM reduction, covariance, plastic test) are recorded in units/nvflex.flex/_Z11SolveShapesILb1EEvPKiS1_PKfS3_S3_S1_P8XVector3IfEP8XVector4IfE8Vec3IterSA_P5XQuatIfES6_S9_SA_if.md and a completion would otherwise guess
+- `nvflex.sort#_ZL24__sti____cudaRegisterAllv`: compiler-generated CUDA registration: CUDA 13.4 -rdc=true emits a 33-byte __sti____cudaRegisterAll using __cudaRegisterLinkedBinary_* where the shipped CUDA 9.2 object has 521 bytes of __cudaRegisterFatBinary/__cudaRegisterFunction/__cudaRegisterVar calls (gate: ratio 0.057, call set differs). No source-level definition exists; waive as compiler-generated CUDA registration.
+- `nvflex.sort#_ZL26__cudaUnregisterBinaryUtilv`: compiler-generated CUDA registration helper from include/crt/host_runtime.h:265: under CUDA 13.4 with -rdc=true (the project build mode) nvcc does not emit __cudaUnregisterBinaryUtil at all, so the symbol cannot be produced from source. Waive as compiler-generated CUDA registration.
 
 ## Exports
 
 | library | shipped | reconstructed | missing |
 |---|---|---|---|
-| nvflex | 241 | 0 | 241 |
+| nvflex | 241 | 183 | 125 |
 | nvflexdevice | 7 | 7 | 0 |
-| nvflexext | 106 | 71 | 43 |
+| nvflexext | 106 | 79 | 43 |
 
 ## Acceptance
 
 - open_zero: `False`
-- claimed_zero: `False`
-- blocked_zero: `True`
+- claimed_zero: `True`
+- blocked_zero: `False`
 - all_verified: `False`
 - exports_match: `False`
 - headers_identical: `True`

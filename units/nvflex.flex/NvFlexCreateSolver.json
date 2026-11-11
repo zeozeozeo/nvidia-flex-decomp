@@ -10,10 +10,10 @@
     },
     {
       "arg": 1,
-      "base": "void",
+      "base": "NvFlexSolverDesc",
       "count": 4,
       "init": "zero",
-      "type": "void*"
+      "type": "const NvFlexSolverDesc*"
     }
   ],
   "byte_size": 5050,
@@ -22,14 +22,14 @@
   "outputs": [],
   "params": [
     "NvFlexLibrary*",
-    "void*"
+    "const NvFlexSolverDesc*"
   ],
   "parity": "needs-gpu",
   "reason": "calls cudaMemcpyAsync/cudaMemset/cudaEvent*/cudaGraphics* or the device kernel stub; needs a CUDA device and context, G1 only",
   "ret": "NvFlexSolver*",
   "scalars": {},
   "seed": 1234,
-  "signature": "NvFlexCreateSolver(NvFlexLibrary*, void*)",
+  "signature": "NvFlexCreateSolver(NvFlexLibrary*, const NvFlexSolverDesc*)",
   "source": "src/cuda/flex.cu:4874",
   "symbol": "NvFlexCreateSolver",
   "unit": "nvflex.flex#NvFlexCreateSolver"

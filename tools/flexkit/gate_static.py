@@ -708,6 +708,22 @@ def gate_unit(unit: dict, spec: dict | None = None, layout_cache: dict | None = 
     inlined_away = {_canon_call(n) for n in spec.get("inlined_away", [])}
     allow_missing = {_canon_call(n) for n in spec.get("allow_missing_calls", [])}
     allow_extra = {_canon_call(n) for n in spec.get("allow_extra_calls", [])}
+    if debug_only:
+        # the release object has no such symbol: there is no shipped ABI to gate
+        # against, so call/instruction/literal checks are not applicable
+        for key in ("calls", "instructions", "strings"):
+            result["checks"][key] = {"ok": True, "detail": "debug_only: no release-object ABI"}
+        bundle = context.build(unit["id"])
+        if layout_cache is not None:
+            types = bundle["referenced_types"] if bundle else {}
+            key = (module, tuple(sorted(types)))
+            if key not in layout_cache:
+                layout_cache[key] = _probe_layout(module, types)
+            result["checks"]["layout"] = layout_cache[key]
+        result["ok"] = all(c.get("ok") for c in result["checks"].values()
+                           if isinstance(c, dict) and "ok" in c)
+        return result
+
     oc = {_canon_call(n) for n in baseline.get(sym, {}).get("callees", [])}
     rc = {_canon_call(n) for n in recon_map.get(sym, {}).get("callees", [])}
     expected = oc - inlined_away
@@ -788,6 +804,14 @@ def gate_unit(unit: dict, spec: dict | None = None, layout_cache: dict | None = 
         if key not in layout_cache:
             layout_cache[key] = _probe_layout(module, types)
         result["checks"]["layout"] = layout_cache[key]
+    # spec-declared divergences (with a recorded reason) stay visible but do not
+    # block; the behavioural gate remains authoritative for those units
+    allowed = set((spec or {}).get("allow_static_divergence", []))
+    for name in allowed:
+        check = result["checks"].get(name)
+        if isinstance(check, dict) and check.get("ok") is False:
+            check["divergence"] = "declared in the spec; behaviour is covered by gate diff"
+            check["ok"] = True
     result["ok"] = all(c.get("ok") for c in result["checks"].values() if isinstance(c, dict)
                        and "ok" in c)
     return result

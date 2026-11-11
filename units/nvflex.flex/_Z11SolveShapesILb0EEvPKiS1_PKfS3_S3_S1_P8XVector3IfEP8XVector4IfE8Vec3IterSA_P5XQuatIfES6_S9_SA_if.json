@@ -1,0 +1,20 @@
+{
+  "blocked": "body not transcribed; see the unit notes for the decoded and undecoded PTX regions",
+  "inlined_away": [],
+  "launch": {
+    "block": [
+      256,
+      1,
+      1
+    ],
+    "grid": "numRigids"
+  },
+  "outputs": [],
+  "parity": "kernel",
+  "ptx_entry": "_Z11SolveShapesILb0EEvPKiS1_PKfS3_S3_S1_P8XVector3IfEP8XVector4IfE8Vec3IterSA_P5XQuatIfES6_S9_SA_if",
+  "ptx_lines": "15753-19600",
+  "signature": "SolveShapes<false>(int* rigidOffsets, int* rigidIndices, float* rigidCoefficients, float* rigidPlasticThresholds, float* rigidPlasticCreeps, int* reverseLookup, Vec3* localPositions, Vec4* localNormals, Vec3Iter oldPositions, Vec3Iter newPositions, Quat* rotations, Vec3* translations, Vec4* normals, Vec3Iter deltas, int numRigids, float sleepThreshold)",
+  "source": "src/cuda/flex.cu",
+  "symbol": "_Z11SolveShapesILb0EEvPKiS1_PKfS3_S3_S1_P8XVector3IfEP8XVector4IfE8Vec3IterSA_P5XQuatIfES6_S9_SA_if",
+  "unit": "nvflex.flex#_Z11SolveShapesILb0EEvPKiS1_PKfS3_S3_S1_P8XVector3IfEP8XVector4IfE8Vec3IterSA_P5XQuatIfES6_S9_SA_if"
+}

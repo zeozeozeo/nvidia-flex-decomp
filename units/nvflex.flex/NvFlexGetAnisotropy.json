@@ -36,10 +36,10 @@
     },
     {
       "arg": 4,
-      "base": "void",
+      "base": "NvFlexCopyDesc",
       "count": 4,
       "init": "zero",
-      "type": "void*"
+      "type": "const NvFlexCopyDesc*"
     }
   ],
   "byte_size": 137,
@@ -51,14 +51,14 @@
     "NvFlexBuffer*",
     "NvFlexBuffer*",
     "NvFlexBuffer*",
-    "void*"
+    "const NvFlexCopyDesc*"
   ],
   "parity": "needs-gpu",
   "reason": "calls cudaMemcpyAsync/cudaMemset/cudaEvent*/cudaGraphics* or the device kernel stub; needs a CUDA device and context, G1 only",
   "ret": "void",
   "scalars": {},
   "seed": 1234,
-  "signature": "NvFlexGetAnisotropy(NvFlexSolver*, NvFlexBuffer*, NvFlexBuffer*, NvFlexBuffer*, void*)",
+  "signature": "NvFlexGetAnisotropy(NvFlexSolver*, NvFlexBuffer*, NvFlexBuffer*, NvFlexBuffer*, const NvFlexCopyDesc*)",
   "source": "src/cuda/flex.cu:5478",
   "symbol": "NvFlexGetAnisotropy",
   "unit": "nvflex.flex#NvFlexGetAnisotropy"

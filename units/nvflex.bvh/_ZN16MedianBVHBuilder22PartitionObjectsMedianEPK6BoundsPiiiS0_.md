@@ -19,8 +19,19 @@ of the supplied range, using `std::nth_element` with a comparator that compares
 
 - The comparator instantiates as `<anonymous namespace>::PartitionPredicateMedianCmp`, so the
   `__introselect` instantiation name differs from the shipped one. Both are recorded as extra /
-  `_ZSt`-inlinable calls by the gate, and the permutation result is nevertheless bitwise
-  identical over 64 randomized vectors.
+  `_ZSt`-inlinable calls by the gate.
+- **Permutation is not bitwise identical on arbitrary index arrays.** An out-of-tree A/B harness
+  (dlopen of `libnvflex_rel.so` vs `libnvflex.so`, 2000 randomized `Bounds` arrays, `indices[i] =
+  i`, `rangeBounds` = total bounds) reports `k` equal in every case but a different `indices`
+  permutation in 1343 of them: the shipped object's selection comes from the GCC 4.8
+  `__introselect`/`__insertion_sort` instantiation and this toolchain's `std::nth_element`
+  resolves equal midpoints in a different order. `std::nth_element` only constrains the nth
+  element, so both orders satisfy the contract. The divergence is *not observable in the BVH*:
+  over the same run, `MedianBVHBuilder::Build` produced byte-identical node arrays, node counts
+  and depths in 2000/2000 random builds, and the gate's 64/64 vectors are identical.
+  Exact-permutation parity would require reimplementing GCC 4.8's introselect instead of calling
+  `std::nth_element`; recorded here rather than done because the build output is already
+  equivalent.
 
 ## Evidence
 

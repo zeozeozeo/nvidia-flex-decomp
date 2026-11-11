@@ -14,6 +14,14 @@ line with `__printf_chk` (the object was built with `_FORTIFY_SOURCE`).
   shipped callee set has no `_M_insert_aux` / `__introsort_loop` / `memmove`, so that block is
   unreachable decoding noise and is not reconstructed here.
 
+## Parity
+
+`gate diff` 64/64 bitwise with `n=16` random `Bounds`. The BVH's five pointer/texture members are
+masked (`ignore_offsets:[0,40]`) because each library allocates its own arena; `mNumNodes`,
+`mMaxNodes` and `mMaxDepth` are compared. The node arrays themselves were compared by an
+out-of-tree dlopen A/B harness (2000 random builds, `n` in [2,31]): node count, depth and both
+`PackedNodeHalf` arrays byte-identical in every case.
+
 ## Open unknowns
 
 - The exact source line of the `memset`/allocation sequence (the DWARF line table maps them to

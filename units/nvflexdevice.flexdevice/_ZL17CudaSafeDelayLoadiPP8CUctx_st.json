@@ -1,13 +1,15 @@
 {
-  "unit": "nvflexdevice.flexdevice#_ZL17CudaSafeDelayLoadiPP8CUctx_st",
-  "symbol": "_ZL17CudaSafeDelayLoadiPP8CUctx_st",
-  "signature": "bool CudaSafeDelayLoad(int, CUcontext*)",
-  "parity": "needs-gpu",
+  "baseline": "dbg",
+  "baseline_reason": "device objects: the reconstructable body matches the debug object's codegen; the release object differs only by inlining",
+  "inlined_away": [],
   "iterations": 0,
-  "reason": "requires an NVIDIA driver: dlopen(\"libcuda.so\") + cuGetExportTable/cuCtxCreateOnNode3DLowLatency context creation; also internal linkage.",
   "params": [
     "int",
     "CUcontext*"
   ],
-  "inlined_away": []
+  "parity": "needs-gpu",
+  "reason": "requires an NVIDIA driver: dlopen(\"libcuda.so\") + cuGetExportTable/cuCtxCreateOnNode3DLowLatency context creation; also internal linkage.",
+  "signature": "bool CudaSafeDelayLoad(int, CUcontext*)",
+  "symbol": "_ZL17CudaSafeDelayLoadiPP8CUctx_st",
+  "unit": "nvflexdevice.flexdevice#_ZL17CudaSafeDelayLoadiPP8CUctx_st"
 }

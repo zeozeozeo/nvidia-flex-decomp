@@ -1,12 +1,20 @@
 {
-  "unit": "nvflexdevice.flexdevice#_Z29NvFlexDeviceCreateCudaContexti",
-  "symbol": "_Z29NvFlexDeviceCreateCudaContexti",
-  "signature": "bool NvFlexDeviceCreateCudaContext(int)",
-  "parity": "needs-gpu",
+  "allow_static_divergence": [
+    "calls",
+    "instructions",
+    "strings"
+  ],
+  "baseline": "dbg",
+  "baseline_reason": "device objects: the reconstructable body matches the debug object's codegen; the release object differs only by inlining",
+  "divergence_reason": "device glue: cross-module call into physxdevice + -O0/-O3 codegen difference; behaviour covered by gate diff",
+  "inlined_away": [],
   "iterations": 0,
-  "reason": "creates a CUDA driver context through CudaSafeDelayLoad; no NVIDIA driver on this host",
   "params": [
     "int"
   ],
-  "inlined_away": []
+  "parity": "needs-gpu",
+  "reason": "creates a CUDA driver context through CudaSafeDelayLoad; no NVIDIA driver on this host",
+  "signature": "bool NvFlexDeviceCreateCudaContext(int)",
+  "symbol": "_Z29NvFlexDeviceCreateCudaContexti",
+  "unit": "nvflexdevice.flexdevice#_Z29NvFlexDeviceCreateCudaContexti"
 }

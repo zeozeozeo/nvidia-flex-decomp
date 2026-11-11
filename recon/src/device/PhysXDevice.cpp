@@ -15,11 +15,12 @@
 #include "PhysXDevice.h"
 
 // Host libc entry points used below.  <stdlib.h> is not included because
-// glibc's __USE_EXTERN_INLINES turns atoi() into an inline call to
-// __isoc23_strtol under any -O build; the shipped object calls atoi@plt
-// (PLT32 relocations at 0x14 and 0x37), so the libc symbols are declared
-// directly to preserve that call set.
-extern "C" int atoi(const char* nptr);
+// glibc's __USE_EXTERN_INLINES replaces atoi() with an inline strtol() (and,
+// since glibc 2.39, that strtol with __isoc23_strtol) under any -O build; the
+// shipped objects call the plain libc symbols -- debug: atoi@plt, release:
+// strtol@plt with base 10 and a NULL endptr (rel PhysXDevice.cpp.o @0x1f) --
+// so the symbols are declared directly to preserve the shipped call set.
+extern "C" long int strtol(const char* nptr, char** endptr, int base);
 extern "C" char* getenv(const char* name);
 
 // The shipped object was compiled with -O0 (DW_AT_producer).  Reproduce that
@@ -40,9 +41,11 @@ PHYSX_DEV_STATUS physxDevGetCudaOrdinalWrapper(int* cudaDevOrdinal)
 	// flexdecomp: PhysXDevice.cpp:40/41
 	if (deviceOrdinalString == NULL)
 		*cudaDevOrdinal = 0;
-	// flexdecomp: PhysXDevice.cpp:43 (PLT32 atoi@0x36)
+	// flexdecomp: PhysXDevice.cpp:43.  The shipped source calls atoi(); the
+	// release object has it folded to strtol@plt (base 10, NULL endptr) by
+	// glibc's inline atoi, and (int)strtol(nptr, NULL, 10) is exactly atoi().
 	else
-		*cudaDevOrdinal = atoi(deviceOrdinalString);
+		*cudaDevOrdinal = (int)strtol(deviceOrdinalString, NULL, 10);
 
 	// flexdecomp: PhysXDevice.cpp:44
 	return PHYSX_DEV_OK;
@@ -55,6 +58,9 @@ PHYSX_DEV_STATUS physxDevUsingDedicatedGPUWrapper()
 	return PHYSX_DEV_OK;
 }
 
+// This wrapper is 2 instructions in the shipped release object
+// (`xor %eax,%eax; ret`), which the module's -O0 pragma would not produce.
+__attribute__((optimize("O3")))
 // flexdecomp: PhysXDevice.cpp:54 _ZN5physx25physxDevSLIEnabledWrapperEPv
 bool physxDevSLIEnabledWrapper(void*)
 {

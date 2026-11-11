@@ -12,6 +12,10 @@
 
 // Recovered constant buffers (defined once by the module's host translation
 // unit; declared extern here).
+// The shipped 9.2 objects export the launch wrappers GLOBAL DEFAULT; modern
+// nvcc emits them hidden, so every kernel carries an explicit visibility.
+#define FLEX_KERNEL_API __attribute__((visibility("default")))
+
 extern __constant__ KernelParams gParams;
 extern __constant__ KernelBounds gBounds;  // KernelBounds{float kLower[3]; float kUpper[3];}
 
@@ -26,14 +30,14 @@ static __device__ __forceinline__ Vec3 boundUpper() {
 // kernel for the "no work" case.
 namespace cub {
 template <typename T>
-__global__ void EmptyKernel() {}
+__global__ void FLEX_KERNEL_API EmptyKernel() {}
 }  // namespace cub
 
 // ---------------------------------------------------------------------------
 // flexdecomp: src/cuda/flex.cu:680 _Z17InitActiveIndicesiPi
 // PTX 43-69: identity fill, one thread per particle.
 // ---------------------------------------------------------------------------
-__global__ void InitActiveIndices(int numParticles, int* indices) {
+__global__ void FLEX_KERNEL_API InitActiveIndices(int numParticles, int* indices) {
     int i = blockIdx.x * blockDim.x + threadIdx.x;
     if (i >= numParticles) return;
     indices[i] = i;
@@ -45,7 +49,7 @@ __global__ void InitActiveIndices(int numParticles, int* indices) {
 // s->mParams.gravity, decomp 10426-10436); fluids get it scaled by kBuoyancy
 // (PTX 136-137: gParams+236), then the speed is clamped to maxVelocity.
 // ---------------------------------------------------------------------------
-__global__ void Predict(int numParticles, const int* indices, const XVector4<float>* positions,
+__global__ void FLEX_KERNEL_API Predict(int numParticles, const int* indices, const XVector4<float>* positions,
                         const int* phases, XVector3<float> velocity, float dt,
                         XVector4<float>* newPositions, XVector3<float>* outVelocities,
                         float maxVelocity) {
@@ -100,7 +104,7 @@ __global__ void Predict(int numParticles, const int* indices, const XVector4<flo
 // PTX 182-248.  `invCellSize` is 1/(radius+particleCollisionMargin) (host
 // 10513-10514: _LC3/(radius+margin), _LC3 == 1.0f).  128^3 hashed grid.
 // ---------------------------------------------------------------------------
-__global__ void CreateCellIndices(int numParticles, const int* indices,
+__global__ void FLEX_KERNEL_API CreateCellIndices(int numParticles, const int* indices,
                                   const XVector4<float>* positions, int* cellIndices,
                                   int* particleIndices, float invCellSize) {
     int i = blockIdx.x * blockDim.x + threadIdx.x;
@@ -122,7 +126,7 @@ __global__ void CreateCellIndices(int numParticles, const int* indices,
 // flexdecomp: src/cuda/flex.cu:740 _Z10CreateGridiPKiPiS1_
 // PTX 251-312.  Emits the start/end offset of every run of equal cell ids.
 // ---------------------------------------------------------------------------
-__global__ void CreateGrid(int numParticles, const int* cellIds, int* cellStarts, int* cellEnds) {
+__global__ void FLEX_KERNEL_API CreateGrid(int numParticles, const int* cellIds, int* cellStarts, int* cellEnds) {
     int i = blockIdx.x * blockDim.x + threadIdx.x;
     if (i >= numParticles) return;
 
@@ -145,7 +149,7 @@ __global__ void CreateGrid(int numParticles, const int* cellIds, int* cellStarts
 // PTX 315-379.  Scatters the unsorted buffers into sorted order and writes the
 // inverse permutation.
 // ---------------------------------------------------------------------------
-__global__ void ReorderParticles(int numParticles, const XVector4<float>* positions,
+__global__ void FLEX_KERNEL_API ReorderParticles(int numParticles, const XVector4<float>* positions,
                                  const XVector4<float>* newPositions, const int* phases,
                                  const int* indices, int* reverseLookup,
                                  XVector4<float>* sortedPositions, XVector4<float>* sortedNewPositions,
@@ -169,7 +173,7 @@ __global__ void ReorderParticles(int numParticles, const XVector4<float>* positi
 // restPositions texture (gParams+368); these pointers are not read.
 // Neighbour storage is column major: particleNeighbors[j*numParticles + i].
 // ---------------------------------------------------------------------------
-__global__ void CollideParticles(int numParticles, const int* cellStarts, const int* cellEnds,
+__global__ void FLEX_KERNEL_API CollideParticles(int numParticles, const int* cellStarts, const int* cellEnds,
                                  const int* indices, Vec3Iter positions,
                                  const XVector4<float>* restPositions, const int* sortedPhases,
                                  float cellSizeSq, float invCellSize, int maxNeighbors,
@@ -250,7 +254,7 @@ __global__ void CollideParticles(int numParticles, const int* cellStarts, const 
 // exp(kShockPropagation * (minPoint - x).normalized(gravity)); minPoint is the
 // bounds corner furthest along gravity.
 // ---------------------------------------------------------------------------
-__global__ void ContinuousShockPropagation(int numParticles, XVector4<float>* positions,
+__global__ void FLEX_KERNEL_API ContinuousShockPropagation(int numParticles, XVector4<float>* positions,
                                            int* /*unused: neighborCounts*/) {
     __shared__ float3 minPoint;
     __shared__ float3 minDir;
@@ -301,7 +305,7 @@ __global__ void ContinuousShockPropagation(int numParticles, XVector4<float>* po
 // fluid ones (PTX 9555-9557: selp kSolidPressure : 1.0 on the phase Fluid bit).
 // ---------------------------------------------------------------------------
 template <bool T>
-__global__ void CalculateDensity(int numParticles, Vec3Iter sortedNewPositions, const int* phases,
+__global__ void FLEX_KERNEL_API CalculateDensity(int numParticles, Vec3Iter sortedNewPositions, const int* phases,
                                  const int* contacts, const int* contactCounts,
                                  const int* collisionCounts, const XVector4<float>* collisionPlanes,
                                  float* densities, XVector4<float>* normals, const int* indices) {
@@ -374,7 +378,7 @@ template __global__ void CalculateDensity<false>(int, Vec3Iter, const int*, cons
 // same-phase fluid branch (PTX 10375-10395 vs 10695-10700).
 // ---------------------------------------------------------------------------
 template <bool T>
-__global__ void SolveDensities(int numParticles, Vec3Iter prevPositions, Vec3Iter positions,
+__global__ void FLEX_KERNEL_API SolveDensities(int numParticles, Vec3Iter prevPositions, Vec3Iter positions,
                                const int* phases, const float* densities,
                                const XVector4<float>* normals, const int* contacts,
                                const int* contactCounts, const int* indices, float dt,
@@ -621,7 +625,7 @@ __device__ __forceinline__ float reduce1Block(float v, int count, float* tmp) {
 // (PTX 11440-11497), then the constraint lambda is written (PTX 11600-11635).
 // ---------------------------------------------------------------------------
 template <int TB>
-__global__ void CalculateInflatableVolume(const FlexInflatable* inflatables, Vec3Iter positions,
+__global__ void FLEX_KERNEL_API CalculateInflatableVolume(const FlexInflatable* inflatables, Vec3Iter positions,
                                           const int* reverseLookup, const int* indices,
                                           float* lambdas) {
     __shared__ FlexInflatable inflatable;
@@ -731,7 +735,7 @@ template __global__ void CalculateInflatableVolume<256>(const FlexInflatable*, V
 // relaxation directly.  The first Vec3Iter and the second Vec4* are unused.
 // ---------------------------------------------------------------------------
 template <bool T>
-__global__ void ApplyDeltas(int numParticles, Vec3Iter positions, Vec3Iter newPositions,
+__global__ void FLEX_KERNEL_API ApplyDeltas(int numParticles, Vec3Iter positions, Vec3Iter newPositions,
                             const XVector4<float>* deltas, const XVector4<float>* forces,
                             float relaxation, float damp) {
     int i = blockIdx.x * blockDim.x + threadIdx.x;
@@ -765,7 +769,7 @@ template __global__ void ApplyDeltas<false>(int, Vec3Iter, Vec3Iter, const XVect
 // maxContacts*i + j, walking j downwards).
 // ---------------------------------------------------------------------------
 template <bool T>
-__global__ void SolveContacts(Vec3Iter prevPosition, Vec3Iter positions, int numParticles,
+__global__ void FLEX_KERNEL_API SolveContacts(Vec3Iter prevPosition, Vec3Iter positions, int numParticles,
                               const int* collisionCounts, const XVector4<float>* collisionPlanes,
                               const XVector4<float>* collisionVelocities, const float* densities,
                               XVector4<float>* deltas) {
@@ -862,7 +866,7 @@ template __global__ void cub::EmptyKernel<void>();
 // curl epilogue (PTX 751-785) exist only in the ILb1EE entry.
 // ---------------------------------------------------------------------------
 template <bool T>
-__global__ void SolveVelocities(int numParticles, Vec3Iter sortedNewPositions,
+__global__ void FLEX_KERNEL_API SolveVelocities(int numParticles, Vec3Iter sortedNewPositions,
                                 const XVector3<float>* velocities, Vec3Iter sortedNewVelocities,
                                 const XVector4<float>* curl, const int* phases,
                                 const int* contacts, const int* contactCounts,

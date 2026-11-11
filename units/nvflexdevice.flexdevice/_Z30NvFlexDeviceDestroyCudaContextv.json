@@ -1,10 +1,12 @@
 {
-  "unit": "nvflexdevice.flexdevice#_Z30NvFlexDeviceDestroyCudaContextv",
-  "symbol": "_Z30NvFlexDeviceDestroyCudaContextv",
-  "signature": "void NvFlexDeviceDestroyCudaContext()",
-  "parity": "needs-gpu",
+  "baseline": "dbg",
+  "baseline_reason": "device objects: the reconstructable body matches the debug object's codegen; the release object differs only by inlining",
+  "inlined_away": [],
   "iterations": 0,
-  "reason": "calls the driver entry points cuCtxGetCurrent/cuCtxDestroy through the file-scope pointers, which are NULL until CudaSafeDelayLoad succeeds",
   "params": [],
-  "inlined_away": []
+  "parity": "needs-gpu",
+  "reason": "calls the driver entry points cuCtxGetCurrent/cuCtxDestroy through the file-scope pointers, which are NULL until CudaSafeDelayLoad succeeds",
+  "signature": "void NvFlexDeviceDestroyCudaContext()",
+  "symbol": "_Z30NvFlexDeviceDestroyCudaContextv",
+  "unit": "nvflexdevice.flexdevice#_Z30NvFlexDeviceDestroyCudaContextv"
 }

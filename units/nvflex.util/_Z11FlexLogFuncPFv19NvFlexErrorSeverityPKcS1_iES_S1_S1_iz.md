@@ -12,10 +12,16 @@
 
 ## Inference only
 - `buf` is a named local of 2048 bytes; the shipped code writes at most that.
-- Every log site in this TU passes `__FILE__` ("../../../src/cuda/util.cpp") and one empty
+- Every log site in this TU passes `__FILE__` ("./../../../src/cuda/util.cpp") and one empty
   variadic argument (`.rodata+0xe`, a lone NUL); both are reproduced literally so the call
   ABI and the literal set match (`src/cuda/util.cpp:49`).
 - `va_end` is a no-op here (no visible code).
+
+## Differential
+`pure-cpu`, 64/64 bitwise identical. The harness cannot mint a C callback, and it always passes
+a valid pointer for a pointer parameter, so the spec spells the callback argument as `long`
+(integer-class pointer argument on x86-64 SysV) to reach the real null-callback path; `type`,
+`msg`, `file` and `line` are varied by the harness.
 
 ## Unknowns
 - none.

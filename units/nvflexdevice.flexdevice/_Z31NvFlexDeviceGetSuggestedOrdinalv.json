@@ -1,16 +1,23 @@
 {
-  "unit": "nvflexdevice.flexdevice#_Z31NvFlexDeviceGetSuggestedOrdinalv",
-  "symbol": "_Z31NvFlexDeviceGetSuggestedOrdinalv",
-  "signature": "int NvFlexDeviceGetSuggestedOrdinal()",
-  "parity": "pure-cpu",
-  "iterations": 64,
-  "seed": 1234,
-  "params": [],
-  "ret": "int",
-  "scalars": {},
+  "allow_static_divergence": [
+    "calls"
+  ],
+  "baseline": "dbg",
+  "baseline_reason": "device objects: the reconstructable body matches the debug object's codegen; the release object differs only by inlining",
   "buffers": [],
+  "divergence_reason": "device glue: cross-module call into physxdevice + -O0/-O3 codegen difference; behaviour covered by gate diff",
+  "iterations": 64,
+  "mode": "bitwise",
   "outputs": [
     "ret"
   ],
-  "mode": "bitwise"
+  "params": [],
+  "parity": "pure-cpu",
+  "reason": "",
+  "ret": "int",
+  "scalars": {},
+  "seed": 1234,
+  "signature": "int NvFlexDeviceGetSuggestedOrdinal()",
+  "symbol": "_Z31NvFlexDeviceGetSuggestedOrdinalv",
+  "unit": "nvflexdevice.flexdevice#_Z31NvFlexDeviceGetSuggestedOrdinalv"
 }

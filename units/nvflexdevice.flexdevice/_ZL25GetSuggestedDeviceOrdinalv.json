@@ -1,10 +1,12 @@
 {
-  "unit": "nvflexdevice.flexdevice#_ZL25GetSuggestedDeviceOrdinalv",
-  "symbol": "_ZL25GetSuggestedDeviceOrdinalv",
-  "signature": "int GetSuggestedDeviceOrdinal()",
-  "parity": "needs-gpu",
+  "baseline": "dbg",
+  "baseline_reason": "device objects: the reconstructable body matches the debug object's codegen; the release object differs only by inlining",
+  "inlined_away": [],
   "iterations": 0,
-  "reason": "G1 only: internal linkage (local 't' symbol, not in .dynsym). Its only exported caller, NvFlexDeviceGetSuggestedOrdinal, is covered by a bitwise differential test.",
   "params": [],
-  "inlined_away": []
+  "parity": "needs-gpu",
+  "reason": "G1 only: internal linkage (local 't' symbol, not in .dynsym). Its only exported caller, NvFlexDeviceGetSuggestedOrdinal, is covered by a bitwise differential test.",
+  "signature": "int GetSuggestedDeviceOrdinal()",
+  "symbol": "_ZL25GetSuggestedDeviceOrdinalv",
+  "unit": "nvflexdevice.flexdevice#_ZL25GetSuggestedDeviceOrdinalv"
 }

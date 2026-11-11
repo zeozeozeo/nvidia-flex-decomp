@@ -29,6 +29,4 @@ therefore cannot spell those parameter types; the spec above uses ABI-equivalent
 
 `flexkit gate diff --unit 'nvflex.flex#NvFlexGetSolverLibrary'` passes 64/64 vectors bitwise
 (`libnvflex_rel.so` vs `recon/build/libnvflex.so`). The harness spells the
-`NvFlexSolverDesc*` parameter as `void*` because `nvflex/all.h` does not declare
-that type; the call is ABI-identical and the compared buffer is the full
-zero-filled struct.
+parameters with the public `NvFlex.h` types (`nvflex/all.h` now includes it).

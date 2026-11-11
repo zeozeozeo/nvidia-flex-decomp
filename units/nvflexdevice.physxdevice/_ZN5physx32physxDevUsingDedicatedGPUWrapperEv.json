@@ -1,17 +1,20 @@
 {
-  "unit": "nvflexdevice.physxdevice#_ZN5physx32physxDevUsingDedicatedGPUWrapperEv",
-  "symbol": "_ZN5physx32physxDevUsingDedicatedGPUWrapperEv",
-  "signature": "physx::PHYSX_DEV_STATUS physx::physxDevUsingDedicatedGPUWrapper()",
-  "parity": "pure-cpu",
-  "iterations": 64,
-  "seed": 1234,
-  "params": [],
-  "ret": "int",
-  "scalars": {},
+  "baseline": "dbg",
+  "baseline_reason": "device objects: the reconstructable body matches the debug object's codegen; the release object differs only by inlining",
   "buffers": [],
+  "iterations": 64,
+  "mode": "bitwise",
   "outputs": [
     "ret"
   ],
-  "mode": "bitwise",
-  "self_type": null
+  "params": [],
+  "parity": "pure-cpu",
+  "reason": "",
+  "ret": "int",
+  "scalars": {},
+  "seed": 1234,
+  "self_type": null,
+  "signature": "physx::PHYSX_DEV_STATUS physx::physxDevUsingDedicatedGPUWrapper()",
+  "symbol": "_ZN5physx32physxDevUsingDedicatedGPUWrapperEv",
+  "unit": "nvflexdevice.physxdevice#_ZN5physx32physxDevUsingDedicatedGPUWrapperEv"
 }

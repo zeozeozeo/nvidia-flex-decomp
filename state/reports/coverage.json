@@ -1,8 +1,8 @@
 {
   "acceptance": {
     "all_verified": false,
-    "blocked_zero": true,
-    "claimed_zero": false,
+    "blocked_zero": false,
+    "claimed_zero": true,
     "dxbc": {
       "matched": 0,
       "not_reconstructed": 83,
@@ -14,14 +14,39 @@
     "open_zero": false,
     "vendored_untouched": true
   },
-  "blocked": [],
+  "blocked": [
+    {
+      "reason": "nvcc CUDA registration hook (plan 2.2 classifies it stub/waived, ledger kind=host): the shipped object registers the 8 kernels of its own fatbin (__cudaRegisterFatBinary, 8x __cudaRegisterFunction, __cudaRegisterVar, atexit); with -rdc=true CUDA 13.4 emits __cudaRegisterLinkedBinary_* per TU instead, giving instruction ratio 0.101 vs band >=0.2 and 4 unexplained missing callees. Not producible from source; needs integrator waiver.",
+      "unit": "nvflex.bvh#_ZL24__sti____cudaRegisterAllv"
+    },
+    {
+      "reason": "nvcc CUDA unregistration hook (plan 2.2: stub/waived, ledger kind=host): CUDA 13.4 in RDC mode does not emit __cudaUnregisterBinaryUtil at all (that is the non-RDC fatbin teardown path), so the symbol is absent from the reconstructed object; its body references nvcc-internal __cudaFatCubinHandle, which no longer exists. Needs integrator waiver.",
+      "unit": "nvflex.bvh#_ZL26__cudaUnregisterBinaryUtilv"
+    },
+    {
+      "reason": "same as the ILb1EE instantiation: PTX 15753-19600 shares the structure, the quaternion update and the unrolled transform/atomic loops are not transcribed; decoded regions and the exact undecoded line ranges are in units/nvflex.flex/_Z11SolveShapesILb0EEvPKiS1_PKfS3_S3_S1_P8XVector3IfEP8XVector4IfE8Vec3IterSA_P5XQuatIfES6_S9_SA_if.md",
+      "unit": "nvflex.flex#_Z11SolveShapesILb0EEvPKiS1_PKfS3_S3_S1_P8XVector3IfEP8XVector4IfE8Vec3IterSA_P5XQuatIfES6_S9_SA_if"
+    },
+    {
+      "reason": "not reconstructed in this slice: PTX 1800-3740 (quaternion SOR update + 8x unrolled transform/atomic particle loop) and the tail at 3741-4078 are decoded only structurally; the decoded regions (init, COM reduction, covariance, plastic test) are recorded in units/nvflex.flex/_Z11SolveShapesILb1EEvPKiS1_PKfS3_S3_S1_P8XVector3IfEP8XVector4IfE8Vec3IterSA_P5XQuatIfES6_S9_SA_if.md and a completion would otherwise guess",
+      "unit": "nvflex.flex#_Z11SolveShapesILb1EEvPKiS1_PKfS3_S3_S1_P8XVector3IfEP8XVector4IfE8Vec3IterSA_P5XQuatIfES6_S9_SA_if"
+    },
+    {
+      "reason": "compiler-generated CUDA registration: CUDA 13.4 -rdc=true emits a 33-byte __sti____cudaRegisterAll using __cudaRegisterLinkedBinary_* where the shipped CUDA 9.2 object has 521 bytes of __cudaRegisterFatBinary/__cudaRegisterFunction/__cudaRegisterVar calls (gate: ratio 0.057, call set differs). No source-level definition exists; waive as compiler-generated CUDA registration.",
+      "unit": "nvflex.sort#_ZL24__sti____cudaRegisterAllv"
+    },
+    {
+      "reason": "compiler-generated CUDA registration helper from include/crt/host_runtime.h:265: under CUDA 13.4 with -rdc=true (the project build mode) nvcc does not emit __cudaUnregisterBinaryUtil at all, so the symbol cannot be produced from source. Waive as compiler-generated CUDA registration.",
+      "unit": "nvflex.sort#_ZL26__cudaUnregisterBinaryUtilv"
+    }
+  ],
   "exports": {
     "nvflex": {
       "counts": {
-        "extra": 0,
-        "missing": 241,
+        "extra": 67,
+        "missing": 125,
         "orig": 241,
-        "recon": 0
+        "recon": 183
       },
       "missing_sample": [
         "DW.ref.__gxx_personality_v0",
@@ -31,19 +56,19 @@
         "NvFlexCopyDeviceToHost",
         "NvFlexCreateConvexMesh",
         "NvFlexCreateDistanceField",
-        "NvFlexCreateSolver",
         "NvFlexCreateTriangleMesh",
         "NvFlexDestroyConvexMesh",
         "NvFlexDestroyDistanceField",
-        "NvFlexDestroySolver",
         "NvFlexDestroyTriangleMesh",
         "NvFlexFlush",
         "NvFlexFreeBuffer",
-        "NvFlexGetActive",
-        "NvFlexGetActiveCount",
-        "NvFlexGetAnisotropy",
         "NvFlexGetBounds",
-        "NvFlexGetContacts"
+        "NvFlexGetContacts",
+        "NvFlexGetConvexMeshBounds",
+        "NvFlexGetConvexMeshes",
+        "NvFlexGetDetailTimers",
+        "NvFlexGetDeviceLatency",
+        "NvFlexGetDeviceName"
       ],
       "orig": [
         "DW.ref.__gxx_personality_v0",
@@ -287,6 +312,191 @@
         "_ZSt16__introsort_loopIN9__gnu_cxx17__normal_iteratorIPN19LinearBVHBuilderCPU12KeyIndexPairESt6vectorIS3_SaIS3_EEEElEvT_S9_T0_",
         "_ZSt6removeIN9__gnu_cxx17__normal_iteratorIPjSt6vectorIjSaIjEEEEmET_S7_S7_RKT0_",
         "g_savedContext"
+      ],
+      "recon": [
+        "NvFlexCreateSolver",
+        "NvFlexDestroySolver",
+        "NvFlexGetActive",
+        "NvFlexGetActiveCount",
+        "NvFlexGetAnisotropy",
+        "NvFlexGetDensities",
+        "NvFlexGetDeviceAndContext",
+        "NvFlexGetDiffuseParticles",
+        "NvFlexGetNeighbors",
+        "NvFlexGetNormals",
+        "NvFlexGetParticles",
+        "NvFlexGetPhases",
+        "NvFlexGetRestParticles",
+        "NvFlexGetRigids",
+        "NvFlexGetSmoothParticles",
+        "NvFlexGetSolverDesc",
+        "NvFlexGetSolverLibrary",
+        "NvFlexGetSolvers",
+        "NvFlexGetSprings",
+        "NvFlexGetVelocities",
+        "NvFlexSetActive",
+        "NvFlexSetActiveCount",
+        "NvFlexSetDiffuseParticles",
+        "NvFlexSetInflatables",
+        "NvFlexSetNormals",
+        "NvFlexSetParticles",
+        "NvFlexSetPhases",
+        "NvFlexSetRestParticles",
+        "NvFlexSetRigids",
+        "NvFlexSetSolverDescDefaults",
+        "NvFlexSetSprings",
+        "NvFlexSetVelocities",
+        "_Z10CreateGridiPKiPiS1_",
+        "_Z10CudaUnloadP8CUctx_st",
+        "_Z10DumpMemoryPKc",
+        "_Z112__device_stub__Z91_ZN3cub19RadixSortScanKernelINS_23DeviceRadixSortDispatchILb0EiiiE13PtxScanPolicyEiEEvPT0_iPiiPii",
+        "_Z11ApplyDeltasILb0EEvi8Vec3IterS0_PK8XVector4IfES4_ff",
+        "_Z11ApplyDeltasILb1EEvi8Vec3IterS0_PK8XVector4IfES4_ff",
+        "_Z11BuildLeavesPK8XVector4IfES2_iPKiPiS5_P14PackedNodeHalfS7_",
+        "_Z11FlexLogFuncPFv19NvFlexErrorSeverityPKcS1_iES_S1_S1_iz",
+        "_Z13CreateTexturePK8XVector4IfEi",
+        "_Z13CreateTexturePKfi",
+        "_Z13CreateTexturePKii",
+        "_Z13SolveContactsILb0EEv8Vec3IterS0_iPKiPK8XVector4IfES6_PKfPS4_",
+        "_Z14BuildHierarchyiPiPKiS_PViS3_PV14PackedNodeHalfS6_",
+        "_Z14CudaGetContextv",
+        "_Z14CudaSetContextP8CUctx_st",
+        "_Z14DestroyTexturey",
+        "_Z14SolveDensitiesILb0EEvi8Vec3IterS0_PKiPKfPK8XVector4IfES2_S2_S2_fPS6_",
+        "_Z14SolveDensitiesILb1EEvi8Vec3IterS0_PKiPKfPK8XVector4IfES2_S2_S2_fPS6_",
+        "_Z15SolveVelocitiesILb0EEvi8Vec3IterPK8XVector3IfES0_PK8XVector4IfEPKiSA_SA_S8_SA_SA_fPS6_PfSC_",
+        "_Z15SolveVelocitiesILb1EEvi8Vec3IterPK8XVector3IfES0_PK8XVector4IfEPKiSA_SA_S8_SA_SA_fPS6_PfSC_",
+        "_Z15SortCellIndicesP13NvFlexLibraryPiS1_ii",
+        "_Z16CalculateDensityILb0EEvi8Vec3IterPKiS2_S2_S2_PK8XVector4IfEPfPS4_S2_",
+        "_Z16CalculateDensityILb1EEvi8Vec3IterPKiS2_S2_S2_PK8XVector4IfEPfPS4_S2_",
+        "_Z16CollideParticlesiPKiS0_S0_8Vec3IterPK8XVector4IfES0_ffiPiS6_",
+        "_Z16CudaContextCheckPFv19NvFlexErrorSeverityPKcS1_iEP8CUctx_st",
+        "_Z16ReorderParticlesiPK8XVector4IfES2_PKiS4_PiPS0_S6_S5_",
+        "_Z17CreateCellIndicesiPKiPK8XVector4IfEPiS5_f",
+        "_Z17CreateCudaContextiPP8CUctx_st",
+        "_Z17CudaSafeDelayLoadPFv19NvFlexErrorSeverityPKcS1_iEiPP8CUctx_st",
+        "_Z186__device_stub__Z135_ZN3cub22RadixSortUpsweepKernelINS_23DeviceRadixSortDispatchILb0EiiiE16PtxUpsweepPolicyELb0EiiEEvPT1_PT2_S6_iibNS_13GridEvenShareIS6_EEPiS_iiibN3cub13GridEvenShareIiEEPiS_iiibRN3cub13GridEvenShareIiEE",
+        "_Z189__device_stub__Z138_ZN3cub22RadixSortUpsweepKernelINS_23DeviceRadixSortDispatchILb0EiiiE19PtxAltUpsweepPolicyELb0EiiEEvPT1_PT2_S6_iibNS_13GridEvenShareIS6_EEPiS_iiibN3cub13GridEvenShareIiEEPiS_iiibRN3cub13GridEvenShareIiEE",
+        "_Z18CalculateKeyDeltasPKiPii",
+        "_Z18ComputeTotalBoundsPK8XVector4IfES2_P8XVector3IfES5_i",
+        "_Z209__device_stub__Z151_ZN3cub24RadixSortDownsweepKernelINS_23DeviceRadixSortDispatchILb0EiiiE18PtxDownsweepPolicyELb0EiiiEEvPT1_S5_PT2_S7_PT3_S8_iibbNS_13GridEvenShareIS8_EEPiS_S_S_S_iiibbN3cub13GridEvenShareIiEEPiS_S_S_S_iiibbRN3cub13GridEvenShareIiEE",
+        "_Z20CalculateMortonCodesPK8XVector4IfES2_PKiiPK8XVector3IfES8_PiS9_",
+        "_Z20ComputeTotalInvEdgesPK8XVector3IfES2_PS0_",
+        "_Z212__device_stub__Z154_ZN3cub24RadixSortDownsweepKernelINS_23DeviceRadixSortDispatchILb0EiiiE21PtxAltDownsweepPolicyELb0EiiiEEvPT1_S5_PT2_S7_PT3_S8_iibbNS_13GridEvenShareIS8_EEPiS_S_S_S_iiibbN3cub13GridEvenShareIiEEPiS_S_S_S_iiibbRN3cub13GridEvenShareIiEE",
+        "_Z22FlexDeviceFreeInternalPv",
+        "_Z24FlexDeviceMallocInternalPPvmPKcS2_i",
+        "_Z25CalculateInflatableVolumeILi256EEvPK14FlexInflatable8Vec3IterPKiS5_Pf",
+        "_Z26ContinuousShockPropagationiP8XVector4IfEPi",
+        "_Z37__device_stub__Z10CreateGridiPKiPiS1_iPKiPiS1_",
+        "_Z38__device_stub__Z17InitActiveIndicesiPiiPi",
+        "_Z42__device_stub__Z18CalculateKeyDeltasPKiPiiPKiPii",
+        "_Z45__device_stub__Z26_ZN3cub11EmptyKernelIvEEvvvv",
+        "_Z59__device_stub__Z17CreateCellIndicesiPKiPK8XVector4IfEPiS5_fiPKiPK8XVector4IfEPiS5_f",
+        "_Z59__device_stub__Z20ComputeTotalInvEdgesPK8XVector3IfES2_PS0_PK8XVector3IfES2_PS0_",
+        "_Z60__device_stub__Z26ContinuousShockPropagationiP8XVector4IfEPiiP8XVector4IfEPi",
+        "_Z67__device_stub__Z14BuildHierarchyiPiPKiS_PViS3_PV14PackedNodeHalfS6_iPiPKiS_PViS3_PV14PackedNodeHalfS6_",
+        "_Z67__device_stub__Z7PredictiPKiPK8XVector4IfES0_8XVector3IfEfPS2_PS6_fiPKiPK8XVector4IfES0_R8XVector3IfEfPS2_PS6_f",
+        "_Z70__device_stub__Z16ReorderParticlesiPK8XVector4IfES2_PKiS4_PiPS0_S6_S5_iPK8XVector4IfES2_PKiS4_PiPS0_S6_S5_",
+        "_Z70__device_stub__Z18ComputeTotalBoundsPK8XVector4IfES2_P8XVector3IfES5_iPK8XVector4IfES2_P8XVector3IfES5_i",
+        "_Z75__device_stub__Z11BuildLeavesPK8XVector4IfES2_iPKiPiS5_P14PackedNodeHalfS7_PK8XVector4IfES2_iPKiPiS5_P14PackedNodeHalfS7_",
+        "_Z78__device_stub__Z16CollideParticlesiPKiS0_S0_8Vec3IterPK8XVector4IfES0_ffiPiS6_iPKiS0_S0_R8Vec3IterPK8XVector4IfES0_ffiPiS7_",
+        "_Z7FreeBVHR3BVH",
+        "_Z7PredictiPKiPK8XVector4IfES0_8XVector3IfEfPS2_PS6_f",
+        "_Z81__device_stub__Z20CalculateMortonCodesPK8XVector4IfES2_PKiiPK8XVector3IfES8_PiS9_PK8XVector4IfES2_PKiiPK8XVector3IfES8_PiS9_",
+        "_Z8CloneBVHRK3BVHRS_",
+        "_Z9FlexAllocP13NvFlexLibraryi",
+        "_Z9ResizeBVHR3BVHi",
+        "_Z9SortResetP13NvFlexLibrary",
+        "_ZN12NvFlexBuffer3mapEv",
+        "_ZN12NvFlexBuffer5unmapEv",
+        "_ZN12NvFlexBufferC1EiiiP13NvFlexLibrary",
+        "_ZN12NvFlexBufferC2EiiiP13NvFlexLibrary",
+        "_ZN12NvFlexBufferD1Ev",
+        "_ZN12NvFlexBufferD2Ev",
+        "_ZN16MedianBVHBuilder10CalcBoundsEPK6BoundsPKiii",
+        "_ZN16MedianBVHBuilder14BuildRecursiveER3BVHPK6BoundsPiiii",
+        "_ZN16MedianBVHBuilder22PartitionObjectsMedianEPK6BoundsPiiiS0_",
+        "_ZN16MedianBVHBuilder24PartitionObjectsMidPointEPK6BoundsPiiiS0_",
+        "_ZN16MedianBVHBuilder5BuildER3BVHPK6Boundsi",
+        "_ZN18CudaRangeTimerPoolC1Ev",
+        "_ZN18CudaRangeTimerPoolC2Ev",
+        "_ZN19LinearBVHBuilderCPU5BuildER3BVHPK6Boundsi",
+        "_ZN19LinearBVHBuilderGPU5BuildEP13NvFlexLibraryR3BVHPK8XVector4IfES7_PKiiP6Bounds",
+        "_ZN19LinearBVHBuilderGPUC1Ev",
+        "_ZN19LinearBVHBuilderGPUC2Ev",
+        "_ZN19LinearBVHBuilderGPUD1Ev",
+        "_ZN19LinearBVHBuilderGPUD2Ev",
+        "_ZN3cub11EmptyKernelIvEEvv",
+        "_ZN3cub15DeviceRadixSort9SortPairsIiiEE9cudaErrorPvRmRNS_12DoubleBufferIT_EERNS5_IT0_EEiiiP11CUstream_stb",
+        "_ZN3cub19RadixSortScanKernelINS_23DeviceRadixSortDispatchILb0EiiiE13PtxScanPolicyEiEEvPT0_i",
+        "_ZN3cub22RadixSortUpsweepKernelINS_23DeviceRadixSortDispatchILb0EiiiE16PtxUpsweepPolicyELb0EiiEEvPT1_PT2_S6_iibNS_13GridEvenShareIS6_EE",
+        "_ZN3cub22RadixSortUpsweepKernelINS_23DeviceRadixSortDispatchILb0EiiiE19PtxAltUpsweepPolicyELb0EiiEEvPT1_PT2_S6_iibNS_13GridEvenShareIS6_EE",
+        "_ZN3cub24RadixSortDownsweepKernelINS_23DeviceRadixSortDispatchILb0EiiiE18PtxDownsweepPolicyELb0EiiiEEvPT1_S5_PT2_S7_PT3_S8_iibbNS_13GridEvenShareIS8_EE",
+        "_ZN3cub24RadixSortDownsweepKernelINS_23DeviceRadixSortDispatchILb0EiiiE21PtxAltDownsweepPolicyELb0EiiiEEvPT1_S5_PT2_S7_PT3_S8_iibbNS_13GridEvenShareIS8_EE",
+        "_ZN4cuda3__413in_place_fromE",
+        "_ZN4cuda3std3__419piecewise_constructE",
+        "_ZN4cuda3std3__45__cpo3endE",
+        "_ZN4cuda3std3__45__cpo4cendE",
+        "_ZN4cuda3std3__45__cpo4rendE",
+        "_ZN4cuda3std3__45__cpo5beginE",
+        "_ZN4cuda3std3__45__cpo5crendE",
+        "_ZN4cuda3std3__45__cpo6cbeginE",
+        "_ZN4cuda3std3__45__cpo6rbeginE",
+        "_ZN4cuda3std3__45__cpo7crbeginE",
+        "_ZN4cuda3std3__45__cpo9iter_swapE",
+        "_ZN4cuda3std3__47nulloptE",
+        "_ZN4cuda3std3__48in_placeE",
+        "_ZN4cuda3std6ranges3__45__cpo3endE",
+        "_ZN4cuda3std6ranges3__45__cpo4cendE",
+        "_ZN4cuda3std6ranges3__45__cpo4dataE",
+        "_ZN4cuda3std6ranges3__45__cpo4nextE",
+        "_ZN4cuda3std6ranges3__45__cpo4prevE",
+        "_ZN4cuda3std6ranges3__45__cpo4sizeE",
+        "_ZN4cuda3std6ranges3__45__cpo4swapE",
+        "_ZN4cuda3std6ranges3__45__cpo5beginE",
+        "_ZN4cuda3std6ranges3__45__cpo5cdataE",
+        "_ZN4cuda3std6ranges3__45__cpo5ssizeE",
+        "_ZN4cuda3std6ranges3__45__cpo6cbeginE",
+        "_ZN4cuda3std6ranges3__45__cpo7advanceE",
+        "_ZN4cuda3std6ranges3__45__cpo8distanceE",
+        "_ZN4cuda3std6ranges3__45__cpo9iter_moveE",
+        "_ZN4cuda3std6ranges3__45__cpo9iter_swapE",
+        "_ZN63_GLOBAL__N__39_tmpxft_00000d59_00000000_6_flex_cpp1_ii_dbca320710ByteOffsetEPKvi",
+        "_ZN63_GLOBAL__N__39_tmpxft_00000d59_00000000_6_flex_cpp1_ii_dbca320710ByteOffsetEPvi",
+        "_ZN63_GLOBAL__N__39_tmpxft_00000d59_00000000_6_flex_cpp1_ii_dbca320711writeData3DEP9cudaArrayP12NvFlexBufferiii",
+        "_ZN63_GLOBAL__N__39_tmpxft_00000d59_00000000_6_flex_cpp1_ii_dbca320715ExecuteCallbackEP12NvFlexSolver25NvFlexSolverCallbackStagef",
+        "_ZN63_GLOBAL__N__39_tmpxft_00000d59_00000000_6_flex_cpp1_ii_dbca32078ReadDataEP12NvFlexBufferiPKvii",
+        "_ZN63_GLOBAL__N__39_tmpxft_00000d59_00000000_6_flex_cpp1_ii_dbca32078ReadDataEPFv19NvFlexErrorSeverityPKcS2_iEP12NvFlexBufferPKviPK14NvFlexCopyDesci",
+        "_ZN63_GLOBAL__N__39_tmpxft_00000d59_00000000_6_flex_cpp1_ii_dbca32079WriteDataEPFv19NvFlexErrorSeverityPKcS2_iEPviP12NvFlexBufferPK14NvFlexCopyDesci",
+        "_ZN63_GLOBAL__N__39_tmpxft_00000d59_00000000_6_flex_cpp1_ii_dbca32079WriteDataEPviP12NvFlexBufferii",
+        "_ZN9CudaTimerC1EPKcR10CudaTimers",
+        "_ZN9CudaTimerC2EPKcR10CudaTimers",
+        "_ZN9CudaTimerD1Ev",
+        "_ZN9CudaTimerD2Ev",
+        "__cudaRegisterLinkedBinary_5473beb9_13_flex_part1_cu_c3f544ee",
+        "__cudaRegisterLinkedBinary_86f6839c_7_flex_cu_1dcd7855_245117",
+        "__cudaRegisterLinkedBinary_98decf99_12_bvh_part1_cu_e6b7b7b7",
+        "__cudaRegisterLinkedBinary_ad92b671_7_sort_cu_a06bd971",
+        "__cudaRegisterLinkedBinary_b0a2fb70_6_bvh_cu_001947f6",
+        "__cudaRegisterLinkedBinary_c9a48600_13_flex_part6_cu_5ed38fd4",
+        "__cudaRegisterLinkedBinary_db1129ee_13_flex_part5_cu_d9d02b55",
+        "__cudaRegisterLinkedBinary_fe7a7632_13_flex_part3_cu_seed1",
+        "__fatbinwrap_5473beb9_13_flex_part1_cu_c3f544ee",
+        "__fatbinwrap_86f6839c_7_flex_cu_1dcd7855_245117",
+        "__fatbinwrap_98decf99_12_bvh_part1_cu_e6b7b7b7",
+        "__fatbinwrap_ad92b671_7_sort_cu_a06bd971",
+        "__fatbinwrap_b0a2fb70_6_bvh_cu_001947f6",
+        "__fatbinwrap_c9a48600_13_flex_part6_cu_5ed38fd4",
+        "__fatbinwrap_db1129ee_13_flex_part5_cu_d9d02b55",
+        "__fatbinwrap_fe7a7632_13_flex_part3_cu_seed1",
+        "hostRefConstantArrayExternalLinkage",
+        "hostRefConstantArrayInternalLinkage",
+        "hostRefDeviceArrayExternalLinkage",
+        "hostRefDeviceArrayInternalLinkage",
+        "hostRefKernelArrayExternalLinkage",
+        "hostRefKernelArrayInternalLinkage",
+        "seed1",
+        "seed2"
       ]
     },
     "nvflexdevice": {
@@ -318,10 +528,10 @@
     },
     "nvflexext": {
       "counts": {
-        "extra": 8,
+        "extra": 16,
         "missing": 43,
         "orig": 106,
-        "recon": 71
+        "recon": 79
       },
       "missing_sample": [
         "DW.ref.__gxx_personality_v0",
@@ -523,13 +733,21 @@
         "_ZNSt6vectorIiSaIiEE17_M_realloc_appendIJRKiEEEvDpOT_",
         "_ZNSt6vectorIiSaIiEE17_M_realloc_appendIJiEEEvDpOT_",
         "_ZNSt8_Rb_treeIN9ClothMesh4EdgeES1_St9_IdentityIS1_ESt4lessIS1_ESaIS1_EE16_M_insert_uniqueIS1_EESt4pairISt17_Rb_tree_iteratorIS1_EbEOT_",
+        "__cudaRegisterLinkedBinary_04a76be1_14_cudaflexExt_cu_0ba922de",
+        "__fatbinwrap_04a76be1_14_cudaflexExt_cu_0ba922de",
+        "hostRefConstantArrayExternalLinkage",
+        "hostRefConstantArrayInternalLinkage",
+        "hostRefDeviceArrayExternalLinkage",
+        "hostRefDeviceArrayInternalLinkage",
+        "hostRefKernelArrayExternalLinkage",
+        "hostRefKernelArrayInternalLinkage",
         "seed1",
         "seed2"
       ]
     }
   },
   "gates": {
-    "diff_pass_rate": 0.0,
+    "diff_pass_rate": 1.0,
     "dxbc": {
       "matched": 0,
       "not_reconstructed": 83,
@@ -540,16 +758,20 @@
       "detail": "skipped:no-gpu (FLEX_GPU!=1)"
     },
     "runs": {
+      "diff": {
+        "fail": 21,
+        "pass": 184
+      },
       "dxbc": {
-        "fail": 87,
+        "fail": 171,
         "pass": 2
       },
       "static": {
-        "fail": 1171,
-        "pass": 80
+        "fail": 1306,
+        "pass": 900
       }
     },
-    "static_pass_rate": 0.0692
+    "static_pass_rate": 0.217
   },
   "headers": {
     "all_identical": true,
@@ -569,51 +791,59 @@
     ]
   },
   "pending": {
-    "claimed": 9,
+    "claimed": 0,
     "decompiled": 0,
-    "open": 235
+    "open": 72
   },
   "units": {
     "by_kind": {
       "host": {
-        "claimed": 9,
-        "open": 181,
-        "verified": 59,
-        "waived": 543
+        "blocked": 3,
+        "open": 51,
+        "verified": 153,
+        "waived": 563
       },
       "inline": {
         "waived": 2328
       },
       "kernel": {
-        "open": 54,
-        "verified": 1
+        "blocked": 2,
+        "open": 21,
+        "verified": 27,
+        "waived": 5
       },
       "stub": {
-        "waived": 14
+        "blocked": 1,
+        "verified": 6,
+        "waived": 29
       }
     },
     "by_module": {
       "nvflex.bvh": {
-        "open": 30,
+        "blocked": 2,
+        "verified": 28,
         "waived": 8
       },
       "nvflex.flex": {
-        "open": 171,
-        "waived": 11
+        "blocked": 2,
+        "open": 72,
+        "verified": 64,
+        "waived": 44
       },
       "nvflex.sort": {
-        "open": 11,
-        "waived": 2
+        "blocked": 2,
+        "verified": 3,
+        "waived": 8
       },
       "nvflex.util": {
-        "open": 23,
-        "waived": 1
+        "verified": 22,
+        "waived": 2
       },
       "nvflexdevice.flexdevice": {
-        "claimed": 6
+        "verified": 6
       },
       "nvflexdevice.physxdevice": {
-        "claimed": 3
+        "verified": 3
       },
       "nvflexext.aabbtree": {
         "verified": 11,
@@ -657,10 +887,10 @@
       }
     },
     "counts": {
-      "claimed": 9,
-      "open": 235,
-      "verified": 60,
-      "waived": 2885
+      "blocked": 6,
+      "open": 72,
+      "verified": 186,
+      "waived": 2925
     },
     "total": 3189
   },
@@ -710,6 +940,171 @@
       "kind": "stub",
       "reason": "compiler-generated CUDA registration",
       "unit": "nvflex.flex#_GLOBAL__sub_I_tmpxft_00000d59_00000000_5_flex.cudafe1.cpp"
+    },
+    {
+      "kind": "stub",
+      "reason": "compiler-generated CUDA registration / compiler clone",
+      "unit": "nvflex.flex#_Z161__device_stub__Z20TransformShapeBoundsP8XVector4IfES1_PKS0_PK5XQuatIfES3_S7_PK23NvFlexCollisionGeometryPKiiPK22FlexConvexMeshInternalPK24FlexTriangleMeshInternalP8XVector4IfES1_PKS0_PK5XQuatIfES3_S7_PK23NvFlexCollisionGeometryPKiiPK22FlexConvexMeshInternalPK24FlexTriangleMeshInternal"
+    },
+    {
+      "kind": "host",
+      "reason": "compiler-generated code (CUDA launch stub / registration trampoline / IPA clone); no out-of-line body is producible from source under the pinned CUDA 13.4 toolchain",
+      "unit": "nvflex.flex#_Z37__device_stub__Z10CreateGridiPKiPiS1_iPKiPiS1_"
+    },
+    {
+      "kind": "stub",
+      "reason": "compiler-generated CUDA registration / compiler clone",
+      "unit": "nvflex.flex#_Z38__device_stub__Z17InitActiveIndicesiPiiPi"
+    },
+    {
+      "kind": "host",
+      "reason": "compiler-generated code (CUDA launch stub / registration trampoline / IPA clone); no out-of-line body is producible from source under the pinned CUDA 13.4 toolchain",
+      "unit": "nvflex.flex#_Z48__device_stub__Z25ClampDiffuseParticleCountPiS_iPiS_i"
+    },
+    {
+      "kind": "host",
+      "reason": "compiler-generated code (CUDA launch stub / registration trampoline / IPA clone); no out-of-line body is producible from source under the pinned CUDA 13.4 toolchain",
+      "unit": "nvflex.flex#_Z49__device_stub__Z16UpdateVelocitiesi8Vec3IterS_S_fiRK8Vec3IterS1_RS_f"
+    },
+    {
+      "kind": "host",
+      "reason": "compiler-generated code (CUDA launch stub / registration trampoline / IPA clone); no out-of-line body is producible from source under the pinned CUDA 13.4 toolchain",
+      "unit": "nvflex.flex#_Z50__device_stub__Z12SolveSpringsPiPfS0_PKii8Vec3IterPiPfS0_PKiiR8Vec3Iter"
+    },
+    {
+      "kind": "host",
+      "reason": "compiler-generated code (CUDA launch stub / registration trampoline / IPA clone); no out-of-line body is producible from source under the pinned CUDA 13.4 toolchain",
+      "unit": "nvflex.flex#_Z59__device_stub__Z17CreateCellIndicesiPKiPK8XVector4IfEPiS5_fiPKiPK8XVector4IfEPiS5_f"
+    },
+    {
+      "kind": "host",
+      "reason": "compiler-generated code (CUDA launch stub / registration trampoline / IPA clone); no out-of-line body is producible from source under the pinned CUDA 13.4 toolchain",
+      "unit": "nvflex.flex#_Z60__device_stub__Z26ContinuousShockPropagationiP8XVector4IfEPiiP8XVector4IfEPi"
+    },
+    {
+      "kind": "host",
+      "reason": "compiler-generated code (CUDA launch stub / registration trampoline / IPA clone); no out-of-line body is producible from source under the pinned CUDA 13.4 toolchain",
+      "unit": "nvflex.flex#_Z62__device_stub__Z22NormalizeVertexNormalsiPKiPK8XVector4IfEPS2_iPKiPK8XVector4IfEPS2_"
+    },
+    {
+      "kind": "host",
+      "reason": "compiler-generated code (CUDA launch stub / registration trampoline / IPA clone); no out-of-line body is producible from source under the pinned CUDA 13.4 toolchain",
+      "unit": "nvflex.flex#_Z64__device_stub__Z21ComputeTriangleBoundsPK8XVector4IfEPKiiPS0_S5_PK8XVector4IfEPKiiPS0_S5_"
+    },
+    {
+      "kind": "host",
+      "reason": "compiler-generated code (CUDA launch stub / registration trampoline / IPA clone); no out-of-line body is producible from source under the pinned CUDA 13.4 toolchain",
+      "unit": "nvflex.flex#_Z67__device_stub__Z15CalculateBoundsiPKiPK8XVector4IfEP8XVector3IfES7_iPKiPK8XVector4IfEP8XVector3IfES7_"
+    },
+    {
+      "kind": "host",
+      "reason": "compiler-generated code (CUDA launch stub / registration trampoline / IPA clone); no out-of-line body is producible from source under the pinned CUDA 13.4 toolchain",
+      "unit": "nvflex.flex#_Z67__device_stub__Z15SmoothPositionsiPK8XVector4IfEPKiS4_S4_S4_PS0_S5_iPK8XVector4IfEPKiS4_S4_S4_PS0_S5_"
+    },
+    {
+      "kind": "host",
+      "reason": "compiler-generated code (CUDA launch stub / registration trampoline / IPA clone); no out-of-line body is producible from source under the pinned CUDA 13.4 toolchain",
+      "unit": "nvflex.flex#_Z67__device_stub__Z19UpdateVertexNormalsiPKiS0_PK8XVector3IfE8Vec3IteriPKiS0_PK8XVector3IfER8Vec3Iter"
+    },
+    {
+      "kind": "host",
+      "reason": "compiler-generated code (CUDA launch stub / registration trampoline / IPA clone); no out-of-line body is producible from source under the pinned CUDA 13.4 toolchain",
+      "unit": "nvflex.flex#_Z67__device_stub__Z7PredictiPKiPK8XVector4IfES0_8XVector3IfEfPS2_PS6_fiPKiPK8XVector4IfES0_R8XVector3IfEfPS2_PS6_f"
+    },
+    {
+      "kind": "host",
+      "reason": "compiler-generated code (CUDA launch stub / registration trampoline / IPA clone); no out-of-line body is producible from source under the pinned CUDA 13.4 toolchain",
+      "unit": "nvflex.flex#_Z70__device_stub__Z15UpdateTrianglesi8Vec3IterS_PKiS1_P8XVector3IfES3_S_fiR8Vec3IterS0_PKiS2_P8XVector3IfERS4_S0_f"
+    },
+    {
+      "kind": "host",
+      "reason": "compiler-generated code (CUDA launch stub / registration trampoline / IPA clone); no out-of-line body is producible from source under the pinned CUDA 13.4 toolchain",
+      "unit": "nvflex.flex#_Z70__device_stub__Z16ReorderParticlesiPK8XVector4IfES2_PKiS4_PiPS0_S6_S5_iPK8XVector4IfES2_PKiS4_PiPS0_S6_S5_"
+    },
+    {
+      "kind": "host",
+      "reason": "compiler-generated code (CUDA launch stub / registration trampoline / IPA clone); no out-of-line body is producible from source under the pinned CUDA 13.4 toolchain",
+      "unit": "nvflex.flex#_Z70__device_stub__Z23CompactDiffuseParticlesPK8XVector4IfES2_PS0_S3_PKiPiPK8XVector4IfES2_PS0_S3_PKiPi"
+    },
+    {
+      "kind": "stub",
+      "reason": "compiler-generated CUDA registration / compiler clone",
+      "unit": "nvflex.flex#_Z73__device_stub__Z8FinalizeiPK8XVector4IfES2_PKfS2_PKiPS0_P8XVector3IfEPfffiPK8XVector4IfES2_PKfS2_PKiPS0_P8XVector3IfEPfff"
+    },
+    {
+      "kind": "stub",
+      "reason": "compiler-generated CUDA registration / compiler clone",
+      "unit": "nvflex.flex#_Z74__device_stub__Z19CalculateAnisotropyiPKiS0_S0_S0_PK8XVector4IfEPS2_S5_S5_iPKiS0_S0_S0_PK8XVector4IfEPS2_S5_S5_"
+    },
+    {
+      "kind": "stub",
+      "reason": "compiler-generated CUDA registration / compiler clone",
+      "unit": "nvflex.flex#_Z76__device_stub__Z22CreateDiffuseParticlesi8Vec3IterPKfP8XVector4IfES4_PiiS1_fiRK8Vec3IterPKfP8XVector4IfES6_PiiS3_f"
+    },
+    {
+      "kind": "stub",
+      "reason": "compiler-generated CUDA registration / compiler clone",
+      "unit": "nvflex.flex#_Z78__device_stub__Z16CollideParticlesiPKiS0_S0_8Vec3IterPK8XVector4IfES0_ffiPiS6_iPKiS0_S0_RK8Vec3IterPK8XVector4IfES0_ffiPiS8_"
+    },
+    {
+      "kind": "stub",
+      "reason": "compiler-generated CUDA registration / compiler clone",
+      "unit": "nvflex.flex#_Z79__device_stub__Z21SolveInflatableVolumePK14FlexInflatable8Vec3IterPKiS4_PKfS2_fPK14FlexInflatableRK8Vec3IterPKiS6_PKfRS2_f"
+    },
+    {
+      "kind": "stub",
+      "reason": "compiler-generated CUDA registration / compiler clone",
+      "unit": "nvflex.flex#_Z87__device_stub__Z22UpdateDiffuseParticlesP8XVector4IfES1_PKiS3_S3_S3_S3_S3_8Vec3IterffffP8XVector4IfES1_PKiS3_S3_S3_S3_S3_RK8Vec3Iterffff"
+    },
+    {
+      "kind": "stub",
+      "reason": "compiler-generated CUDA registration / compiler clone",
+      "unit": "nvflex.flex#_Z88__device_stub__Z13CollideShapes22FlexCollisionShapeData8Vec3IterPKiiPiP8XVector4IfES6_ffR22FlexCollisionShapeDataRK8Vec3IterPKiiPiP8XVector4IfES9_ff"
+    },
+    {
+      "kind": "stub",
+      "reason": "compiler-generated CUDA registration / compiler clone",
+      "unit": "nvflex.flex#_Z90__device_stub__Z26SolveDensitiesSimpleFluidsi8Vec3IterS_PKiPKfPK8XVector4IfES1_S1_S1_fPS5_iR8Vec3IterRKS_PKiPKfPK8XVector4IfES4_S4_S4_fPS8_"
+    },
+    {
+      "kind": "stub",
+      "reason": "compiler-generated CUDA registration / compiler clone",
+      "unit": "nvflex.flex#_Z90__device_stub__Z26SolveDensitiesSimpleSolidsi8Vec3IterS_PKiPKfPK8XVector4IfES1_S1_S1_fPS5_iR8Vec3IterRKS_PKiPKfPK8XVector4IfES4_S4_S4_fPS8_"
+    },
+    {
+      "kind": "stub",
+      "reason": "compiler-generated CUDA registration / compiler clone",
+      "unit": "nvflex.flex#_Z91__device_stub__Z16CollideTriangles22FlexCollisionShapeData8Vec3IterPKiiPiP8XVector4IfES6_ffR22FlexCollisionShapeDataRK8Vec3IterPKiiPiP8XVector4IfES9_ff"
+    },
+    {
+      "kind": "stub",
+      "reason": "compiler-generated CUDA registration / compiler clone",
+      "unit": "nvflex.flex#_Z91__device_stub__Z18CalculateVorticityi8Vec3IterPK8XVector3IfES_PiPKiS6_PK8XVector4IfES6_PS8_iR8Vec3IterPK8XVector3IfERKS_PiPKiS9_PK8XVector4IfES9_PSB_"
+    },
+    {
+      "kind": "stub",
+      "reason": "compiler-generated CUDA registration / compiler clone",
+      "unit": "nvflex.flex#_ZL109__device_stub__Z15SolveVelocitiesILb0EEvi8Vec3IterPK8XVector3IfES0_PK8XVector4IfEPKiSA_SA_S8_SA_SA_fPS6_PfSC_iR8Vec3IterPK8XVector3IfERKS_PK8XVector4IfEPKiSC_SC_SA_SC_SC_fPS8_PfSE_"
+    },
+    {
+      "kind": "host",
+      "reason": "compiler-generated code (CUDA launch stub / registration trampoline / IPA clone); no out-of-line body is producible from source under the pinned CUDA 13.4 toolchain",
+      "unit": "nvflex.flex#_ZL109__device_stub__Z15SolveVelocitiesILb1EEvi8Vec3IterPK8XVector3IfES0_PK8XVector4IfEPKiSA_SA_S8_SA_SA_fPS6_PfSC_iR8Vec3IterPK8XVector3IfERKS_PK8XVector4IfEPKiSC_SC_SA_SC_SC_fPS8_PfSE_"
+    },
+    {
+      "kind": "host",
+      "reason": "compiler-generated code (CUDA launch stub / registration trampoline / IPA clone); no out-of-line body is producible from source under the pinned CUDA 13.4 toolchain",
+      "unit": "nvflex.flex#_ZL24__sti____cudaRegisterAllv"
+    },
+    {
+      "kind": "stub",
+      "reason": "compiler-generated CUDA registration / compiler clone",
+      "unit": "nvflex.flex#_ZL26__cudaUnregisterBinaryUtilv"
+    },
+    {
+      "kind": "host",
+      "reason": "compiler-generated code (CUDA launch stub / registration trampoline / IPA clone); no out-of-line body is producible from source under the pinned CUDA 13.4 toolchain",
+      "unit": "nvflex.flex#_ZN12DeviceBufferI8XVector4IfEE6resizeEi.part.32"
     },
     {
       "kind": "inline",
@@ -767,14 +1162,49 @@
       "unit": "nvflex.sort#_GLOBAL__sub_I_tmpxft_00000d5c_00000000_5_sort.cudafe1.cpp"
     },
     {
+      "kind": "host",
+      "reason": "nvcc CUDA-9.2 device stub thunk; CUDA 13.4 inlines/renames it, no out-of-line copy exists",
+      "unit": "nvflex.sort#_ZL105__device_stub__ZN3cub19RadixSortScanKernelINS_23DeviceRadixSortDispatchILb0EiiiE13PtxScanPolicyEiEEvPT0_iPii"
+    },
+    {
       "kind": "inline",
       "reason": "third-party header template instantiation (libstdc++/CUB); covered by the enclosing unit",
       "unit": "nvflex.sort#_ZN3cub15DeviceRadixSort9SortPairsIiiEE9cudaErrorPvRmRNS_12DoubleBufferIT_EERNS5_IT0_EEiiiP11CUstream_stb"
     },
     {
+      "kind": "kernel",
+      "reason": "third-party CUB 1.3.2 device code replaced; CUB cannot build for sm_75 (ptxas rejects shfl/vote without .sync); preserved .entry names; requires GPU differential verification (plan 5.3)",
+      "unit": "nvflex.sort#_ZN3cub19RadixSortScanKernelINS_23DeviceRadixSortDispatchILb0EiiiE13PtxScanPolicyEiEEvPT0_i"
+    },
+    {
+      "kind": "kernel",
+      "reason": "third-party CUB 1.3.2 device code replaced; CUB cannot build for sm_75 (ptxas rejects shfl/vote without .sync); preserved .entry names; requires GPU differential verification (plan 5.3)",
+      "unit": "nvflex.sort#_ZN3cub22RadixSortUpsweepKernelINS_23DeviceRadixSortDispatchILb0EiiiE16PtxUpsweepPolicyELb0EiiEEvPT1_PT2_S6_iibNS_13GridEvenShareIS6_EE"
+    },
+    {
+      "kind": "kernel",
+      "reason": "third-party CUB 1.3.2 device code replaced; CUB cannot build for sm_75 (ptxas rejects shfl/vote without .sync); preserved .entry names; requires GPU differential verification (plan 5.3)",
+      "unit": "nvflex.sort#_ZN3cub22RadixSortUpsweepKernelINS_23DeviceRadixSortDispatchILb0EiiiE19PtxAltUpsweepPolicyELb0EiiEEvPT1_PT2_S6_iibNS_13GridEvenShareIS6_EE"
+    },
+    {
+      "kind": "kernel",
+      "reason": "third-party CUB 1.3.2 device code replaced; CUB cannot build for sm_75 (ptxas rejects shfl/vote without .sync); preserved .entry names; requires GPU differential verification (plan 5.3)",
+      "unit": "nvflex.sort#_ZN3cub24RadixSortDownsweepKernelINS_23DeviceRadixSortDispatchILb0EiiiE18PtxDownsweepPolicyELb0EiiiEEvPT1_S5_PT2_S7_PT3_S8_iibbNS_13GridEvenShareIS8_EE"
+    },
+    {
+      "kind": "kernel",
+      "reason": "third-party CUB 1.3.2 device code replaced; CUB cannot build for sm_75 (ptxas rejects shfl/vote without .sync); preserved .entry names; requires GPU differential verification (plan 5.3)",
+      "unit": "nvflex.sort#_ZN3cub24RadixSortDownsweepKernelINS_23DeviceRadixSortDispatchILb0EiiiE21PtxAltDownsweepPolicyELb0EiiiEEvPT1_S5_PT2_S7_PT3_S8_iibbNS_13GridEvenShareIS8_EE"
+    },
+    {
       "kind": "stub",
-      "reason": "compiler-generated CUDA registration",
+      "reason": "compiler-generated TU static-init trampoline; modern GCC emits it differently and it carries no source",
       "unit": "nvflex.util#_GLOBAL__sub_I_util.cpp"
+    },
+    {
+      "kind": "host",
+      "reason": "GCC 4.8 TU static-init trampoline for std::__ioinit; modern libstdc++ removed __ioinit and folds static init into _GLOBAL__sub_I_util.cpp; absent from the release object",
+      "unit": "nvflex.util#_Z41__static_initialization_and_destruction_0ii"
     },
     {
       "kind": "stub",

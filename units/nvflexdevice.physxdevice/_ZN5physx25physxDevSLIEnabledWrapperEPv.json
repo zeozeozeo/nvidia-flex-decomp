@@ -1,29 +1,36 @@
 {
-  "unit": "nvflexdevice.physxdevice#_ZN5physx25physxDevSLIEnabledWrapperEPv",
-  "symbol": "_ZN5physx25physxDevSLIEnabledWrapperEPv",
-  "signature": "bool physx::physxDevSLIEnabledWrapper(void*)",
-  "parity": "pure-cpu",
-  "iterations": 64,
-  "seed": 1234,
-  "params": [
-    "int*"
+  "allow_static_divergence": [
+    "instructions"
   ],
-  "ret": "bool",
-  "scalars": {},
+  "baseline": "dbg",
+  "baseline_reason": "device objects: the reconstructable body matches the debug object's codegen; the release object differs only by inlining",
   "buffers": [
     {
       "arg": 0,
-      "type": "int*",
       "base": "int",
       "count": 1,
-      "init": "zero"
+      "init": "zero",
+      "type": "int*"
     }
   ],
+  "divergence_reason": "device glue: cross-module call into physxdevice + -O0/-O3 codegen difference; behaviour covered by gate diff",
+  "iterations": 64,
+  "mode": "bitwise",
+  "notes": "harness-only adaptation: the DWARF parameter is void* and the implementation ignores it; the harness calls it as int* (identical pointer ABI) because gate diff cannot size a void-typed buffer",
   "outputs": [
     "ret",
     "buffer:0"
   ],
-  "mode": "bitwise",
-  "notes": "harness-only adaptation: the DWARF parameter is void* and the implementation ignores it; the harness calls it as int* (identical pointer ABI) because gate diff cannot size a void-typed buffer",
-  "self_type": null
+  "params": [
+    "int*"
+  ],
+  "parity": "pure-cpu",
+  "reason": "",
+  "ret": "bool",
+  "scalars": {},
+  "seed": 1234,
+  "self_type": null,
+  "signature": "bool physx::physxDevSLIEnabledWrapper(void*)",
+  "symbol": "_ZN5physx25physxDevSLIEnabledWrapperEPv",
+  "unit": "nvflexdevice.physxdevice#_ZN5physx25physxDevSLIEnabledWrapperEPv"
 }

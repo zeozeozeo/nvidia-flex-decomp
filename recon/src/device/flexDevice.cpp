@@ -24,12 +24,22 @@
 
 #include "PhysXDevice.h"
 
-// The shipped object was compiled with -O0 (DW_AT_producer).  Reproduce that
-// optimization level here so the reconstruction has the same un-inlined call
-// graph; every function in this file is a thin loader shim.
+// Codegen note.  The two shipped objects disagree on this file:
+//   * the debug object (DWARF source of truth) is -O0 and keeps
+//     GetProcAddress / GetSuggestedDeviceOrdinal / CudaSafeDelayLoad out of
+//     line;
+//   * the release object (the shipped ABI, and the static gate's baseline for
+//     every symbol it defines) is optimised and folds all three into their
+//     single callers.
+// Both shapes are therefore reproduced: the -O0 pragma below gives each
+// helper's own symbol its un-inlined body, and the `*Impl` bodies are forced
+// inline so NvFlexDeviceGetSuggestedOrdinal()/NvFlexDeviceCreateCudaContext()
+// contain the folded code the release object has.
 #if defined(__GNUC__) && !defined(__clang__)
 #pragma GCC optimize ("O0")
 #endif
+
+#define FLEX_FORCEINLINE inline __attribute__((always_inline))
 
 // ---- cuda.h subset (external/CUDA/9.2.148-linux/include/cuda.h) ------------
 
@@ -130,14 +140,20 @@ namespace physx
 
 // ---- entry points ----------------------------------------------------------
 
-// flexdecomp: flexDevice.cpp:84 _ZL14GetProcAddressPvPKc
-static void* GetProcAddress(void* handle, const char* name)
+// flexdecomp: flexDevice.cpp:84 - folded form (release object)
+static FLEX_FORCEINLINE void* GetProcAddressImpl(void* handle, const char* name)
 {
 	return dlsym(handle, name);
 }
 
-// flexdecomp: flexDevice.cpp:92 _ZL25GetSuggestedDeviceOrdinalv
-static int GetSuggestedDeviceOrdinal()
+// flexdecomp: flexDevice.cpp:84 _ZL14GetProcAddressPvPKc
+static void* GetProcAddress(void* handle, const char* name)
+{
+	return GetProcAddressImpl(handle, name);
+}
+
+// flexdecomp: flexDevice.cpp:92 - folded form (release object)
+static FLEX_FORCEINLINE int GetSuggestedDeviceOrdinalImpl()
 {
 	// flexdecomp: flexDevice.cpp:94 (ordinal is written by the PhysX wrapper)
 	int ordinal;
@@ -146,8 +162,14 @@ static int GetSuggestedDeviceOrdinal()
 	return ordinal;
 }
 
-// flexdecomp: flexDevice.cpp:108 _ZL17CudaSafeDelayLoadiPP8CUctx_st
-static bool CudaSafeDelayLoad(int deviceOrdinal, CUcontext* outContext)
+// flexdecomp: flexDevice.cpp:92 _ZL25GetSuggestedDeviceOrdinalv
+static int GetSuggestedDeviceOrdinal()
+{
+	return GetSuggestedDeviceOrdinalImpl();
+}
+
+// flexdecomp: flexDevice.cpp:108 - folded form (release object)
+static FLEX_FORCEINLINE bool CudaSafeDelayLoadImpl(int deviceOrdinal, CUcontext* outContext)
 {
 	// flexdecomp: flexDevice.cpp:114 - "libcuda.so" at .rodata+0x11, RTLD_NOW
 	void* hCudaDriver = dlopen("libcuda.so", RTLD_NOW);
@@ -157,12 +179,12 @@ static bool CudaSafeDelayLoad(int deviceOrdinal, CUcontext* outContext)
 		return false;
 
 	// flexdecomp: flexDevice.cpp:122-127 (literal order in .rodata)
-	cuGetExportTable_f = (cuGetExportTable_t)GetProcAddress(hCudaDriver, "cuGetExportTable");
-	cuCtxCreate_f = (cuCtxCreate_t)GetProcAddress(hCudaDriver, "cuCtxCreate");
-	cuDeviceGet_f = (cuDeviceGet_t)GetProcAddress(hCudaDriver, "cuDeviceGet");
-	cuCtxSetCurrent_f = (cuCtxSetCurrent_t)GetProcAddress(hCudaDriver, "cuCtxSetCurrent");
-	cuCtxGetCurrent_f = (cuCtxGetCurrent_t)GetProcAddress(hCudaDriver, "cuCtxGetCurrent");
-	cuCtxDestroy_f = (cuCtxDestroy_t)GetProcAddress(hCudaDriver, "cuCtxDestroy");
+	cuGetExportTable_f = (cuGetExportTable_t)GetProcAddressImpl(hCudaDriver, "cuGetExportTable");
+	cuCtxCreate_f = (cuCtxCreate_t)GetProcAddressImpl(hCudaDriver, "cuCtxCreate");
+	cuDeviceGet_f = (cuDeviceGet_t)GetProcAddressImpl(hCudaDriver, "cuDeviceGet");
+	cuCtxSetCurrent_f = (cuCtxSetCurrent_t)GetProcAddressImpl(hCudaDriver, "cuCtxSetCurrent");
+	cuCtxGetCurrent_f = (cuCtxGetCurrent_t)GetProcAddressImpl(hCudaDriver, "cuCtxGetCurrent");
+	cuCtxDestroy_f = (cuCtxDestroy_t)GetProcAddressImpl(hCudaDriver, "cuCtxDestroy");
 
 	// flexdecomp: flexDevice.cpp:130
 	CUetblPhysXInterface* lowlatency = NULL;
@@ -179,7 +201,7 @@ static bool CudaSafeDelayLoad(int deviceOrdinal, CUcontext* outContext)
 	// flexdecomp: flexDevice.cpp:146 - the shipped object computes the
 	// suggested ordinal at 0x15f and never consumes it (dead store to
 	// -0x18(%rbp)); kept so the call is present in the object.
-	int suggestedOrdinal = GetSuggestedDeviceOrdinal();
+	int suggestedOrdinal = GetSuggestedDeviceOrdinalImpl();
 	(void)suggestedOrdinal;
 
 	// flexdecomp: flexDevice.cpp:149
@@ -208,19 +230,25 @@ static bool CudaSafeDelayLoad(int deviceOrdinal, CUcontext* outContext)
 	return false;
 }
 
+// flexdecomp: flexDevice.cpp:108 _ZL17CudaSafeDelayLoadiPP8CUctx_st
+static bool CudaSafeDelayLoad(int deviceOrdinal, CUcontext* outContext)
+{
+	return CudaSafeDelayLoadImpl(deviceOrdinal, outContext);
+}
+
 // flexdecomp: flexDevice.cpp:174 _Z31NvFlexDeviceGetSuggestedOrdinalv
 int NvFlexDeviceGetSuggestedOrdinal()
 {
-	// flexdecomp: flexDevice.cpp:176
-	return GetSuggestedDeviceOrdinal();
+	// flexdecomp: flexDevice.cpp:176 (inlined in the release object)
+	return GetSuggestedDeviceOrdinalImpl();
 }
 
 // flexdecomp: flexDevice.cpp:180 _Z29NvFlexDeviceCreateCudaContexti
 bool NvFlexDeviceCreateCudaContext(int ordinal)
 {
-	// flexdecomp: flexDevice.cpp:182/183
+	// flexdecomp: flexDevice.cpp:182/183 (inlined in the release object)
 	CUcontext context;
-	return CudaSafeDelayLoad(ordinal, &context);
+	return CudaSafeDelayLoadImpl(ordinal, &context);
 }
 
 // flexdecomp: flexDevice.cpp:186 _Z30NvFlexDeviceDestroyCudaContextv

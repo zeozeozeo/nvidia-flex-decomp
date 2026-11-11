@@ -1,11 +1,10 @@
 # CudaRangeTimerPool::CudaRangeTimerPool() (C2)
 
-Alias of the C1 body, matching the shipped object where C1 and C2 share one
-section.
+Alias of the C1 body, matching the shipped object where C1 and C2 name one
+section (194 bytes / 48 instructions, `FUNC WEAK`).
 
-BLOCKED: the static gate cannot evaluate an aliased symbol. objdump emits one
-function header per address, so `_disasm_map` reports `orig: 0` instructions for
-C2 and `low <= ratio <= 2.0 if oi else False` fails regardless of the
-reconstruction. Symbol, signature and call checks all pass (nm shows the symbol,
-readelf shows FUNC WEAK size 194). Needs the same "both sides zero => pass" rule
-the kernel PTX path received.
+G1 static gate PASS. The gate resolves the alias through the sibling symbol at the
+same address (`detail: "zero-length original body (alias symbol)"`), which is the
+case the shipped object presents: objdump emits a single header per address.
+`allow_missing_calls` is inherited from C1 (_M_fill_insert / _ZdlPv inlined by
+GCC 15). Parity `needs-gpu`.
