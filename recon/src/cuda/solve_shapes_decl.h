@@ -12,8 +12,13 @@
 
 #include "nvflex/all.h"
 
+// The shipped objects export both instantiations (weak, default visibility);
+// without the attribute nvcc gives the host launch stub internal linkage and
+// the symbol would be missing from libnvflex.so.  It must be on the first
+// declaration: nvcc rejects adding it in the definition TU.
 template <bool IsRigid>
-__global__ void SolveShapes(const int* shapeOffsets, const int* shapeIndices,
+__global__ void __attribute__((visibility("default")))
+SolveShapes(const int* shapeOffsets, const int* shapeIndices,
                             const float* shapePositions, const float* shapeRotations,
                             const float* shapePrevPositions, const int* shapeStarts,
                             XVector3<float>* p, XVector4<float>* q,

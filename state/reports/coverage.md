@@ -4,11 +4,11 @@ Units: **3189**
 
 | status | count |
 |---|---|
-| verified | 258 |
+| verified | 260 |
 | decompiled | 0 |
 | claimed | 0 |
 | open | 0 |
-| blocked | 2 |
+| blocked | 0 |
 | waived | 2929 |
 
 ## By module
@@ -16,7 +16,7 @@ Units: **3189**
 | module | verified | decompiled | claimed | open | blocked | waived |
 |---|---|---|---|---|---|---|
 | nvflex.bvh | 28 | 0 | 0 | 0 | 0 | 10 |
-| nvflex.flex | 136 | 0 | 0 | 0 | 2 | 44 |
+| nvflex.flex | 138 | 0 | 0 | 0 | 0 | 44 |
 | nvflex.sort | 3 | 0 | 0 | 0 | 0 | 10 |
 | nvflex.util | 22 | 0 | 0 | 0 | 0 | 2 |
 | nvflexdevice.flexdevice | 6 | 0 | 0 | 0 | 0 | 0 |
@@ -34,7 +34,7 @@ Units: **3189**
 
 ## Gates
 
-- static pass rate: 0.9961
+- static pass rate: 0.9962
 - diff pass rate: 1.0
 - gpu: skipped:no-gpu (FLEX_GPU!=1)
 
@@ -82,37 +82,31 @@ Units: **3189**
 - `nvflex.flex#_ZL109__device_stub__Z15SolveVelocitiesILb0EEvi8Vec3IterPK8XVector3IfES0_PK8XVector4IfEPKiSA_SA_S8_SA_SA_fPS6_PfSC_iR8Vec3IterPK8XVector3IfERKS_PK8XVector4IfEPKiSC_SC_SA_SC_SC_fPS8_PfSE_` (stub): compiler-generated CUDA registration / compiler clone
 - … 2889 more (see coverage.json)
 
-## Blocked units
-
-- `nvflex.flex#_Z11SolveShapesILb0EEvPKiS1_PKfS3_S3_S1_P8XVector3IfEP8XVector4IfE8Vec3IterSA_P5XQuatIfES6_S9_SA_if`: same as the ILb1EE instantiation: PTX 15753-19600 shares the structure, the quaternion update and the unrolled transform/atomic loops are not transcribed; decoded regions and the exact undecoded line ranges are in units/nvflex.flex/_Z11SolveShapesILb0EEvPKiS1_PKfS3_S3_S1_P8XVector3IfEP8XVector4IfE8Vec3IterSA_P5XQuatIfES6_S9_SA_if.md
-- `nvflex.flex#_Z11SolveShapesILb1EEvPKiS1_PKfS3_S3_S1_P8XVector3IfEP8XVector4IfE8Vec3IterSA_P5XQuatIfES6_S9_SA_if`: not reconstructed in this slice: PTX 1800-3740 (quaternion SOR update + 8x unrolled transform/atomic particle loop) and the tail at 3741-4078 are decoded only structurally; the decoded regions (init, COM reduction, covariance, plastic test) are recorded in units/nvflex.flex/_Z11SolveShapesILb1EEvPKiS1_PKfS3_S3_S1_P8XVector3IfEP8XVector4IfE8Vec3IterSA_P5XQuatIfES6_S9_SA_if.md and a completion would otherwise guess
-
 ## Exports
 
 | library | shipped (strong) | reconstructed | missing | public API | present | missing |
 |---|---|---|---|---|---|---|
-| nvflex | 198 | 217 | 39 | 77 | 77 | 0 |
+| nvflex | 198 | 221 | 39 | 77 | 77 | 0 |
 | nvflexdevice | 7 | 7 | 0 | 0 | 0 | 0 |
 | nvflexext | 60 | 60 | 2 | 36 | 36 | 0 |
 
 ## Known limitations
 
 - GPU parity (G3) not executed: no NVIDIA device on this host; `flexkit gate gpu --all` reports `skipped:no-gpu`.
-- D3D solver shaders: 44/84 structurally matched, 8 blocked with a recorded front-end limit, 32 still unreconstructed (indices [24, 25, 27, 28, 31, 33, 35, 36, 42, 45, 46, 48, 49, 50, 51, 52, 54, 56, 57, 58, 61, 62, 65, 68, 70, 75, 76, 77, 78, 81, 82, 83]). HLSL is compiled by vkd3d-shader while the originals come from Microsoft fxc/dxc, so opcode-level equality is unattainable here; the gate therefore checks the shader interface.
+- D3D solver shaders: 65/84 structurally matched, 16 blocked with a recorded front-end limit, 3 still unreconstructed (indices [68, 75, 78]). HLSL is compiled by vkd3d-shader while the originals come from Microsoft fxc/dxc, so opcode-level equality is unattainable here; the gate therefore checks the shader interface.
 - nvflex: 39 strong symbols absent, all internal `__global__` launch wrappers: with `-rdc=true` (required for the shared `__constant__ gParams`/`gBounds`) nvcc 13 device-links them as local symbols, while CUDA 9.2 exported them `GLOBAL DEFAULT`. The public `NvFlex*` surface and every `__device_stub__` are exported, so the consumer-visible ABI is complete.
 - nvflexext: 2 strong symbol(s) absent; the Ext device kernel launch wrappers are `GLOBAL HIDDEN` under nvcc 13 for the verbatim shipped source, while CUDA 9.2 exported them `GLOBAL DEFAULT`.
-- 2 unit(s) blocked with recorded evidence (see below).
 - REA's Ghidra provider requires an MCP client restart to pick up the pinned 12.1.4 install; pseudocode in this tree was produced offline with the same Ghidra via `flexkit decomp`.
 
 ## Acceptance
 
 - open_zero: `True`
 - claimed_zero: `True`
-- blocked_zero: `False`
-- all_verified: `False`
+- blocked_zero: `True`
+- all_verified: `True`
 - public_api_match: `True`
 - exports_strict_match: `False`
 - headers_identical: `True`
 - vendored_untouched: `True`
 - gpu_gate: `skipped:no-gpu (FLEX_GPU!=1)`
-- dxbc: `{'shaders': 84, 'matched': 44, 'blocked_with_evidence': 8, 'blocked_indices': [1, 5, 6, 8, 9, 16, 18, 32], 'not_reconstructed': 32, 'not_reconstructed_indices': [24, 25, 27, 28, 31, 33, 35, 36, 42, 45, 46, 48, 49, 50, 51, 52, 54, 56, 57, 58, 61, 62, 65, 68, 70, 75, 76, 77, 78, 81, 82, 83]}`
+- dxbc: `{'shaders': 84, 'matched': 65, 'blocked_with_evidence': 16, 'blocked_indices': [1, 5, 9, 16, 27, 28, 31, 45, 46, 48, 49, 50, 51, 54, 61, 70], 'not_reconstructed': 3, 'not_reconstructed_indices': [68, 75, 78]}`

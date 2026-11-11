@@ -15,7 +15,7 @@
 // SolveShapes<true/false> are blocked kernel units (no definition in the
 // reconstructed library yet); see the comment at their launch site.
 #ifndef FLEXDECOMP_HAVE_SOLVESHAPES
-#define FLEXDECOMP_HAVE_SOLVESHAPES 0
+#define FLEXDECOMP_HAVE_SOLVESHAPES 1
 #endif
 #include "nvflex/all.h"
 #include "NvFlex.h"

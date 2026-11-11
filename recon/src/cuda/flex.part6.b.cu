@@ -103,7 +103,10 @@ static __device__ __forceinline__ XQuat<float> normalizeQuat(float x, float y, f
     return r;
 }
 
-// v*(2w^2-1) + 2w*(q x v) + 2q(q.v) -- PTX 15344-15375 (f1673-f1690).
+// FleX/core/quat.h:189 Rotate(q, x) = x*(2w^2-1) + Cross(q, x)*w*2 + q*Dot(q, x)*2.
+// `m` is the 2w^2-1 term, which the shipped code computes once and reuses
+// (PTX 13270 computes it for the matrix, 15464 for the particle rotation).
+// PTX 15344-15375 (f1673-f1690), 13269-13312 (f816-f872).
 static __device__ __forceinline__ float3 rotateForward(float qx, float qy, float qz, float qw,
                                                        float m, float3 v)
 {
@@ -118,9 +121,9 @@ static __device__ __forceinline__ float3 rotateForward(float qx, float qy, float
     return r;
 }
 
-// v*(2w^2-1) - 2w*(q x v) + 2q(q.v) -- the transposed rotation used by the
-// plastic branch to map a blended world position back to local space
-// (PTX 15635-15676, f1713-f1742).
+// FleX/core/quat.h:195 RotateInv(q, x) = x*(2w^2-1) - Cross(q, x)*w*2 + q*Dot(q, x)*2,
+// used by the plastic branch to map a blended world position back to local
+// space (PTX 15635-15676, f1713-f1742).
 static __device__ __forceinline__ float3 rotateInverse(float qx, float qy, float qz, float qw,
                                                        float m, float3 v)
 {
@@ -140,6 +143,12 @@ static __device__ __forceinline__ float3 rotateInverse(float qx, float qy, float
 // ---------------------------------------------------------------------------
 
 // flexdecomp: src/cuda/flex.cu _Z11SolveShapesILb1EEvPKiS1_PKfS3_S3_S1_P8XVector3IfEP8XVector4IfE8Vec3IterSA_P5XQuatIfES6_S9_SA_if
+// NOTE: the launch wrapper needs GLOBAL DEFAULT visibility (modern nvcc marks
+// the host stub internal, the shipped 9.2 build exported the kernel symbol as
+// weak -- `nm -D work/binary/so/libnvflex_rel.so`).  For a template that
+// attribute must sit on the FIRST declaration, i.e. on solve_shapes_decl.h; a
+// redeclaration here is rejected by nvcc ("redeclared with different
+// visibility").  Reported to the integrator.
 template <bool IsRigid>
 __global__ void SolveShapes(const int* shapeOffsets, const int* shapeIndices,
                             const float* shapePositions, const float* shapeRotations,
@@ -166,6 +175,7 @@ __global__ void SolveShapes(const int* shapeOffsets, const int* shapeIndices,
     const float* rigidPlasticThresholds = shapeRotations;   // param_3
     const float* rigidPlasticCreeps = shapePrevPositions;   // param_4
     const XVector3<float>* localPositions = p;              // param_6
+    XVector3<float>* localPositionsRW = p;                   // plastic branch rewrites the rest pose
     const XVector4<float>* localNormals = q;                // param_7
     const float4* oldPositions = reinterpret_cast<const float4*>(u.x);   // param_8
     const float4* newPositions = reinterpret_cast<const float4*>(u2.x);  // param_9
@@ -311,19 +321,18 @@ __global__ void SolveShapes(const int* shapeOffsets, const int* shapeIndices,
             const float z = rot.z;
             const float qw = rot.w;
 
-            // PTX 13269-13312: m00 = 2(x^2+w^2)-1, m01 = 2(xy+wz), ...
-            // (R^T for a unit quaternion; the shipped code folds the
-            // 1-2(y^2+z^2) diagonal through 2w^2-1).
+            // PTX 13269-13312: the three rows are Rotate(q, e_i), i.e. the
+            // columns of FleX/core/mat33.h:45 Matrix33(q) (R^T of the
+            // quaternion).  The shipped code computes 2w^2-1 once (f817) and
+            // reuses it, and keeps the literal 0/1 components of the basis
+            // vectors in the products (mul.f32 %fX, %fY, 0f00000000).
             const float m = 2.0f * qw * qw - 1.0f;          // PTX 13270-13272 (fma)
-            const float mx0 = 2.0f * x * x + m;             // f836
-            const float mx1 = 2.0f * x * y + 2.0f * qw * z; // f837
-            const float mx2 = 2.0f * x * z - 2.0f * qw * y; // f838
-            const float my0 = 2.0f * x * y - 2.0f * qw * z; // f853
-            const float my1 = 2.0f * y * y + m;             // f854
-            const float my2 = 2.0f * y * z + 2.0f * qw * x; // f855
-            const float mz0 = 2.0f * x * z + 2.0f * qw * y; // f870
-            const float mz1 = 2.0f * y * z - 2.0f * qw * x; // f871
-            const float mz2 = 2.0f * z * z + m;             // f872
+            const float3 r0 = rotateForward(x, y, z, qw, m, make_float3(1.0f, 0.0f, 0.0f));
+            const float3 r1 = rotateForward(x, y, z, qw, m, make_float3(0.0f, 1.0f, 0.0f));
+            const float3 r2 = rotateForward(x, y, z, qw, m, make_float3(0.0f, 0.0f, 1.0f));
+            const float mx0 = r0.x, mx1 = r0.y, mx2 = r0.z;  // f836-f838
+            const float my0 = r1.x, my1 = r1.y, my2 = r1.z;  // f853-f855
+            const float mz0 = r2.x, mz1 = r2.y, mz2 = r2.z;  // f870-f872
 
             const float q0 = newQRData[0];                  // PTX 13313-13321
             const float q1 = newQRData[1];
@@ -369,13 +378,16 @@ __global__ void SolveShapes(const int* shapeOffsets, const int* shapeIndices,
             const float s = sinf(half);                     // PTX 13426-13602
             const float c = cosf(half);                     // PTX 13603-13768
 
-            // PTX 13769-13813: rot = Normalize(rot * Quat(axis*s, c))
+            // PTX 13769-13813: rot = Normalize(delta * rot) with
+            // delta = QuatFromAxisAngle(axis, len) (FleX/core/quat.h:200:
+            // Normalize(axis), half = angle*0.5, cosf/sinf, Quat(v*s, w)).
+            // The product is delta * rot -- FleX/core/quat.h:56-60 operator*.
             const float sx = ax * s;
             const float sy = ay * s;
             const float sz = az * s;
-            const float nx = (x * c + qw * sx + z * sy) - y * sz;
-            const float ny = (y * c + qw * sy + x * sz) - z * sx;
-            const float nz = (z * c + qw * sz + y * sx) - x * sy;
+            const float nx = (x * c + qw * sx + sy * z) - y * sz;   // w*q.x + q.w*x + y*q.z - q.y*z
+            const float ny = (y * c + qw * sy + sz * x) - z * sx;
+            const float nz = (z * c + qw * sz + sx * y) - x * sy;
             const float nw = (qw * c - x * sx - y * sy) - z * sz;
             rot = normalizeQuat(nx, ny, nz, nw);
         }
@@ -420,12 +432,6 @@ __global__ void SolveShapes(const int* shapeOffsets, const int* shapeIndices,
             const float4 cur = newPositions[gp];            // PTX 15517
             const XVector3<float> lp = localPositions[i];   // PTX 15484-15486
 
-            const float3 target = make_float3(
-                com.x + rotateForward(rqx, rqy, rqz, rqw, m,
-                                      make_float3(lp.x, lp.y, lp.z)).x,
-                com.y + 0.0f, 0.0f);                        // placeholder, replaced below
-            (void)target;
-
             const float3 rl = rotateForward(rqx, rqy, rqz, rqw, m, make_float3(lp.x, lp.y, lp.z));
             const float tx = com.x + rl.x;                  // PTX 15534-15536
             const float ty = com.y + rl.y;
@@ -437,9 +443,9 @@ __global__ void SolveShapes(const int* shapeOffsets, const int* shapeIndices,
 
             const float3 local = rotateInverse(rqx, rqy, rqz, rqw, m,
                                                make_float3(bx - com.x, by - com.y, bz - com.z));
-            localPositions[i].x = local.x;                  // PTX 15560-15562
-            localPositions[i].y = local.y;
-            localPositions[i].z = local.z;
+            localPositionsRW[i].x = local.x;                // PTX 15560-15562
+            localPositionsRW[i].y = local.y;
+            localPositionsRW[i].z = local.z;
 
             const XVector4<float> ln = localNormals[i];     // PTX 15566-15569
             const float3 rn = rotateForward(rqx, rqy, rqz, rqw, m,

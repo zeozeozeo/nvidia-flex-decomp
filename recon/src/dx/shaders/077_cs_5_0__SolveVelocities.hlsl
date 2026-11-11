@@ -242,6 +242,14 @@ void SolveVelocities(uint3 tid : SV_DispatchThreadID)
 		dv = float3(-vel);
 	}
 
+	// Cohesion-driven potential, only tracked when cohesion is enabled.
+	if (doCohesion)
+	{
+		const float speedSq = 3.0f * dot(vel, vel);
+		const float rest = max(1.0f - kInvRestDensity * (accum.x + accum.y), 0.0f);
+		potentials[tid.x] = diffuse ? speedSq * (accum.y * rest) : 0.0f;
+	}
+
 	deltas.Store4(tid.x * 16, asuint(float4(dv, 0.0f)));
 	densities[tid.x] = accum.x;
 }

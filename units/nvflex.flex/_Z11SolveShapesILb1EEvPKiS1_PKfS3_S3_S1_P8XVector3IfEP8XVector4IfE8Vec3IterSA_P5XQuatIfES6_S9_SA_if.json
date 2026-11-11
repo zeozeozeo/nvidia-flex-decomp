@@ -1,20 +1,43 @@
 {
-  "blocked": "body not transcribed; see the unit notes for the decoded and undecoded PTX regions",
-  "inlined_away": [],
-  "launch": {
-    "block": [
-      256,
-      1,
-      1
-    ],
-    "grid": "numRigids"
-  },
-  "outputs": [],
+  "unit": "nvflex.flex#_Z11SolveShapesILb1EEvPKiS1_PKfS3_S3_S1_P8XVector3IfEP8XVector4IfE8Vec3IterSA_P5XQuatIfES6_S9_SA_if",
+  "symbol": "_Z11SolveShapesILb1EEvPKiS1_PKfS3_S3_S1_P8XVector3IfEP8XVector4IfE8Vec3IterSA_P5XQuatIfES6_S9_SA_if",
+  "signature": "SolveShapes<true>(int* rigidOffsets, int* rigidIndices, float* rigidCoefficients, float* rigidPlasticThresholds, float* rigidPlasticCreeps, int* reverseLookup, Vec3* localPositions, Vec4* localNormals, Vec3Iter oldPositions, Vec3Iter newPositions, Quat* rotations, Vec3* translations, Vec4* normals, Vec3Iter deltas, int numRigids, float sleepThreshold)",
+  "source": "src/cuda/flex.cu",
   "parity": "kernel",
   "ptx_entry": "_Z11SolveShapesILb1EEvPKiS1_PKfS3_S3_S1_P8XVector3IfEP8XVector4IfE8Vec3IterSA_P5XQuatIfES6_S9_SA_if",
   "ptx_lines": "11675-15752",
-  "signature": "SolveShapes<true>(int* rigidOffsets, int* rigidIndices, float* rigidCoefficients, float* rigidPlasticThresholds, float* rigidPlasticCreeps, int* reverseLookup, Vec3* localPositions, Vec4* localNormals, Vec3Iter oldPositions, Vec3Iter newPositions, Quat* rotations, Vec3* translations, Vec4* normals, Vec3Iter deltas, int numRigids, float sleepThreshold)",
-  "source": "src/cuda/flex.cu",
-  "symbol": "_Z11SolveShapesILb1EEvPKiS1_PKfS3_S3_S1_P8XVector3IfEP8XVector4IfE8Vec3IterSA_P5XQuatIfES6_S9_SA_if",
-  "unit": "nvflex.flex#_Z11SolveShapesILb1EEvPKiS1_PKfS3_S3_S1_P8XVector3IfEP8XVector4IfE8Vec3IterSA_P5XQuatIfES6_S9_SA_if"
+  "launch": {
+    "grid": "numRigids",
+    "block": [
+      64,
+      1,
+      1
+    ],
+    "evidence": "work/decomp/nvflex.flex/cudaflex.c:12562 __cudaPushCallConfiguration(grid=numRigids, block=0x100000040 -> x=0x40=64, y=1)"
+  },
+  "inlined_away": [
+    "sinf",
+    "cosf",
+    "Normalize(Vec3)",
+    "Length(Vec3)",
+    "Rotate(Quat,Vec3)",
+    "RotateInv(Quat,Vec3)",
+    "Matrix33(Quat)",
+    "QuatFromAxisAngle"
+  ],
+  "inlined_away_note": "all of these are header-inline in the shipped tree (FleX/core/quat.h, mat33.h, maths.h) or libdevice (sinf/cosf, PTX 13426-13768), so neither side emits a PTX call; gate calls: 0 expected / 0 matched.",
+  "outputs": [],
+  "gates": {
+    "static": {
+      "ok": true,
+      "ptx_instructions": {
+        "orig": 3013,
+        "recon": 2755,
+        "ratio": 0.914
+      },
+      "ptx_calls": "0/0",
+      "elf_symbol": "present"
+    },
+    "gpu": "skipped:no-gpu (host has no NVIDIA device)"
+  }
 }
