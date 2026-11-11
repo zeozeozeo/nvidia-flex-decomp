@@ -11,9 +11,9 @@ from .util import ensure, have, jwrite, run, sha256_file
 
 RECORD_RE = re.compile(r"^\s*0x([0-9A-Fa-f]+)\s+\|\s+(LF_\w+)\s*(?:\[size = (\d+)\])?\s*(?:`([^'`]*)`)?")
 FIELD_LIST_RE = re.compile(r"field list:\s+0x([0-9A-Fa-f]+)")
-MEMBER_RE = re.compile(r"^-\s+LF_MEMBER \[name = `([^'`]*)`, Type = 0x([0-9A-Fa-f]+)(?: \(([^)]*)\))?, offset = (\d+)")
-BASE_RE = re.compile(r"^-\s+LF_BCLASS \[.*?offset = (\d+)")
-ENUM_RE = re.compile(r"^-\s+LF_ENUMERATE \[([^\]=]+?)\s*=?\s*([^\]]*)\]")
+MEMBER_RE = re.compile(r"^\s*-\s+LF_MEMBER \[name = `([^'`]*)`, Type = 0x([0-9A-Fa-f]+)(?: \(([^)]*)\))?, offset = (\d+)")
+BASE_RE = re.compile(r"^\s*-\s+LF_BCLASS \[.*?offset = (\d+)")
+ENUM_RE = re.compile(r"^\s*-\s+LF_ENUMERATE \[([^\]=]+?)\s*=?\s*([^\]]*)\]")
 PUBLIC_REC_RE = re.compile(r"^\s*(\d+)\s+\|\s+(S_\w+)\s*(?:\[size = (\d+)\])?\s*`([^'`]*)`")
 PUBLIC_ADDR_RE = re.compile(r"addr\s*=\s*([0-9A-Fa-f]{4}):([0-9A-Fa-f]+)")
 
@@ -26,12 +26,12 @@ def dump_pdb(pdb: Path) -> dict:
     publics = run(["llvm-pdbutil", "dump", "-publics", str(pdb)])
     globals_ = run(["llvm-pdbutil", "dump", "-globals", str(pdb)])
 
-    # pass 1: field lists and enums keyed by record id
+    # pass 1: collect field lists and link them to their structure records
     field_lists: dict[int, list[dict]] = {}
-    enums: dict[int, dict] = {}
-    struct_recs: dict[int, dict] = {}
-    cur_id = None
-    cur_kind = None
+    struct_meta: dict[int, dict] = {}
+    struct_names: dict[int, tuple[str, int, str]] = {}
+    cur_id = 0
+    cur_kind = ""
     for line in types.splitlines():
         m = RECORD_RE.match(line)
         if m:
@@ -39,8 +39,9 @@ def dump_pdb(pdb: Path) -> dict:
             cur_kind = m.group(2)
             if cur_kind == "LF_FIELDLIST":
                 field_lists[cur_id] = []
-            continue
-        if cur_id is None:
+            elif cur_kind in ("LF_STRUCTURE", "LF_CLASS", "LF_UNION", "LF_INTERFACE"):
+                struct_names[cur_id] = (m.group(4) or "", int(m.group(3) or 0), cur_kind)
+                struct_meta[cur_id] = {"field_list": None}
             continue
         if cur_kind == "LF_FIELDLIST":
             mm = MEMBER_RE.match(line)
@@ -62,41 +63,25 @@ def dump_pdb(pdb: Path) -> dict:
                 field_lists[cur_id].append({"base_offset": int(bm.group(1))})
         elif cur_kind in ("LF_STRUCTURE", "LF_CLASS", "LF_UNION", "LF_INTERFACE"):
             fl = FIELD_LIST_RE.search(line)
-            if fl:
-                struct_recs[cur_id] = {
-                    "name": None, "kind": cur_kind, "byte_size": None,
-                    "field_list": int(fl.group(1), 16),
-                }
-        elif cur_kind in ("LF_STRUCTURE", "LF_CLASS", "LF_UNION", "LF_INTERFACE"):
-            pass
-        elif cur_kind == "LF_ENUM":
-            fl = FIELD_LIST_RE.search(line)
-            if fl:
-                enums[cur_id] = {"field_list": int(fl.group(1), 16)}
+            if fl and struct_meta.get(cur_id, {}).get("field_list") is None:
+                struct_meta[cur_id]["field_list"] = int(fl.group(1), 16)
 
-    # pass 2: attach names/sizes (they appear on the record header line)
     structs: dict[str, dict] = {}
-    for line in types.splitlines():
-        m = RECORD_RE.match(line)
-        if not m:
-            continue
-        kind = m.group(2)
-        if kind not in ("LF_STRUCTURE", "LF_CLASS", "LF_UNION"):
-            continue
-        rid = int(m.group(1), 16)
-        name = m.group(4)
-        size = int(m.group(3)) if m.group(3) else 0
+    for rid, (name, size, kind) in struct_names.items():
         if not name:
             continue
-        rec = struct_recs.get(rid)
+        fl_id = struct_meta.get(rid, {}).get("field_list")
         members = []
-        if rec:
-            for f in field_lists.get(rec["field_list"], []):
-                if "name" in f:
-                    members.append({"name": f["name"], "offset": f["offset"],
-                                    "type": f["type"] or f"0x{f['type_id']:x}"})
+        bases = []
+        for f in field_lists.get(fl_id, []) if fl_id else []:
+            if "name" in f:
+                members.append({"name": f["name"], "offset": f["offset"],
+                                "type": f["type"] or f"0x{f['type_id']:x}"})
+            elif "base_offset" in f:
+                bases.append(f["base_offset"])
         structs.setdefault(name, {"unique_id": rid, "kind": kind,
-                                  "byte_size": size, "members": members})
+                                  "byte_size": size, "members": members,
+                                  "bases": bases})
 
     enum_map: dict[str, dict] = {}
     cur_enum_name = None

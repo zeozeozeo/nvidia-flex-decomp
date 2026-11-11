@@ -122,6 +122,17 @@ def cmd_pdb(args):
     return 0
 
 
+def cmd_dxheaders(args):
+    from . import dxheaders
+    r = dxheaders.generate()
+    if args.json:
+        jprint(r)
+    else:
+        print(f"d3d types: structs={r.get('structs')} names={r.get('names')} "
+              f"enums={r.get('enum_count')} -> {r.get('header')}")
+    return 0 if r.get("structs") else 1
+
+
 def cmd_dxbc(args):
     from . import dxbc
     r = dxbc.extract_all(disassemble_shaders=not args.no_asm)
@@ -195,6 +206,18 @@ def cmd_units(args):
         else:
             print(f"{args.unit}: blocked")
         return 0
+    if sub == "import-verbatim":
+        r = units.verify_verbatim([args.module] if args.module else None,
+                                  sample_diff=args.sample)
+        if args.json:
+            jprint(r)
+        else:
+            for m, v in sorted(r.items()):
+                print(f"{m}: ok={v['ok']} identical={v.get('byte_identical')} "
+                      f"units={v.get('units')} verified={v.get('verified')} "
+                      f"waived={v.get('waived')} failed={v.get('failed')} "
+                      f"diff_sampled={v.get('diff_sampled')} {v.get('detail','')}")
+        return 0 if all(v["ok"] for v in r.values()) else 1
     if sub == "status":
         r = units.status(strict=args.strict)
         if args.json:
@@ -317,6 +340,10 @@ def build_parser() -> argparse.ArgumentParser:
     s.add_argument("--json", action="store_true")
     s.set_defaults(func=cmd_pdb)
 
+    s = sub.add_parser("dxheaders", help="recover D3D type map from PDB")
+    s.add_argument("--json", action="store_true")
+    s.set_defaults(func=cmd_dxheaders)
+
     s = sub.add_parser("dxbc", help="extract and disassemble DXBC containers")
     s.add_argument("--no-asm", action="store_true")
     s.add_argument("--json", action="store_true")
@@ -355,6 +382,10 @@ def build_parser() -> argparse.ArgumentParser:
     u = usub.add_parser("block")
     u.add_argument("--unit", required=True)
     u.add_argument("--reason", required=True)
+    u = usub.add_parser("import-verbatim")
+    u.add_argument("--module")
+    u.add_argument("--no-gate", action="store_true")
+    u.add_argument("--sample", type=int, default=2)
     u = usub.add_parser("status")
     u.add_argument("--strict", action="store_true")
     s.set_defaults(func=cmd_units)

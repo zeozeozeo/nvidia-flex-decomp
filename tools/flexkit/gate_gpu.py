@@ -81,8 +81,9 @@ def gate_kernel(unit: dict, spec: dict) -> dict:
         res["detail"] = "missing_launch_config"
         return res
 
+    from .gate_static import recon_ptx
     orig_ptx_path = GPU / "dbg" / unit["module"] / "sm_30.ptx"
-    recon_ptx_path = CASEless_recon_ptx(unit)
+    recon_ptx_path = recon_ptx(unit["module"])
     if not orig_ptx_path.exists():
         res["detail"] = "original_ptx_missing"
         return res
@@ -109,14 +110,6 @@ def gate_kernel(unit: dict, spec: dict) -> dict:
             lib.cuCtxDestroy_v2(ctx)
         except Exception:  # noqa: BLE001
             pass
-
-
-def CASEless_recon_ptx(unit: dict) -> Path | None:
-    """Reconstructed PTX for a module (produced by nvcc -ptx of recon sources)."""
-    for cand in sorted((RECON / "build").glob(f"*{unit['module'].split('.')[-1]}*.ptx")):
-        return cand
-    out = WORK / "gpu" / "recon" / f"{unit['module'].split('.')[-1]}.ptx"
-    return out
 
 
 def run(unit: str | None = None, module: str | None = None, all_: bool = False) -> dict:

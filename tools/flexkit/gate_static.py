@@ -413,6 +413,120 @@ def _probe_layout(module: str, types: dict) -> dict:
             "probe": str(probe)}
 
 
+PTX_INSN_RE = re.compile(r"^\s*([a-z][a-z0-9]*(?:\.[a-z0-9]+)*)\s")
+PTX_DECL = ("reg", "param", "local", "shared", "global", "const", "tex", "surf",
+            "version", "target", "address_size", "file", "loc", "visible", "entry",
+            "func", "maxntid", "reqntid", "maxnreg", "pragma", "align", "branchtargets",
+            "callprototype", "calltargets")
+
+
+def _ptx_entry_block(text: str, symbol: str) -> list[str]:
+    """Lines of the ``.entry <symbol>`` body (empty if absent)."""
+    lines = text.splitlines()
+    start = None
+    for i, ln in enumerate(lines):
+        if re.match(rf"\s*(?:\.visible\s+)?\.entry\s+{re.escape(symbol)}\s*\(", ln) or \
+           re.match(rf"\s*\.entry\s+{re.escape(symbol)}\s*\(", ln):
+            start = i
+            break
+    if start is None:
+        return []
+    depth = 0
+    out = []
+    for ln in lines[start:]:
+        out.append(ln)
+        depth += ln.count("{") - ln.count("}")
+        if depth == 0 and "}" in ln and len(out) > 1:
+            break
+    return out
+
+
+def _ptx_stats(block: list[str]) -> dict:
+    insns = 0
+    calls = set()
+    for ln in block:
+        t = ln.strip()
+        if not t or t.startswith(("//", "$", ".", "}")):
+            continue
+        m = PTX_INSN_RE.match(t)
+        if not m:
+            continue
+        op = m.group(1)
+        if op.split(".")[0] in PTX_DECL or op == "loc":
+            continue
+        if t.endswith(";"):
+            insns += 1
+        if op.startswith("call"):
+            target = t.split(None, 1)[1].split(",")[0].strip() if " " in t else ""
+            if target:
+                calls.add(target)
+    return {"insns": insns, "calls": calls}
+
+
+def recon_ptx(module: str, force: bool = False) -> Path | None:
+    """Concatenated PTX of the reconstructed module sources (nvcc -ptx)."""
+    from . import GPU
+    outdir = GPU / "recon"
+    ensure(outdir)
+    out = outdir / f"{module}.ptx"
+    srcs = [s for s in module_sources(module) if s.suffix == ".cu"]
+    if not srcs:
+        return None
+    newest = max(s.stat().st_mtime for s in srcs)
+    if out.exists() and not force and out.stat().st_mtime >= newest:
+        return out
+    if not have("nvcc"):
+        return None
+    chunks = []
+    for src in srcs:
+        ptmp = outdir / f"{module}.{src.stem}.ptx"
+        cmd = ["nvcc", "-ptx", "-O3", "-arch=sm_75", *module_flags(module),
+               "-I", str(RECON / "include"), "-I", str(RECON / "include" / "nvflex"),
+               "-o", str(ptmp), str(src)]
+        if not run_ok(cmd):
+            return None
+        chunks.append(ptmp.read_text(errors="replace"))
+        ptmp.unlink(missing_ok=True)
+    out.write_text("\n".join(chunks))
+    return out
+
+
+def ptx_checks(unit: dict, recon_map: dict) -> dict:
+    """Kernel checks the plan specifies on PTX, not on the ELF host wrapper."""
+    from . import GPU
+    symbol = unit["symbol"]
+    orig_ptx = GPU / "dbg" / unit["module"] / "sm_30.ptx"
+    recon_path = recon_ptx(unit["module"])
+    out = {}
+    if not orig_ptx.exists():
+        out["ptx"] = {"ok": False, "detail": "original_ptx_missing"}
+        return out
+    if recon_path is None or not recon_path.exists():
+        out["ptx"] = {"ok": False, "detail": "recon_ptx_missing"}
+        return out
+    a = _ptx_stats(_ptx_entry_block(orig_ptx.read_text(errors="replace"), symbol))
+    b = _ptx_stats(_ptx_entry_block(recon_path.read_text(errors="replace"), symbol))
+    if not a["insns"] or not b["insns"]:
+        out["ptx"] = {"ok": False, "detail": "entry_not_found",
+                      "orig_insns": a["insns"], "recon_insns": b["insns"]}
+        return out
+    ratio = b["insns"] / a["insns"]
+    missing_calls = sorted(a["calls"] - b["calls"])
+    out["instructions"] = {
+        "ok": 0.4 <= ratio <= 2.5,
+        "orig": a["insns"], "recon": b["insns"], "ratio": round(ratio, 3),
+        "source": "ptx", "band": [0.4, 2.5],
+    }
+    out["calls"] = {
+        "ok": not missing_calls,
+        "matched": len(a["calls"] & b["calls"]), "expected": len(a["calls"]),
+        "missing": missing_calls, "extra": sorted(b["calls"] - a["calls"]),
+        "source": "ptx",
+    }
+    out["ptx"] = {"ok": True, "path": str(recon_path)}
+    return out
+
+
 def gate_unit(unit: dict, spec: dict | None = None, layout_cache: dict | None = None) -> dict:
     module = unit["module"]
     orig = _orig_object(module)
@@ -444,8 +558,25 @@ def gate_unit(unit: dict, spec: dict | None = None, layout_cache: dict | None = 
     if sym not in recon_map:
         return result
 
+    if unit["kind"] == "kernel":
+        # kernels: the ELF object only carries the nvcc host launch wrapper, so
+        # instruction/call checks are taken from PTX (plan 3.2)
+        result["checks"].update(ptx_checks(unit, recon_map))
+        result["checks"]["strings"] = {"ok": True, "detail": "n/a for device code"}
+        bundle = context.build(unit["id"])
+        if layout_cache is not None:
+            types = bundle["referenced_types"] if bundle else {}
+            key = (module, tuple(sorted(types)))
+            if key not in layout_cache:
+                layout_cache[key] = _probe_layout(module, types)
+            result["checks"]["layout"] = layout_cache[key]
+        result["ok"] = all(c.get("ok") for c in result["checks"].values()
+                           if isinstance(c, dict) and "ok" in c)
+        return result
+
     dem = _demangled(orig, [sym])
-    demr = _demangled(recon, [sym])
+    defining = next((o for o in recon_objs if sym in _disasm_map(o)), recon_objs[0])
+    demr = _demangled(defining, [sym])
     result["checks"]["signature"] = {
         "ok": dem.get(sym) == demr.get(sym),
         "orig": dem.get(sym), "recon": demr.get(sym),

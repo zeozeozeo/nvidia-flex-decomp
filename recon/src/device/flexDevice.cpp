@@ -1,0 +1,226 @@
+// flexdecomp: reconstructed src/device/flexDevice.cpp (FleX 1.2.0).
+//
+// The shipped object work/binary/obj/dbg/NvFlexDeviceDebug_x64/flexDevice.cpp.o
+// was built with
+//   GNU C++ 4.8.1 -m64 -mtune=generic -march=x86-64 -g -O0 -std=c++11 -fPIC
+//                  -fpermissive -fno-strict-aliasing -fstack-protector
+// against CUDA 9.2's cuda.h (DWARF decl_file 3 =
+// external/CUDA/9.2.148-linux/include/cuda.h) and PhysXDevice.h (decl_file 4).
+//
+// This translation unit is the whole of the optional NvFlexDevice helper
+// library: it lazily dlopen()s the CUDA driver, fetches the PhysX "low latency"
+// context-creation entry point out of the driver export table, and creates the
+// context used by NvFlexInit().  All driver entry points stay in file-scope
+// pointers so the library loads on hosts without libcuda.so.
+//
+// The CUDA driver declarations below are the subset of cuda.h (9.2.148) that
+// this file actually uses; the shipped header is not vendored in the tree.
+// Each one records the cuda.h line the DWARF points at.
+
+#include "NvFlexDevice.h"
+
+#include <dlfcn.h>
+#include <stddef.h>
+
+#include "PhysXDevice.h"
+
+// ---- cuda.h subset (external/CUDA/9.2.148-linux/include/cuda.h) ------------
+
+// flexdecomp: cuda.h:249
+typedef int CUdevice;
+
+// flexdecomp: cuda.h:251
+struct CUctx_st;
+
+// flexdecomp: cuda.h:250
+typedef struct CUctx_st* CUcontext;
+
+// flexdecomp: cuda.h:263/264
+struct CUuuid_st
+{
+	char bytes[16];
+};
+
+// flexdecomp: cuda.h:265
+typedef struct CUuuid_st CUuuid;
+
+// flexdecomp: cuda.h:310 (values verbatim; the full enum is not reproduced)
+enum CUctx_flags_enum
+{
+	CU_CTX_SCHED_AUTO = 0x00,
+	CU_CTX_SCHED_SPIN = 0x01,
+	CU_CTX_SCHED_YIELD = 0x02,
+	CU_CTX_SCHED_BLOCKING_SYNC = 0x04,
+	CU_CTX_BLOCKING_SYNC = 0x04,
+	CU_CTX_SCHED_MASK = 0x07,
+	CU_CTX_MAP_HOST = 0x08,
+	CU_CTX_LMEM_RESIZE_TO_MAX = 0x10,
+	CU_CTX_FLAGS_MASK = 0x1f
+};
+
+// flexdecomp: cuda.h:1058/1467 - only the success code is tested here
+enum cudaError_enum
+{
+	CUDA_SUCCESS = 0
+};
+
+typedef enum cudaError_enum CUresult;
+
+// ---- driver export table (CUetblPhysXInterface) ----------------------------
+
+// Identifier of the driver's PhysX interface export table.  The 16 bytes are
+// the .rodata bytes at offset 0 of the shipped object; the symbol has external
+// linkage there (GLOBAL, 16 bytes, .rodata+0).
+//
+// flexdecomp: flexDevice.cpp:51
+extern const CUuuid CU_ETID_PhysXInterface = { {
+	0x0c, 0xa5, 0x0b, 0x8c, 0x10, 0x04, 0x92, 0x9a,
+	0x89, 0xa7, 0xd0, 0xdf, 0x10, 0xe7, 0x72, 0x86
+} };
+
+// flexdecomp: flexDevice.cpp:53
+struct CUetblPhysXInterface_st
+{
+	// size of this structure
+	// flexdecomp: flexDevice.cpp:56 (size_t, offset 0)
+	size_t size;
+
+	// flexdecomp: flexDevice.cpp:64 (offset 8)
+	CUresult (*cuCtxCreateOnNode3DLowLatency)(CUcontext* pctx, unsigned int flags, CUdevice dev);
+};
+
+// flexdecomp: flexDevice.cpp:66
+typedef CUetblPhysXInterface_st CUetblPhysXInterface;
+
+// flexdecomp: flexDevice.cpp:68
+typedef CUresult (*cuGetExportTable_t)(const void** ppExportTable, const CUuuid* pExportTableId);
+// flexdecomp: flexDevice.cpp:69
+typedef CUresult (*cuDeviceGet_t)(CUdevice* device, int ordinal);
+// flexdecomp: flexDevice.cpp:70
+typedef CUresult (*cuCtxCreate_t)(CUcontext* pctx, unsigned int flags, CUdevice dev);
+// flexdecomp: flexDevice.cpp:71
+typedef CUresult (*cuCtxSetCurrent_t)(CUcontext ctx);
+// flexdecomp: flexDevice.cpp:72
+typedef CUresult (*cuCtxGetCurrent_t)(CUcontext* pctx);
+// flexdecomp: flexDevice.cpp:73
+typedef CUresult (*cuCtxDestroy_t)(CUcontext ctx);
+
+// flexdecomp: flexDevice.cpp:75-80 (order as in the shipped .bss)
+static cuGetExportTable_t cuGetExportTable_f;
+static cuDeviceGet_t cuDeviceGet_f;
+static cuCtxCreate_t cuCtxCreate_f;
+static cuCtxDestroy_t cuCtxDestroy_f;
+static cuCtxSetCurrent_t cuCtxSetCurrent_f;
+static cuCtxGetCurrent_t cuCtxGetCurrent_f;
+
+// flexdecomp: PhysXDevice.cpp:37 - declared in flexDevice.cpp, not in the header
+namespace physx
+{
+	PHYSX_DEV_STATUS physxDevGetCudaOrdinalWrapper(int* cudaDevOrdinal);
+}
+
+// ---- entry points ----------------------------------------------------------
+
+// flexdecomp: flexDevice.cpp:84 _ZL14GetProcAddressPvPKc
+static void* GetProcAddress(void* handle, const char* name)
+{
+	return dlsym(handle, name);
+}
+
+// flexdecomp: flexDevice.cpp:92 _ZL25GetSuggestedDeviceOrdinalv
+static int GetSuggestedDeviceOrdinal()
+{
+	// flexdecomp: flexDevice.cpp:94 (ordinal is written by the PhysX wrapper)
+	int ordinal;
+	if (physx::physxDevGetCudaOrdinalWrapper(&ordinal) != 0)
+		return -1;
+	return ordinal;
+}
+
+// flexdecomp: flexDevice.cpp:108 _ZL17CudaSafeDelayLoadiPP8CUctx_st
+static bool CudaSafeDelayLoad(int deviceOrdinal, CUcontext* outContext)
+{
+	// flexdecomp: flexDevice.cpp:114 - "libcuda.so" at .rodata+0x11, RTLD_NOW
+	void* hCudaDriver = dlopen("libcuda.so", RTLD_NOW);
+
+	// flexdecomp: flexDevice.cpp:117/119
+	if (hCudaDriver == NULL)
+		return false;
+
+	// flexdecomp: flexDevice.cpp:122-127 (literal order in .rodata)
+	cuGetExportTable_f = (cuGetExportTable_t)GetProcAddress(hCudaDriver, "cuGetExportTable");
+	cuCtxCreate_f = (cuCtxCreate_t)GetProcAddress(hCudaDriver, "cuCtxCreate");
+	cuDeviceGet_f = (cuDeviceGet_t)GetProcAddress(hCudaDriver, "cuDeviceGet");
+	cuCtxSetCurrent_f = (cuCtxSetCurrent_t)GetProcAddress(hCudaDriver, "cuCtxSetCurrent");
+	cuCtxGetCurrent_f = (cuCtxGetCurrent_t)GetProcAddress(hCudaDriver, "cuCtxGetCurrent");
+	cuCtxDestroy_f = (cuCtxDestroy_t)GetProcAddress(hCudaDriver, "cuCtxDestroy");
+
+	// flexdecomp: flexDevice.cpp:130
+	CUetblPhysXInterface* lowlatency = NULL;
+
+	// flexdecomp: flexDevice.cpp:134 - immediate 0x1c at 0x131
+	int flags = CU_CTX_SCHED_BLOCKING_SYNC | CU_CTX_MAP_HOST | CU_CTX_LMEM_RESIZE_TO_MAX;
+	// flexdecomp: flexDevice.cpp:135
+	cuGetExportTable_f((const void**)&lowlatency, &CU_ETID_PhysXInterface);
+
+	// flexdecomp: flexDevice.cpp:139/140 - -1 selects device 0
+	if (deviceOrdinal == -1)
+		deviceOrdinal = 0;
+
+	// flexdecomp: flexDevice.cpp:146 - the shipped object computes the
+	// suggested ordinal at 0x15f and never consumes it (dead store to
+	// -0x18(%rbp)); kept so the call is present in the object.
+	int suggestedOrdinal = GetSuggestedDeviceOrdinal();
+	(void)suggestedOrdinal;
+
+	// flexdecomp: flexDevice.cpp:149
+	if (lowlatency)
+	{
+		// flexdecomp: flexDevice.cpp:151/152
+		CUdevice device;
+		cuDeviceGet_f(&device, deviceOrdinal);
+
+		// flexdecomp: flexDevice.cpp:154
+		CUresult result = lowlatency->cuCtxCreateOnNode3DLowLatency(outContext, flags, device);
+
+		// flexdecomp: flexDevice.cpp:155-158
+		if (result != CUDA_SUCCESS)
+		{
+			*outContext = NULL;
+			return false;
+		}
+
+		// flexdecomp: flexDevice.cpp:163/164
+		cuCtxSetCurrent_f(*outContext);
+		return true;
+	}
+
+	// flexdecomp: flexDevice.cpp:168
+	return false;
+}
+
+// flexdecomp: flexDevice.cpp:174 _Z31NvFlexDeviceGetSuggestedOrdinalv
+int NvFlexDeviceGetSuggestedOrdinal()
+{
+	// flexdecomp: flexDevice.cpp:176
+	return GetSuggestedDeviceOrdinal();
+}
+
+// flexdecomp: flexDevice.cpp:180 _Z29NvFlexDeviceCreateCudaContexti
+bool NvFlexDeviceCreateCudaContext(int ordinal)
+{
+	// flexdecomp: flexDevice.cpp:182/183
+	CUcontext context;
+	return CudaSafeDelayLoad(ordinal, &context);
+}
+
+// flexdecomp: flexDevice.cpp:186 _Z30NvFlexDeviceDestroyCudaContextv
+void NvFlexDeviceDestroyCudaContext()
+{
+	// flexdecomp: flexDevice.cpp:188/189
+	CUcontext context;
+	cuCtxGetCurrent_f(&context);
+
+	// flexdecomp: flexDevice.cpp:191
+	cuCtxDestroy_f(context);
+}

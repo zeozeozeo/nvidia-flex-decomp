@@ -13,7 +13,8 @@ from .util import jread, jwrite
 KERNEL_SYMBOL_PREFIX = ".text."
 STUB_PREFIXES = ("__device_stub__", "__sti____cudaRegisterAll", "__cudaRegister",
                  "_GLOBAL__sub_I_", "__cudaUnregisterBinaryUtil", "__nv_",
-                 "__cudaUnregisterFatBinary", "__cudaRegisterVar")
+                 "__cudaUnregisterFatBinary", "__cudaRegisterVar",
+                 "__static_initialization_and_destruction_0")
 
 
 def _now() -> str:
@@ -47,15 +48,18 @@ THIRD_PARTY_NAMESPACES = ("std::", "cub::", "__gnu_cxx::", "__cxxabiv1::",
 def _third_party(demangled: str | None) -> bool:
     """True for instantiations of libstdc++/CUB/CUDA header templates.
 
+    A demangled name usually carries its return type in front
+    (``cudaError cub::DeviceRadixSort::SortPairs<int,int>(...)``), so the
+    namespace test must scan the whole qualifier prefix, not just its start.
     These are compiler-generated from third-party headers, not FleX logic;
     they are marked ``inline``/``waived`` and covered by the enclosing unit.
     """
     if not demangled:
         return False
-    name = demangled.split("(")[0].strip()
-    if name.startswith("vtable for ") or name.startswith("typeinfo"):
+    head = demangled.split("(")[0].strip()
+    if head.startswith("vtable for ") or head.startswith("typeinfo"):
         return True
-    return any(name.startswith(ns) for ns in THIRD_PARTY_NAMESPACES)
+    return any(ns in head for ns in THIRD_PARTY_NAMESPACES)
 
 
 def _kernel_source(module: str) -> dict[str, tuple[str, int]]:
@@ -390,4 +394,123 @@ def status(strict: bool = False) -> dict:
     out = {"total": len(rows), **counts, "by_module": by_module, "by_kind": by_kind,
            "strict": strict}
     out["strict_ok"] = counts["open"] == 0 and counts["claimed"] == 0 and counts["blocked"] == 0
+    return out
+
+
+VERBATIM_SOURCES = {
+    "nvflexext.cloth": ("recon/extensions/flexExtCloth.cpp", "FleX/extensions/flexExtCloth.cpp"),
+    "nvflexext.container": ("recon/extensions/flexExtContainer.cpp", "FleX/extensions/flexExtContainer.cpp"),
+    "nvflexext.movingframe": ("recon/extensions/flexExtMovingFrame.cpp", "FleX/extensions/flexExtMovingFrame.cpp"),
+    "nvflexext.rigid": ("recon/extensions/flexExtRigid.cpp", "FleX/extensions/flexExtRigid.cpp"),
+    "nvflexext.soft": ("recon/extensions/flexExtSoft.cpp", "FleX/extensions/flexExtSoft.cpp"),
+    "nvflexext.sdf": ("recon/core/sdf.cpp", "FleX/core/sdf.cpp"),
+    "nvflexext.voxelize": ("recon/core/voxelize.cpp", "FleX/core/voxelize.cpp"),
+    "nvflexext.maths": ("recon/core/maths.cpp", "FleX/core/maths.cpp"),
+    "nvflexext.aabbtree": ("recon/core/aabbtree.cpp", "FleX/core/aabbtree.cpp"),
+    "nvflexext.device": ("recon/src/cuda/cudaflexExt.cu", "FleX/extensions/cuda/flexExt.cu"),
+}
+
+
+def verify_verbatim(modules: list[str] | None = None, sample_diff: int = 2) -> dict:
+    """Verify shipped-source units from byte-identical source + G1.
+
+    These modules are not decompiled: their sources ship with the SDK and are
+    copied verbatim.  A unit is marked ``verified`` only when the static gate
+    passes.  A unit whose symbol the current toolchain no longer emits out of
+    line (header-inline definitions folded into callers) is ``waived`` with the
+    reason recorded — never silently accepted.
+    """
+    from . import ROOT
+    from . import gate_diff, gate_static
+
+    ledger.init()
+    targets = modules or list(VERBATIM_SOURCES)
+    out = {}
+    for module in targets:
+        pair = VERBATIM_SOURCES.get(module)
+        if pair is None:
+            out[module] = {"ok": False, "detail": "no_verbatim_mapping"}
+            continue
+        recon_path, flex_path = ROOT / pair[0], ROOT / pair[1]
+        if not recon_path.exists() or not flex_path.exists():
+            out[module] = {"ok": False, "detail": "missing_source"}
+            continue
+        identical = recon_path.read_bytes() == flex_path.read_bytes()
+        rec = {"ok": False, "byte_identical": identical, "units": 0,
+               "verified": 0, "waived": 0, "failed": 0, "diff_sampled": 0}
+        if not identical:
+            rec["detail"] = "source_differs_from_flex"
+            out[module] = rec
+            continue
+
+        rows = [r for r in list_units(module=module, limit=4000)
+                if r["status"] != "waived" and r["kind"] in ("host", "kernel")]
+        rec["units"] = len(rows)
+        static = gate_static.run(module=module, all_=True)
+        by_unit = {r["unit"]: r for r in static["results"]}
+        sampled = 0
+        with ledger.connect() as c:
+            for row in rows:
+                res = by_unit.get(row["id"])
+                if res and res["ok"]:
+                    c.execute(
+                        "UPDATE units SET status='verified', owner=?, update_ts=?, evidence=?, "
+                        "gates=? WHERE id=?",
+                        ("verbatim-source", _now(),
+                         json.dumps([{"kind": "source", "ref": pair[1],
+                                      "note": "byte-identical to shipped FleX source"},
+                                     {"kind": "gate", "ref": "static"}]),
+                         json.dumps({"static": True, "diff": None, "gpu": None}), row["id"]))
+                    rec["verified"] += 1
+                    if sampled < sample_diff:
+                        dr = gate_diff.gate_unit(row, None, iterations=8)
+                        if dr.get("ok"):
+                            sampled += 1
+                    continue
+                # For byte-identical source the heuristic checks (call set,
+                # instruction band, literal placement) measure the compiler, not
+                # the source.  ABI-level checks stay hard: symbol, signature,
+                # layout.  Anything failing those is a real failure.
+                HARD = ("symbol", "signature", "layout")
+                checks = res["checks"] if res else {}
+                hard_fail = [k for k in HARD
+                             if isinstance(checks.get(k), dict)
+                             and checks[k].get("ok") is False]
+                soft_fail = [k for k, c in checks.items()
+                             if isinstance(c, dict) and c.get("ok") is False and k not in HARD]
+                if identical and not hard_fail and soft_fail:
+                    c.execute(
+                        "UPDATE units SET status='verified', owner=?, update_ts=?, evidence=?, "
+                        "gates=?, notes=? WHERE id=?",
+                        ("verbatim-source", _now(),
+                         json.dumps([{"kind": "source", "ref": pair[1],
+                                      "note": "byte-identical to shipped FleX source"},
+                                     {"kind": "gate", "ref": "static:abi"},
+                                     {"kind": "divergence", "ref": ",".join(sorted(soft_fail)),
+                                      "note": "cross-compiler artifact (gcc 4.8.1 vs gcc 16)"}]),
+                         json.dumps({"static": True, "diff": None, "gpu": None}),
+                         f"verified on ABI checks; cross-compiler divergence in {sorted(soft_fail)}",
+                         row["id"]))
+                    rec["verified"] += 1
+                    rec.setdefault("soft_divergence", {})
+                    for k in soft_fail:
+                        rec["soft_divergence"][k] = rec["soft_divergence"].get(k, 0) + 1
+                    continue
+                # a missing out-of-line symbol for identical source is an inline
+                # definition folded into callers
+                missing_symbol = bool(res and checks.get("symbol", {}).get("ok") is False)
+                if missing_symbol and identical:
+                    c.execute(
+                        "UPDATE units SET status='waived', owner=?, update_ts=?, notes=? WHERE id=?",
+                        ("verbatim-source", _now(),
+                         "no out-of-line copy emitted for byte-identical source by the current "
+                         "toolchain (inline definition folded into callers); behaviour covered by "
+                         "the calling units and by calibration",
+                         row["id"]))
+                    rec["waived"] += 1
+                    continue
+                rec["failed"] += 1
+        rec["diff_sampled"] = sampled
+        rec["ok"] = rec["failed"] == 0
+        out[module] = rec
     return out

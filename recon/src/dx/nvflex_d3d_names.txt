@@ -1,0 +1,889 @@
+"::"
+"NvFlexSolver::TriangleMesh::BvhL"...
+"NvFlexSolver::TriangleMesh::BvhR"...
+"NvFlexSolver::TriangleMesh::Indi"...
+"NvFlexSolver::TriangleMesh::Offs"...
+"NvFlexSolver::TriangleMesh::Vert"...
+"cli::array<"
+"cli::pin_ptr<"
+"std::nullptr_t"
+__int64 & __cdecl std::forward<__int64 &>
+`public: static class CSingletonCriticalSection & __cdecl CSingletonCriticalSection::GetInstance
+`public: static class DNameStatusNode * __cdecl DNameStatusNode::make
+bool && __cdecl std::forward<bool>
+char && __cdecl std::_Move<char &>
+char * __cdecl std::_Allocate<char>
+char * __cdecl std::addressof<char>
+char *& __cdecl std::forward<char *&>
+class XVector3<float> * __cdecl std::_Allocate<class XVector3<float>>
+class XVector3<float> * __cdecl std::_Val_type<class XVector3<float> *>
+class XVector4<float> * __cdecl std::_Allocate<class XVector4<float>>
+class XVector4<float> * __cdecl std::_Val_type<class XVector4<float> *>
+class XVector4<float> const & __cdecl std::forward<class XVector4<float> const &>
+class XVector4<float> const * __cdecl std::addressof<class XVector4<float> const>
+class std::_Tree_iterator<class std::_Tree_val<struct std::_Tree_simple_types<struct std::pair<char const *const, int>>>> & __cdecl std::forward<class std::_Tree_iterator<class std::_Tree_val<struct std::_Tree_simple_types<struct std::pair<char const *const, int>>>> &>
+class std::_Tree_iterator<class std::_Tree_val<struct std::_Tree_simple_types<struct std::pair<wchar_t const *const, int>>>> & __cdecl std::forward<class std::_Tree_iterator<class std::_Tree_val<struct std::_Tree_simple_types<struct std::pair<wchar_t const *const, int>>>> &>
+class std::_Tree_iterator<class std::_Tree_val<struct std::_Tree_simple_types<struct std::pair<wchar_t const *const, int>>>> && __cdecl std::forward<class std::_Tree_iterator<class std::_Tree_val<struct std::_Tree_simple_types<struct std::pair<wchar_t const *const, int>>>>>
+class std::_Vector_iterator<class std::_Vector_val<struct std::_Simple_types<struct NvFlexSolver *>>> & __cdecl std::_Rechecked<class std::_Vector_val<struct std::_Simple_types<struct NvFlexSolver *>>>
+class std::_Vector_iterator<class std::_Vector_val<struct std::_Simple_types<struct NvFlexSolver *>>> __cdecl std::find<class std::_Vector_iterator<class std::_Vector_val<struct std::_Simple_types<struct NvFlexSolver *>>>, struct NvFlexSolver *>
+class std::_Vector_iterator<class std::_Vector_val<struct std::_Simple_types<struct NvFlexSolver *>>> __cdecl std::remove<class std::_Vector_iterator<class std::_Vector_val<struct std::_Simple_types<struct NvFlexSolver *>>>, struct NvFlexSolver *>
+class std::_Vector_iterator<class std::_Vector_val<struct std::_Simple_types<unsigned int>>> & __cdecl std::_Rechecked<class std::_Vector_val<struct std::_Simple_types<unsigned int>>>
+class std::_Vector_iterator<class std::_Vector_val<struct std::_Simple_types<unsigned int>>> __cdecl std::find<class std::_Vector_iterator<class std::_Vector_val<struct std::_Simple_types<unsigned int>>>, unsigned __int64>
+class std::_Vector_iterator<class std::_Vector_val<struct std::_Simple_types<unsigned int>>> __cdecl std::remove<class std::_Vector_iterator<class std::_Vector_val<struct std::_Simple_types<unsigned int>>>, unsigned __int64>
+class std::basic_string<wchar_t, struct std::char_traits<wchar_t>, class std::allocator<wchar_t>> && __cdecl std::forward<class std::basic_string<wchar_t, struct std::char_traits<wchar_t>, class std::allocator<wchar_t>>>
+class std::basic_string<wchar_t, struct std::char_traits<wchar_t>, class std::allocator<wchar_t>> * __cdecl std::_Allocate<class std::basic_string<wchar_t, struct std::char_traits<wchar_t>, class std::allocator<wchar_t>>>
+class std::basic_string<wchar_t, struct std::char_traits<wchar_t>, class std::allocator<wchar_t>> * __cdecl std::_Unchecked<class std::basic_string<wchar_t, struct std::char_traits<wchar_t>, class std::allocator<wchar_t>> *>
+class std::basic_string<wchar_t, struct std::char_traits<wchar_t>, class std::allocator<wchar_t>> * __cdecl std::_Uninit_move<class std::basic_string<wchar_t, struct std::char_traits<wchar_t>, class std::allocator<wchar_t>> *, class std::basic_string<wchar_t, struct std::char_traits<wchar_t>, class std::allocator<wchar_t>> *, class std::allocator<class std::basic_string<wchar_t, struct std::char_traits<wchar_t>, class std::allocator<wchar_t>>>, class std::basic_string<wchar_t, struct std::char_traits<wchar_t>, class std::allocator<wchar_t>>>
+class std::basic_string<wchar_t, struct std::char_traits<wchar_t>, class std::allocator<wchar_t>> * __cdecl std::_Uninit_move<class std::basic_string<wchar_t, struct std::char_traits<wchar_t>, class std::allocator<wchar_t>> *, class std::basic_string<wchar_t, struct std::char_traits<wchar_t>, class std::allocator<wchar_t>> *, struct std::_Wrap_alloc<class std::allocator<class std::basic_string<wchar_t, struct std::char_traits<wchar_t>, class std::allocator<wchar_t>>>>>
+class std::basic_string<wchar_t, struct std::char_traits<wchar_t>, class std::allocator<wchar_t>> * __cdecl std::_Uninitialized_move<class std::basic_string<wchar_t, struct std::char_traits<wchar_t>, class std::allocator<wchar_t>> *, class std::basic_string<wchar_t, struct std::char_traits<wchar_t>, class std::allocator<wchar_t>> *, struct std::_Wrap_alloc<class std::allocator<class std::basic_string<wchar_t, struct std::char_traits<wchar_t>, class std::allocator<wchar_t>>>>>
+class std::basic_string<wchar_t, struct std::char_traits<wchar_t>, class std::allocator<wchar_t>> * __cdecl std::_Val_type<class std::basic_string<wchar_t, struct std::char_traits<wchar_t>, class std::allocator<wchar_t>> *>
+class std::basic_string<wchar_t, struct std::char_traits<wchar_t>, class std::allocator<wchar_t>> * __cdecl std::addressof<class std::basic_string<wchar_t, struct std::char_traits<wchar_t>, class std::allocator<wchar_t>>>
+class std::basic_string<wchar_t, struct std::char_traits<wchar_t>, class std::allocator<wchar_t>> *& __cdecl std::_Rechecked<class std::basic_string<wchar_t, struct std::char_traits<wchar_t>, class std::allocator<wchar_t>> *, class std::basic_string<wchar_t, struct std::char_traits<wchar_t>, class std::allocator<wchar_t>> *>
+class std::vector<struct IDXGIAdapter1 *, class std::allocator<struct IDXGIAdapter1 *>> && __cdecl std::forward<class std::vector<struct IDXGIAdapter1 *, class std::allocator<struct IDXGIAdapter1 *>>>
+const CAutoCriticalSection::`vftable'
+const CSingletonCriticalSection::`vftable'
+const DNameNode::`vftable'
+const DNameStatusNode::`vftable'
+const FlexDeviceDesc::`vftable'
+const NvFlex::Buffer::`vftable'
+const NvFlex::BufferD3D11::`vftable'{for `NvFlex::Buffer'}
+const NvFlex::BufferD3D11::`vftable'{for `NvFlex::Object'}
+const NvFlex::BufferD3D11::`vftable'{for `NvFlex::ResourceD3D11'}
+const NvFlex::BufferD3D11::`vftable'{for `NvFlex::ResourceRW'}
+const NvFlex::BufferD3D12::`vftable'{for `NvFlex::Buffer'}
+const NvFlex::BufferD3D12::`vftable'{for `NvFlex::Object'}
+const NvFlex::BufferD3D12::`vftable'{for `NvFlex::ResourceD3D12'}
+const NvFlex::BufferD3D12::`vftable'{for `NvFlex::ResourceRW'}
+const NvFlex::ComputeShader::`vftable'
+const NvFlex::ComputeShaderD3D11::`vftable'{for `NvFlex::ComputeShader'}
+const NvFlex::ComputeShaderD3D11::`vftable'{for `NvFlex::Object'}
+const NvFlex::ComputeShaderD3D12::`vftable'{for `NvFlex::ComputeShader'}
+const NvFlex::ComputeShaderD3D12::`vftable'{for `NvFlex::Object'}
+const NvFlex::ConstantBuffer::`vftable'
+const NvFlex::ConstantBufferD3D11::`vftable'{for `NvFlex::ConstantBuffer'}
+const NvFlex::ConstantBufferD3D11::`vftable'{for `NvFlex::Object'}
+const NvFlex::ConstantBufferD3D12::`vftable'{for `NvFlex::ConstantBuffer'}
+const NvFlex::ConstantBufferD3D12::`vftable'{for `NvFlex::Object'}
+const NvFlex::Context::`vftable'
+const NvFlex::ContextD3D11::`vftable'{for `NvFlex::Context'}
+const NvFlex::ContextD3D11::`vftable'{for `NvFlex::Object'}
+const NvFlex::ContextD3D12::`vftable'{for `NvFlex::Context'}
+const NvFlex::ContextD3D12::`vftable'{for `NvFlex::Object'}
+const NvFlex::Device::`vftable'
+const NvFlex::DeviceD3D11::`vftable'{for `NvFlex::Device'}
+const NvFlex::DeviceD3D11::`vftable'{for `NvFlex::Object'}
+const NvFlex::DeviceD3D12::`vftable'{for `NvFlex::Device'}
+const NvFlex::DeviceD3D12::`vftable'{for `NvFlex::Object'}
+const NvFlex::Fence::`vftable'
+const NvFlex::FenceD3D11::`vftable'{for `NvFlex::Fence'}
+const NvFlex::FenceD3D11::`vftable'{for `NvFlex::Object'}
+const NvFlex::FenceD3D12::`vftable'{for `NvFlex::Fence'}
+const NvFlex::FenceD3D12::`vftable'{for `NvFlex::Object'}
+const NvFlex::Object::`vftable'
+const NvFlex::RadixSort::`vftable'
+const NvFlex::RadixSortImpl::`vftable'{for `NvFlex::Object'}
+const NvFlex::RadixSortImpl::`vftable'{for `NvFlex::RadixSort'}
+const NvFlex::Resource::`vftable'
+const NvFlex::ResourceD3D11::`vftable'
+const NvFlex::ResourceD3D12::`vftable'
+const NvFlex::ResourceRW::`vftable'
+const NvFlex::ResourceRWD3D11::`vftable'{for `NvFlex::ResourceD3D11'}
+const NvFlex::ResourceRWD3D11::`vftable'{for `NvFlex::ResourceRW'}
+const NvFlex::ResourceRWD3D12::`vftable'{for `NvFlex::ResourceD3D12'}
+const NvFlex::ResourceRWD3D12::`vftable'{for `NvFlex::ResourceRW'}
+const NvFlex::Texture3D::`vftable'
+const NvFlex::Texture3DD3D11::`vftable'{for `NvFlex::Object'}
+const NvFlex::Texture3DD3D11::`vftable'{for `NvFlex::ResourceD3D11'}
+const NvFlex::Texture3DD3D11::`vftable'{for `NvFlex::ResourceRW'}
+const NvFlex::Texture3DD3D11::`vftable'{for `NvFlex::Texture3D'}
+const NvFlex::Texture3DD3D12::`vftable'{for `NvFlex::Object'}
+const NvFlex::Texture3DD3D12::`vftable'{for `NvFlex::ResourceD3D12'}
+const NvFlex::Texture3DD3D12::`vftable'{for `NvFlex::ResourceRW'}
+const NvFlex::Texture3DD3D12::`vftable'{for `NvFlex::Texture3D'}
+const NvFlex::Timer::`vftable'
+const NvFlex::TimerD3D11::`vftable'{for `NvFlex::Object'}
+const NvFlex::TimerD3D11::`vftable'{for `NvFlex::Timer'}
+const NvFlex::TimerD3D12::`vftable'{for `NvFlex::Object'}
+const NvFlex::TimerD3D12::`vftable'{for `NvFlex::Timer'}
+const NvFlex::TimerPool::`vftable'
+const NvFlex::TimerPoolD3D11::`vftable'
+const NvFlex::TimerPoolD3D12::`vftable'
+const NvFlexObject::`vftable'
+const charNode::`vftable'
+const pDNameNode::`vftable'
+const pairNode::`vftable'
+const pcharNode::`vftable'
+const std::_Generic_error_category::`vftable'
+const std::_Iostream_error_category::`vftable'
+const std::_System_error_category::`vftable'
+const std::__non_rtti_object::`vftable'
+const std::bad_alloc::`vftable'
+const std::bad_cast::`vftable'
+const std::bad_exception::`vftable'
+const std::bad_function_call::`vftable'
+const std::bad_typeid::`vftable'
+const std::error_category::`vftable'
+const std::exception::`vftable'
+const std::invalid_argument::`vftable'
+const std::length_error::`vftable'
+const std::logic_error::`vftable'
+const std::out_of_range::`vftable'
+const std::overflow_error::`vftable'
+const std::regex_error::`vftable'
+const std::runtime_error::`vftable'
+const type_info::`vftable'
+float & __cdecl std::forward<float &>
+float * __cdecl std::_Allocate<float>
+float * __cdecl std::_Fill_n<float *, unsigned __int64, float>
+float * __cdecl std::_Unchecked<float *>
+float * __cdecl std::_Uninit_move<float *, float *, struct std::_Wrap_alloc<class std::allocator<float>>>
+float * __cdecl std::_Uninit_move<float, float, float>
+float * __cdecl std::_Uninitialized_move<float *, float *, struct std::_Wrap_alloc<class std::allocator<float>>>
+float * __cdecl std::_Val_type<float *>
+float *& __cdecl std::_Rechecked<float *, float *>
+float const & __cdecl std::forward<float const &>
+float const * __cdecl std::addressof<float const>
+int & __cdecl std::forward<int &>
+int && __cdecl std::_Move<int &>
+int && __cdecl std::forward<int>
+int * __cdecl std::_Allocate<int>
+int * __cdecl std::_Fill_n<int *, unsigned __int64, int>
+int * __cdecl std::_Unchecked<int *>
+int * __cdecl std::_Uninit_move<int *, int *, struct std::_Wrap_alloc<class std::allocator<int>>>
+int * __cdecl std::_Uninit_move<int, int, int>
+int * __cdecl std::_Uninitialized_move<int *, int *, struct std::_Wrap_alloc<class std::allocator<int>>>
+int * __cdecl std::_Val_type<int *>
+int *& __cdecl std::_Rechecked<int *, int *>
+int const & __cdecl std::forward<int const &>
+int const & __cdecl std::min<int>
+int const * __cdecl std::addressof<int const>
+private: __cdecl CSingletonCriticalSection::CSingletonCriticalSection
+private: __cdecl DNameStatusNode::DNameStatusNode
+private: __cdecl type_info::type_info
+private: class type_info & __cdecl type_info::operator=
+protected: __cdecl DNameNode::DNameNode
+protected: class std::_Tree_iterator<class std::_Tree_val<struct std::_Tree_simple_types<struct std::pair<wchar_t const *const, int>>>> __cdecl std::_Tree<class std::_Tmap_traits<wchar_t const *, int, struct NvFlex::ltwstr, class std::allocator<struct std::pair<wchar_t const *const, int>>, 1>>::_Insert_at<struct std::pair<wchar_t const *const, int> &, struct std::_Tree_node<struct std::pair<wchar_t const *const, int>, void *> *>
+protected: class std::basic_string<wchar_t, struct std::char_traits<wchar_t>, class std::allocator<wchar_t>> * __cdecl std::vector<class std::basic_string<wchar_t, struct std::char_traits<wchar_t>, class std::allocator<wchar_t>>, class std::allocator<class std::basic_string<wchar_t, struct std::char_traits<wchar_t>, class std::allocator<wchar_t>>>>::_Umove<class std::basic_string<wchar_t, struct std::char_traits<wchar_t>, class std::allocator<wchar_t>> *>
+protected: float * __cdecl std::vector<float, class std::allocator<float>>::_Umove<float *>
+protected: int * __cdecl std::vector<int, class std::allocator<int>>::_Umove<int *>
+protected: struct FlexTriangleMeshHost ** __cdecl std::vector<struct FlexTriangleMeshHost *, class std::allocator<struct FlexTriangleMeshHost *>>::_Umove<struct FlexTriangleMeshHost **>
+protected: struct IDXGIAdapter1 ** __cdecl std::vector<struct IDXGIAdapter1 *, class std::allocator<struct IDXGIAdapter1 *>>::_Umove<struct IDXGIAdapter1 **>
+protected: struct NvFlex::Texture3D ** __cdecl std::vector<struct NvFlex::Texture3D *, class std::allocator<struct NvFlex::Texture3D *>>::_Umove<struct NvFlex::Texture3D **>
+protected: struct NvFlex::TimerD3D11 ** __cdecl std::vector<struct NvFlex::TimerD3D11 *, class std::allocator<struct NvFlex::TimerD3D11 *>>::_Umove<struct NvFlex::TimerD3D11 **>
+protected: struct NvFlexSolver ** __cdecl std::vector<struct NvFlexSolver *, class std::allocator<struct NvFlexSolver *>>::_Umove<struct NvFlexSolver **>
+protected: struct std::_Tree_node<struct std::pair<wchar_t const *const, int>, void *> * __cdecl std::_Tree<class std::_Tmap_traits<wchar_t const *, int, struct NvFlex::ltwstr, class std::allocator<struct std::pair<wchar_t const *const, int>>, 1>>::_Buynode_if_nil<struct std::pair<wchar_t const *const, int> &>
+protected: struct std::pair<class std::_Tree_iterator<class std::_Tree_val<struct std::_Tree_simple_types<struct std::pair<wchar_t const *const, int>>>>, bool> __cdecl std::_Tree<class std::_Tmap_traits<wchar_t const *, int, struct NvFlex::ltwstr, class std::allocator<struct std::pair<wchar_t const *const, int>>, 1>>::_Insert_nohint<struct std::pair<wchar_t const *const, int> &, struct std::_Tree_node<struct std::pair<wchar_t const *const, int>, void *> *>
+protected: unsigned __int64 * __cdecl std::vector<unsigned __int64, class std::allocator<unsigned __int64>>::_Umove<unsigned __int64 *>
+protected: unsigned int * __cdecl std::vector<unsigned int, class std::allocator<unsigned int>>::_Umove<unsigned int *>
+public: __cdecl BVH::BVH
+public: __cdecl BVHArray::BVHArray
+public: __cdecl Bounds::Bounds
+public: __cdecl CAutoCriticalSection::CAutoCriticalSection
+public: __cdecl CD3DX12_BOX::CD3DX12_BOX
+public: __cdecl CD3DX12_BOX::~CD3DX12_BOX
+public: __cdecl CD3DX12_HEAP_PROPERTIES::CD3DX12_HEAP_PROPERTIES
+public: __cdecl CD3DX12_RESOURCE_DESC::CD3DX12_RESOURCE_DESC
+public: __cdecl CD3DX12_TEXTURE_COPY_LOCATION::CD3DX12_TEXTURE_COPY_LOCATION
+public: __cdecl DName::DName
+public: __cdecl DxBuffer::DxBuffer
+public: __cdecl DxBufferExt::DxBufferExt
+public: __cdecl DxComputeBuffer::DxComputeBuffer
+public: __cdecl DxConstantBuffer::DxConstantBuffer
+public: __cdecl FlexConvexMeshData::FlexConvexMeshData
+public: __cdecl FlexDeviceDesc::FlexDeviceDesc
+public: __cdecl FlexSDFData::FlexSDFData
+public: __cdecl FlexSDFData::~FlexSDFData
+public: __cdecl FlexShapeData::FlexShapeData
+public: __cdecl FlexTriangleMeshData::FlexTriangleMeshData
+public: __cdecl FlexTriangleMeshData::~FlexTriangleMeshData
+public: __cdecl FlexTriangleMeshHost::FlexTriangleMeshHost
+public: __cdecl FlexTriangleMeshHost::~FlexTriangleMeshHost
+public: __cdecl LinearBVHBuilderGPU::LinearBVHBuilderGPU
+public: __cdecl LinearBVHBuilderGPU::~LinearBVHBuilderGPU
+public: __cdecl NvFlex::Buffer::Buffer
+public: __cdecl NvFlex::BufferD3D11::BufferD3D11
+public: __cdecl NvFlex::BufferD3D12::BufferD3D12
+public: __cdecl NvFlex::BufferD3D12::BufferData::BufferData
+public: __cdecl NvFlex::ComputeShader::ComputeShader
+public: __cdecl NvFlex::ComputeShaderD3D11::ComputeShaderD3D11
+public: __cdecl NvFlex::ComputeShaderD3D12::ComputeShaderD3D12
+public: __cdecl NvFlex::ComputeShaderDesc::ComputeShaderDesc
+public: __cdecl NvFlex::ConstantBuffer::ConstantBuffer
+public: __cdecl NvFlex::ConstantBufferD3D11::ConstantBufferD3D11
+public: __cdecl NvFlex::ConstantBufferD3D12::BufferData::BufferData
+public: __cdecl NvFlex::ConstantBufferD3D12::ConstantBufferD3D12
+public: __cdecl NvFlex::Context::Context
+public: __cdecl NvFlex::ContextD3D11::ContextD3D11
+public: __cdecl NvFlex::ContextD3D11::State::State
+public: __cdecl NvFlex::ContextD3D11::State::~State
+public: __cdecl NvFlex::ContextD3D11::Status::Status
+public: __cdecl NvFlex::ContextD3D12::ContextD3D12
+public: __cdecl NvFlex::DXGI_table::DXGI_table
+public: __cdecl NvFlex::DescriptorHeapD3D12::DescriptorHeapD3D12
+public: __cdecl NvFlex::DescriptorHeapD3D12::HeapData::HeapData
+public: __cdecl NvFlex::DescriptorHeapD3D12::~DescriptorHeapD3D12
+public: __cdecl NvFlex::Device::Device
+public: __cdecl NvFlex::DeviceD3D11::DeviceD3D11
+public: __cdecl NvFlex::DeviceD3D12::DeviceD3D12
+public: __cdecl NvFlex::DynamicDescriptorHeapD3D12::DynamicDescriptorHeapD3D12
+public: __cdecl NvFlex::DynamicDescriptorHeapD3D12::HeapData::HeapData
+public: __cdecl NvFlex::DynamicDescriptorHeapD3D12::~DynamicDescriptorHeapD3D12
+public: __cdecl NvFlex::DynamicHeapAllocator<struct NvFlex::DynamicDescriptorHeapD3D12::HeapData>::DynamicHeapAllocator<struct NvFlex::DynamicDescriptorHeapD3D12::HeapData>
+public: __cdecl NvFlex::DynamicHeapAllocator<struct NvFlex::DynamicDescriptorHeapD3D12::HeapData>::Heap::Heap
+public: __cdecl NvFlex::DynamicHeapAllocator<struct NvFlex::DynamicDescriptorHeapD3D12::HeapData>::Heap::~Heap
+public: __cdecl NvFlex::DynamicHeapAllocator<struct NvFlex::DynamicDescriptorHeapD3D12::HeapData>::~DynamicHeapAllocator<struct NvFlex::DynamicDescriptorHeapD3D12::HeapData>
+public: __cdecl NvFlex::Fence::Fence
+public: __cdecl NvFlex::FenceD3D11::FenceD3D11
+public: __cdecl NvFlex::FenceD3D12::FenceD3D12
+public: __cdecl NvFlex::HeapAllocator<struct NvFlex::DescriptorHeapD3D12::HeapData>::Heap::Heap
+public: __cdecl NvFlex::HeapAllocator<struct NvFlex::DescriptorHeapD3D12::HeapData>::HeapAllocator<struct NvFlex::DescriptorHeapD3D12::HeapData>
+public: __cdecl NvFlex::HeapAllocator<struct NvFlex::DescriptorHeapD3D12::HeapData>::~HeapAllocator<struct NvFlex::DescriptorHeapD3D12::HeapData>
+public: __cdecl NvFlex::NvFlexFormatTable::NvFlexFormatTable
+public: __cdecl NvFlex::Object::Object
+public: __cdecl NvFlex::RadixSort::RadixSort
+public: __cdecl NvFlex::RadixSortImpl::RadixSortImpl
+public: __cdecl NvFlex::Resource::Resource
+public: __cdecl NvFlex::ResourceD3D11::ResourceD3D11
+public: __cdecl NvFlex::ResourceD3D12::ResourceD3D12
+public: __cdecl NvFlex::ResourceRW::ResourceRW
+public: __cdecl NvFlex::ResourceRWD3D11::ResourceRWD3D11
+public: __cdecl NvFlex::ResourceRWD3D12::ResourceRWD3D12
+public: __cdecl NvFlex::ResourceStateD3D12::ResourceStateD3D12
+public: __cdecl NvFlex::Texture3D::Texture3D
+public: __cdecl NvFlex::Texture3DD3D11::Texture3DD3D11
+public: __cdecl NvFlex::Texture3DD3D12::BufferData::BufferData
+public: __cdecl NvFlex::Texture3DD3D12::Texture3DD3D12
+public: __cdecl NvFlex::Timer::Timer
+public: __cdecl NvFlex::TimerD3D11::TimerD3D11
+public: __cdecl NvFlex::TimerD3D12::TimerD3D12
+public: __cdecl NvFlex::TimerPool::TimerPool
+public: __cdecl NvFlex::TimerPoolD3D11::TimerPoolD3D11
+public: __cdecl NvFlex::TimerPoolD3D12::TimerPoolD3D12
+public: __cdecl NvFlex::VectorCached<struct ID3D11Buffer *, 8>::VectorCached<struct ID3D11Buffer *, 8>
+public: __cdecl NvFlex::VectorCached<struct ID3D11Buffer *, 8>::~VectorCached<struct ID3D11Buffer *, 8>
+public: __cdecl NvFlex::VectorCached<struct ID3D11SamplerState *, 8>::VectorCached<struct ID3D11SamplerState *, 8>
+public: __cdecl NvFlex::VectorCached<struct ID3D11SamplerState *, 8>::~VectorCached<struct ID3D11SamplerState *, 8>
+public: __cdecl NvFlex::VectorCached<struct ID3D11ShaderResourceView *, 16>::VectorCached<struct ID3D11ShaderResourceView *, 16>
+public: __cdecl NvFlex::VectorCached<struct ID3D11ShaderResourceView *, 16>::~VectorCached<struct ID3D11ShaderResourceView *, 16>
+public: __cdecl NvFlex::VectorCached<struct ID3D11UnorderedAccessView *, 8>::VectorCached<struct ID3D11UnorderedAccessView *, 8>
+public: __cdecl NvFlex::VectorCached<struct ID3D11UnorderedAccessView *, 8>::~VectorCached<struct ID3D11UnorderedAccessView *, 8>
+public: __cdecl NvFlex::VectorCached<struct NvFlex::ContextD3D11::Status, 16>::VectorCached<struct NvFlex::ContextD3D11::Status, 16>
+public: __cdecl NvFlex::VectorCached<struct NvFlex::ContextD3D11::Status, 16>::~VectorCached<struct NvFlex::ContextD3D11::Status, 16>
+public: __cdecl NvFlex::VectorCached<struct NvFlex::DynamicHeapAllocator<struct NvFlex::DynamicDescriptorHeapD3D12::HeapData>::Heap, 16>::VectorCached<struct NvFlex::DynamicHeapAllocator<struct NvFlex::DynamicDescriptorHeapD3D12::HeapData>::Heap, 16>
+public: __cdecl NvFlex::VectorCached<struct NvFlex::DynamicHeapAllocator<struct NvFlex::DynamicDescriptorHeapD3D12::HeapData>::Heap, 16>::~VectorCached<struct NvFlex::DynamicHeapAllocator<struct NvFlex::DynamicDescriptorHeapD3D12::HeapData>::Heap, 16>
+public: __cdecl NvFlex::VectorCached<struct NvFlex::HeapAllocator<struct NvFlex::DescriptorHeapD3D12::HeapData>::Heap, 16>::VectorCached<struct NvFlex::HeapAllocator<struct NvFlex::DescriptorHeapD3D12::HeapData>::Heap, 16>
+public: __cdecl NvFlex::VectorCached<struct NvFlex::HeapAllocator<struct NvFlex::DescriptorHeapD3D12::HeapData>::Heap, 16>::~VectorCached<struct NvFlex::HeapAllocator<struct NvFlex::DescriptorHeapD3D12::HeapData>::Heap, 16>
+public: __cdecl NvFlex::VectorCached<struct NvFlex::VersionedBuffer<struct NvFlex::BufferD3D12::BufferData>::Buffer, 16>::VectorCached<struct NvFlex::VersionedBuffer<struct NvFlex::BufferD3D12::BufferData>::Buffer, 16>
+public: __cdecl NvFlex::VectorCached<struct NvFlex::VersionedBuffer<struct NvFlex::BufferD3D12::BufferData>::Buffer, 16>::~VectorCached<struct NvFlex::VersionedBuffer<struct NvFlex::BufferD3D12::BufferData>::Buffer, 16>
+public: __cdecl NvFlex::VectorCached<struct NvFlex::VersionedBuffer<struct NvFlex::ConstantBufferD3D12::BufferData>::Buffer, 16>::VectorCached<struct NvFlex::VersionedBuffer<struct NvFlex::ConstantBufferD3D12::BufferData>::Buffer, 16>
+public: __cdecl NvFlex::VectorCached<struct NvFlex::VersionedBuffer<struct NvFlex::ConstantBufferD3D12::BufferData>::Buffer, 16>::~VectorCached<struct NvFlex::VersionedBuffer<struct NvFlex::ConstantBufferD3D12::BufferData>::Buffer, 16>
+public: __cdecl NvFlex::VectorCached<struct NvFlex::VersionedBuffer<struct NvFlex::Texture3DD3D12::BufferData>::Buffer, 16>::VectorCached<struct NvFlex::VersionedBuffer<struct NvFlex::Texture3DD3D12::BufferData>::Buffer, 16>
+public: __cdecl NvFlex::VectorCached<struct NvFlex::VersionedBuffer<struct NvFlex::Texture3DD3D12::BufferData>::Buffer, 16>::~VectorCached<struct NvFlex::VersionedBuffer<struct NvFlex::Texture3DD3D12::BufferData>::Buffer, 16>
+public: __cdecl NvFlex::VersionedBuffer<struct NvFlex::BufferD3D12::BufferData>::Buffer::Buffer
+public: __cdecl NvFlex::VersionedBuffer<struct NvFlex::BufferD3D12::BufferData>::VersionedBuffer<struct NvFlex::BufferD3D12::BufferData>
+public: __cdecl NvFlex::VersionedBuffer<struct NvFlex::BufferD3D12::BufferData>::~VersionedBuffer<struct NvFlex::BufferD3D12::BufferData>
+public: __cdecl NvFlex::VersionedBuffer<struct NvFlex::ConstantBufferD3D12::BufferData>::Buffer::Buffer
+public: __cdecl NvFlex::VersionedBuffer<struct NvFlex::ConstantBufferD3D12::BufferData>::VersionedBuffer<struct NvFlex::ConstantBufferD3D12::BufferData>
+public: __cdecl NvFlex::VersionedBuffer<struct NvFlex::ConstantBufferD3D12::BufferData>::~VersionedBuffer<struct NvFlex::ConstantBufferD3D12::BufferData>
+public: __cdecl NvFlex::VersionedBuffer<struct NvFlex::Texture3DD3D12::BufferData>::Buffer::Buffer
+public: __cdecl NvFlex::VersionedBuffer<struct NvFlex::Texture3DD3D12::BufferData>::VersionedBuffer<struct NvFlex::Texture3DD3D12::BufferData>
+public: __cdecl NvFlex::VersionedBuffer<struct NvFlex::Texture3DD3D12::BufferData>::~VersionedBuffer<struct NvFlex::Texture3DD3D12::BufferData>
+public: __cdecl NvFlex::`anonymous namespace'::ComputeRootSignature::ComputeRootSignature
+public: __cdecl NvFlex::`anonymous namespace'::HeapPropsDefault::HeapPropsDefault
+public: __cdecl NvFlex::`anonymous namespace'::HeapPropsReadback::HeapPropsReadback
+public: __cdecl NvFlex::`anonymous namespace'::HeapPropsUpload::HeapPropsUpload
+public: __cdecl NvFlex::`anonymous namespace'::ResourceDescBuffer::ResourceDescBuffer
+public: __cdecl NvFlex::`anonymous namespace'::ResourceDescTexture3D::ResourceDescTexture3D
+public: __cdecl NvFlexBuffer::NvFlexBuffer
+public: __cdecl NvFlexBuffer::~NvFlexBuffer
+public: __cdecl NvFlexLibrary::NvFlexLibrary
+public: __cdecl NvFlexLibrary::~NvFlexLibrary
+public: __cdecl NvFlexObject::NvFlexObject
+public: __cdecl NvFlexSolver::NvFlexSolver
+public: __cdecl NvFlexSolver::~NvFlexSolver
+public: __cdecl NvResourceTracker::NvResourceTracker
+public: __cdecl NvResourceTracker::~NvResourceTracker
+public: __cdecl Replicator::Replicator
+public: __cdecl UnDecorator::UnDecorator
+public: __cdecl XVector3<float>::XVector3<float>
+public: __cdecl XVector4<float>::XVector4<float>
+public: __cdecl _HeapManager::Block::Block
+public: __cdecl _LocaleUpdate::_LocaleUpdate
+public: __cdecl _LocaleUpdate::~_LocaleUpdate
+public: __cdecl `anonymous namespace'::DxTimer::DxTimer
+public: __cdecl `anonymous namespace'::DxTimer::~DxTimer
+public: __cdecl `anonymous namespace'::DxTimers::DxTimers
+public: __cdecl `anonymous namespace'::NvtxTimer::NvtxTimer
+public: __cdecl `anonymous namespace'::NvtxTimer::~NvtxTimer
+public: __cdecl charNode::charNode
+public: __cdecl pDNameNode::pDNameNode
+public: __cdecl pairNode::pairNode
+public: __cdecl pcharNode::pcharNode
+public: __cdecl std::_Generic_error_category::_Generic_error_category
+public: __cdecl std::_Ignore::_Ignore
+public: __cdecl std::_Iostream_error_category::_Iostream_error_category
+public: __cdecl std::_String_alloc<0, struct std::_String_base_types<char, class std::allocator<char>>>::_String_alloc<0, struct std::_String_base_types<char, class std::allocator<char>>>
+public: __cdecl std::_String_alloc<0, struct std::_String_base_types<wchar_t, class std::allocator<wchar_t>>>::_String_alloc<0, struct std::_String_base_types<wchar_t, class std::allocator<wchar_t>>>
+public: __cdecl std::_String_const_iterator<class std::_String_val<struct std::_Simple_types<char>>>::_String_const_iterator<class std::_String_val<struct std::_Simple_types<char>>>
+public: __cdecl std::_String_iterator<class std::_String_val<struct std::_Simple_types<char>>>::_String_iterator<class std::_String_val<struct std::_Simple_types<char>>>
+public: __cdecl std::_String_val<struct std::_Simple_types<char>>::_String_val<struct std::_Simple_types<char>>
+public: __cdecl std::_String_val<struct std::_Simple_types<wchar_t>>::_String_val<struct std::_Simple_types<wchar_t>>
+public: __cdecl std::_System_error_category::_System_error_category
+public: __cdecl std::_Tree<class std::_Tmap_traits<char const *, int, struct NvFlex::ltstr, class std::allocator<struct std::pair<char const *const, int>>, 1>>::_Tree<class std::_Tmap_traits<char const *, int, struct NvFlex::ltstr, class std::allocator<struct std::pair<char const *const, int>>, 1>>
+public: __cdecl std::_Tree<class std::_Tmap_traits<char const *, int, struct NvFlex::ltstr, class std::allocator<struct std::pair<char const *const, int>>, 1>>::~_Tree<class std::_Tmap_traits<char const *, int, struct NvFlex::ltstr, class std::allocator<struct std::pair<char const *const, int>>, 1>>
+public: __cdecl std::_Tree<class std::_Tmap_traits<wchar_t const *, int, struct NvFlex::ltwstr, class std::allocator<struct std::pair<wchar_t const *const, int>>, 1>>::_Tree<class std::_Tmap_traits<wchar_t const *, int, struct NvFlex::ltwstr, class std::allocator<struct std::pair<wchar_t const *const, int>>, 1>>
+public: __cdecl std::_Tree<class std::_Tmap_traits<wchar_t const *, int, struct NvFlex::ltwstr, class std::allocator<struct std::pair<wchar_t const *const, int>>, 1>>::~_Tree<class std::_Tmap_traits<wchar_t const *, int, struct NvFlex::ltwstr, class std::allocator<struct std::pair<wchar_t const *const, int>>, 1>>
+public: __cdecl std::_Tree_alloc<0, struct std::_Tree_base_types<struct std::pair<char const *const, int>, class std::allocator<struct std::pair<char const *const, int>>>>::_Tree_alloc<0, struct std::_Tree_base_types<struct std::pair<char const *const, int>, class std::allocator<struct std::pair<char const *const, int>>>>
+public: __cdecl std::_Tree_alloc<0, struct std::_Tree_base_types<struct std::pair<char const *const, int>, class std::allocator<struct std::pair<char const *const, int>>>>::~_Tree_alloc<0, struct std::_Tree_base_types<struct std::pair<char const *const, int>, class std::allocator<struct std::pair<char const *const, int>>>>
+public: __cdecl std::_Tree_alloc<0, struct std::_Tree_base_types<struct std::pair<wchar_t const *const, int>, class std::allocator<struct std::pair<wchar_t const *const, int>>>>::_Tree_alloc<0, struct std::_Tree_base_types<struct std::pair<wchar_t const *const, int>, class std::allocator<struct std::pair<wchar_t const *const, int>>>>
+public: __cdecl std::_Tree_alloc<0, struct std::_Tree_base_types<struct std::pair<wchar_t const *const, int>, class std::allocator<struct std::pair<wchar_t const *const, int>>>>::~_Tree_alloc<0, struct std::_Tree_base_types<struct std::pair<wchar_t const *const, int>, class std::allocator<struct std::pair<wchar_t const *const, int>>>>
+public: __cdecl std::_Tree_buy<struct std::pair<char const *const, int>, class std::allocator<struct std::pair<char const *const, int>>>::_Tree_buy<struct std::pair<char const *const, int>, class std::allocator<struct std::pair<char const *const, int>>>
+public: __cdecl std::_Tree_buy<struct std::pair<char const *const, int>, class std::allocator<struct std::pair<char const *const, int>>>::~_Tree_buy<struct std::pair<char const *const, int>, class std::allocator<struct std::pair<char const *const, int>>>
+public: __cdecl std::_Tree_buy<struct std::pair<wchar_t const *const, int>, class std::allocator<struct std::pair<wchar_t const *const, int>>>::_Tree_buy<struct std::pair<wchar_t const *const, int>, class std::allocator<struct std::pair<wchar_t const *const, int>>>
+public: __cdecl std::_Tree_buy<struct std::pair<wchar_t const *const, int>, class std::allocator<struct std::pair<wchar_t const *const, int>>>::~_Tree_buy<struct std::pair<wchar_t const *const, int>, class std::allocator<struct std::pair<wchar_t const *const, int>>>
+public: __cdecl std::_Tree_comp<0, class std::_Tmap_traits<char const *, int, struct NvFlex::ltstr, class std::allocator<struct std::pair<char const *const, int>>, 1>>::_Tree_comp<0, class std::_Tmap_traits<char const *, int, struct NvFlex::ltstr, class std::allocator<struct std::pair<char const *const, int>>, 1>>
+public: __cdecl std::_Tree_comp<0, class std::_Tmap_traits<char const *, int, struct NvFlex::ltstr, class std::allocator<struct std::pair<char const *const, int>>, 1>>::~_Tree_comp<0, class std::_Tmap_traits<char const *, int, struct NvFlex::ltstr, class std::allocator<struct std::pair<char const *const, int>>, 1>>
+public: __cdecl std::_Tree_comp<0, class std::_Tmap_traits<wchar_t const *, int, struct NvFlex::ltwstr, class std::allocator<struct std::pair<wchar_t const *const, int>>, 1>>::_Tree_comp<0, class std::_Tmap_traits<wchar_t const *, int, struct NvFlex::ltwstr, class std::allocator<struct std::pair<wchar_t const *const, int>>, 1>>
+public: __cdecl std::_Tree_comp<0, class std::_Tmap_traits<wchar_t const *, int, struct NvFlex::ltwstr, class std::allocator<struct std::pair<wchar_t const *const, int>>, 1>>::~_Tree_comp<0, class std::_Tmap_traits<wchar_t const *, int, struct NvFlex::ltwstr, class std::allocator<struct std::pair<wchar_t const *const, int>>, 1>>
+public: __cdecl std::_Tree_const_iterator<class std::_Tree_val<struct std::_Tree_simple_types<struct std::pair<char const *const, int>>>>::_Tree_const_iterator<class std::_Tree_val<struct std::_Tree_simple_types<struct std::pair<char const *const, int>>>>
+public: __cdecl std::_Tree_const_iterator<class std::_Tree_val<struct std::_Tree_simple_types<struct std::pair<wchar_t const *const, int>>>>::_Tree_const_iterator<class std::_Tree_val<struct std::_Tree_simple_types<struct std::pair<wchar_t const *const, int>>>>
+public: __cdecl std::_Tree_iterator<class std::_Tree_val<struct std::_Tree_simple_types<struct std::pair<char const *const, int>>>>::_Tree_iterator<class std::_Tree_val<struct std::_Tree_simple_types<struct std::pair<char const *const, int>>>>
+public: __cdecl std::_Tree_iterator<class std::_Tree_val<struct std::_Tree_simple_types<struct std::pair<wchar_t const *const, int>>>>::_Tree_iterator<class std::_Tree_val<struct std::_Tree_simple_types<struct std::pair<wchar_t const *const, int>>>>
+public: __cdecl std::_Tree_unchecked_const_iterator<class std::_Tree_val<struct std::_Tree_simple_types<struct std::pair<char const *const, int>>>, struct std::_Iterator_base0>::_Tree_unchecked_const_iterator<class std::_Tree_val<struct std::_Tree_simple_types<struct std::pair<char const *const, int>>>, struct std::_Iterator_base0>
+public: __cdecl std::_Tree_unchecked_const_iterator<class std::_Tree_val<struct std::_Tree_simple_types<struct std::pair<wchar_t const *const, int>>>, struct std::_Iterator_base0>::_Tree_unchecked_const_iterator<class std::_Tree_val<struct std::_Tree_simple_types<struct std::pair<wchar_t const *const, int>>>, struct std::_Iterator_base0>
+public: __cdecl std::_Tree_val<struct std::_Tree_simple_types<struct std::pair<char const *const, int>>>::_Tree_val<struct std::_Tree_simple_types<struct std::pair<char const *const, int>>>
+public: __cdecl std::_Tree_val<struct std::_Tree_simple_types<struct std::pair<wchar_t const *const, int>>>::_Tree_val<struct std::_Tree_simple_types<struct std::pair<wchar_t const *const, int>>>
+public: __cdecl std::_Vector_alloc<0, struct std::_Vec_base_types<class XVector3<float>, class std::allocator<class XVector3<float>>>>::_Vector_alloc<0, struct std::_Vec_base_types<class XVector3<float>, class std::allocator<class XVector3<float>>>>
+public: __cdecl std::_Vector_alloc<0, struct std::_Vec_base_types<class XVector4<float>, class std::allocator<class XVector4<float>>>>::_Vector_alloc<0, struct std::_Vec_base_types<class XVector4<float>, class std::allocator<class XVector4<float>>>>
+public: __cdecl std::_Vector_alloc<0, struct std::_Vec_base_types<class std::basic_string<wchar_t, struct std::char_traits<wchar_t>, class std::allocator<wchar_t>>, class std::allocator<class std::basic_string<wchar_t, struct std::char_traits<wchar_t>, class std::allocator<wchar_t>>>>>::_Vector_alloc<0, struct std::_Vec_base_types<class std::basic_string<wchar_t, struct std::char_traits<wchar_t>, class std::allocator<wchar_t>>, class std::allocator<class std::basic_string<wchar_t, struct std::char_traits<wchar_t>, class std::allocator<wchar_t>>>>>
+public: __cdecl std::_Vector_alloc<0, struct std::_Vec_base_types<float, class std::allocator<float>>>::_Vector_alloc<0, struct std::_Vec_base_types<float, class std::allocator<float>>>
+public: __cdecl std::_Vector_alloc<0, struct std::_Vec_base_types<int, class std::allocator<int>>>::_Vector_alloc<0, struct std::_Vec_base_types<int, class std::allocator<int>>>
+public: __cdecl std::_Vector_alloc<0, struct std::_Vec_base_types<struct FlexInflatable, class std::allocator<struct FlexInflatable>>>::_Vector_alloc<0, struct std::_Vec_base_types<struct FlexInflatable, class std::allocator<struct FlexInflatable>>>
+public: __cdecl std::_Vector_alloc<0, struct std::_Vec_base_types<struct FlexSDFData *, class std::allocator<struct FlexSDFData *>>>::_Vector_alloc<0, struct std::_Vec_base_types<struct FlexSDFData *, class std::allocator<struct FlexSDFData *>>>
+public: __cdecl std::_Vector_alloc<0, struct std::_Vec_base_types<struct FlexTriangleMeshDevice, class std::allocator<struct FlexTriangleMeshDevice>>>::_Vector_alloc<0, struct std::_Vec_base_types<struct FlexTriangleMeshDevice, class std::allocator<struct FlexTriangleMeshDevice>>>
+public: __cdecl std::_Vector_alloc<0, struct std::_Vec_base_types<struct FlexTriangleMeshHost *, class std::allocator<struct FlexTriangleMeshHost *>>>::_Vector_alloc<0, struct std::_Vec_base_types<struct FlexTriangleMeshHost *, class std::allocator<struct FlexTriangleMeshHost *>>>
+public: __cdecl std::_Vector_alloc<0, struct std::_Vec_base_types<struct IDXGIAdapter1 *, class std::allocator<struct IDXGIAdapter1 *>>>::_Vector_alloc<0, struct std::_Vec_base_types<struct IDXGIAdapter1 *, class std::allocator<struct IDXGIAdapter1 *>>>
+public: __cdecl std::_Vector_alloc<0, struct std::_Vec_base_types<struct NvFlex::Texture3D *, class std::allocator<struct NvFlex::Texture3D *>>>::_Vector_alloc<0, struct std::_Vec_base_types<struct NvFlex::Texture3D *, class std::allocator<struct NvFlex::Texture3D *>>>
+public: __cdecl std::_Vector_alloc<0, struct std::_Vec_base_types<struct NvFlex::TimerD3D11 *, class std::allocator<struct NvFlex::TimerD3D11 *>>>::_Vector_alloc<0, struct std::_Vec_base_types<struct NvFlex::TimerD3D11 *, class std::allocator<struct NvFlex::TimerD3D11 *>>>
+public: __cdecl std::_Vector_alloc<0, struct std::_Vec_base_types<struct NvFlexSolver *, class std::allocator<struct NvFlexSolver *>>>::_Vector_alloc<0, struct std::_Vec_base_types<struct NvFlexSolver *, class std::allocator<struct NvFlexSolver *>>>
+public: __cdecl std::_Vector_alloc<0, struct std::_Vec_base_types<unsigned __int64, class std::allocator<unsigned __int64>>>::_Vector_alloc<0, struct std::_Vec_base_types<unsigned __int64, class std::allocator<unsigned __int64>>>
+public: __cdecl std::_Vector_alloc<0, struct std::_Vec_base_types<unsigned int, class std::allocator<unsigned int>>>::_Vector_alloc<0, struct std::_Vec_base_types<unsigned int, class std::allocator<unsigned int>>>
+public: __cdecl std::_Vector_const_iterator<class std::_Vector_val<struct std::_Simple_types<struct NvFlexSolver *>>>::_Vector_const_iterator<class std::_Vector_val<struct std::_Simple_types<struct NvFlexSolver *>>>
+public: __cdecl std::_Vector_const_iterator<class std::_Vector_val<struct std::_Simple_types<unsigned int>>>::_Vector_const_iterator<class std::_Vector_val<struct std::_Simple_types<unsigned int>>>
+public: __cdecl std::_Vector_iterator<class std::_Vector_val<struct std::_Simple_types<struct NvFlexSolver *>>>::_Vector_iterator<class std::_Vector_val<struct std::_Simple_types<struct NvFlexSolver *>>>
+public: __cdecl std::_Vector_iterator<class std::_Vector_val<struct std::_Simple_types<unsigned int>>>::_Vector_iterator<class std::_Vector_val<struct std::_Simple_types<unsigned int>>>
+public: __cdecl std::_Vector_val<struct std::_Simple_types<class XVector3<float>>>::_Vector_val<struct std::_Simple_types<class XVector3<float>>>
+public: __cdecl std::_Vector_val<struct std::_Simple_types<class XVector4<float>>>::_Vector_val<struct std::_Simple_types<class XVector4<float>>>
+public: __cdecl std::_Vector_val<struct std::_Simple_types<class std::basic_string<wchar_t, struct std::char_traits<wchar_t>, class std::allocator<wchar_t>>>>::_Vector_val<struct std::_Simple_types<class std::basic_string<wchar_t, struct std::char_traits<wchar_t>, class std::allocator<wchar_t>>>>
+public: __cdecl std::_Vector_val<struct std::_Simple_types<float>>::_Vector_val<struct std::_Simple_types<float>>
+public: __cdecl std::_Vector_val<struct std::_Simple_types<int>>::_Vector_val<struct std::_Simple_types<int>>
+public: __cdecl std::_Vector_val<struct std::_Simple_types<struct FlexInflatable>>::_Vector_val<struct std::_Simple_types<struct FlexInflatable>>
+public: __cdecl std::_Vector_val<struct std::_Simple_types<struct FlexSDFData *>>::_Vector_val<struct std::_Simple_types<struct FlexSDFData *>>
+public: __cdecl std::_Vector_val<struct std::_Simple_types<struct FlexTriangleMeshDevice>>::_Vector_val<struct std::_Simple_types<struct FlexTriangleMeshDevice>>
+public: __cdecl std::_Vector_val<struct std::_Simple_types<struct FlexTriangleMeshHost *>>::_Vector_val<struct std::_Simple_types<struct FlexTriangleMeshHost *>>
+public: __cdecl std::_Vector_val<struct std::_Simple_types<struct IDXGIAdapter1 *>>::_Vector_val<struct std::_Simple_types<struct IDXGIAdapter1 *>>
+public: __cdecl std::_Vector_val<struct std::_Simple_types<struct NvFlex::Texture3D *>>::_Vector_val<struct std::_Simple_types<struct NvFlex::Texture3D *>>
+public: __cdecl std::_Vector_val<struct std::_Simple_types<struct NvFlex::TimerD3D11 *>>::_Vector_val<struct std::_Simple_types<struct NvFlex::TimerD3D11 *>>
+public: __cdecl std::_Vector_val<struct std::_Simple_types<struct NvFlexSolver *>>::_Vector_val<struct std::_Simple_types<struct NvFlexSolver *>>
+public: __cdecl std::_Vector_val<struct std::_Simple_types<unsigned __int64>>::_Vector_val<struct std::_Simple_types<unsigned __int64>>
+public: __cdecl std::_Vector_val<struct std::_Simple_types<unsigned int>>::_Vector_val<struct std::_Simple_types<unsigned int>>
+public: __cdecl std::_Wrap_alloc<class std::allocator<char>>::_Wrap_alloc<class std::allocator<char>>
+public: __cdecl std::_Wrap_alloc<class std::allocator<class XVector3<float>>>::_Wrap_alloc<class std::allocator<class XVector3<float>>>
+public: __cdecl std::_Wrap_alloc<class std::allocator<class XVector4<float>>>::_Wrap_alloc<class std::allocator<class XVector4<float>>>
+public: __cdecl std::_Wrap_alloc<class std::allocator<class std::basic_string<wchar_t, struct std::char_traits<wchar_t>, class std::allocator<wchar_t>>>>::_Wrap_alloc<class std::allocator<class std::basic_string<wchar_t, struct std::char_traits<wchar_t>, class std::allocator<wchar_t>>>>
+public: __cdecl std::_Wrap_alloc<class std::allocator<float>>::_Wrap_alloc<class std::allocator<float>>
+public: __cdecl std::_Wrap_alloc<class std::allocator<int>>::_Wrap_alloc<class std::allocator<int>>
+public: __cdecl std::_Wrap_alloc<class std::allocator<struct FlexInflatable>>::_Wrap_alloc<class std::allocator<struct FlexInflatable>>
+public: __cdecl std::_Wrap_alloc<class std::allocator<struct FlexSDFData *>>::_Wrap_alloc<class std::allocator<struct FlexSDFData *>>
+public: __cdecl std::_Wrap_alloc<class std::allocator<struct FlexTriangleMeshDevice>>::_Wrap_alloc<class std::allocator<struct FlexTriangleMeshDevice>>
+public: __cdecl std::_Wrap_alloc<class std::allocator<struct FlexTriangleMeshHost *>>::_Wrap_alloc<class std::allocator<struct FlexTriangleMeshHost *>>
+public: __cdecl std::_Wrap_alloc<class std::allocator<struct IDXGIAdapter1 *>>::_Wrap_alloc<class std::allocator<struct IDXGIAdapter1 *>>
+public: __cdecl std::_Wrap_alloc<class std::allocator<struct NvFlex::Texture3D *>>::_Wrap_alloc<class std::allocator<struct NvFlex::Texture3D *>>
+public: __cdecl std::_Wrap_alloc<class std::allocator<struct NvFlex::TimerD3D11 *>>::_Wrap_alloc<class std::allocator<struct NvFlex::TimerD3D11 *>>
+public: __cdecl std::_Wrap_alloc<class std::allocator<struct NvFlexSolver *>>::_Wrap_alloc<class std::allocator<struct NvFlexSolver *>>
+public: __cdecl std::_Wrap_alloc<class std::allocator<struct std::_Tree_node<struct std::pair<char const *const, int>, void *>>>::_Wrap_alloc<class std::allocator<struct std::_Tree_node<struct std::pair<char const *const, int>, void *>>>
+public: __cdecl std::_Wrap_alloc<class std::allocator<struct std::_Tree_node<struct std::pair<wchar_t const *const, int>, void *>>>::_Wrap_alloc<class std::allocator<struct std::_Tree_node<struct std::pair<wchar_t const *const, int>, void *>>>
+public: __cdecl std::_Wrap_alloc<class std::allocator<unsigned __int64>>::_Wrap_alloc<class std::allocator<unsigned __int64>>
+public: __cdecl std::_Wrap_alloc<class std::allocator<unsigned int>>::_Wrap_alloc<class std::allocator<unsigned int>>
+public: __cdecl std::_Wrap_alloc<class std::allocator<wchar_t>>::_Wrap_alloc<class std::allocator<wchar_t>>
+public: __cdecl std::__non_rtti_object::__non_rtti_object
+public: __cdecl std::allocator<char>::allocator<char>
+public: __cdecl std::allocator<class XVector3<float>>::allocator<class XVector3<float>>
+public: __cdecl std::allocator<class XVector4<float>>::allocator<class XVector4<float>>
+public: __cdecl std::allocator<class std::basic_string<wchar_t, struct std::char_traits<wchar_t>, class std::allocator<wchar_t>>>::allocator<class std::basic_string<wchar_t, struct std::char_traits<wchar_t>, class std::allocator<wchar_t>>>
+public: __cdecl std::allocator<float>::allocator<float>
+public: __cdecl std::allocator<int>::allocator<int>
+public: __cdecl std::allocator<struct FlexInflatable>::allocator<struct FlexInflatable>
+public: __cdecl std::allocator<struct FlexSDFData *>::allocator<struct FlexSDFData *>
+public: __cdecl std::allocator<struct FlexTriangleMeshDevice>::allocator<struct FlexTriangleMeshDevice>
+public: __cdecl std::allocator<struct FlexTriangleMeshHost *>::allocator<struct FlexTriangleMeshHost *>
+public: __cdecl std::allocator<struct IDXGIAdapter1 *>::allocator<struct IDXGIAdapter1 *>
+public: __cdecl std::allocator<struct NvFlex::Texture3D *>::allocator<struct NvFlex::Texture3D *>
+public: __cdecl std::allocator<struct NvFlex::TimerD3D11 *>::allocator<struct NvFlex::TimerD3D11 *>
+public: __cdecl std::allocator<struct NvFlexSolver *>::allocator<struct NvFlexSolver *>
+public: __cdecl std::allocator<struct std::_Tree_node<struct std::pair<char const *const, int>, void *>>::allocator<struct std::_Tree_node<struct std::pair<char const *const, int>, void *>>
+public: __cdecl std::allocator<struct std::_Tree_node<struct std::pair<wchar_t const *const, int>, void *>>::allocator<struct std::_Tree_node<struct std::pair<wchar_t const *const, int>, void *>>
+public: __cdecl std::allocator<struct std::pair<char const *const, int>>::allocator<struct std::pair<char const *const, int>>
+public: __cdecl std::allocator<struct std::pair<wchar_t const *const, int>>::allocator<struct std::pair<wchar_t const *const, int>>
+public: __cdecl std::allocator<unsigned __int64>::allocator<unsigned __int64>
+public: __cdecl std::allocator<unsigned int>::allocator<unsigned int>
+public: __cdecl std::allocator<wchar_t>::allocator<wchar_t>
+public: __cdecl std::atomic<unsigned int>::atomic<unsigned int>
+public: __cdecl std::bad_alloc::bad_alloc
+public: __cdecl std::bad_cast::bad_cast
+public: __cdecl std::bad_exception::bad_exception
+public: __cdecl std::bad_function_call::bad_function_call
+public: __cdecl std::bad_typeid::bad_typeid
+public: __cdecl std::basic_string<char, struct std::char_traits<char>, class std::allocator<char>>::basic_string<char, struct std::char_traits<char>, class std::allocator<char>>
+public: __cdecl std::basic_string<char, struct std::char_traits<char>, class std::allocator<char>>::~basic_string<char, struct std::char_traits<char>, class std::allocator<char>>
+public: __cdecl std::basic_string<wchar_t, struct std::char_traits<wchar_t>, class std::allocator<wchar_t>>::basic_string<wchar_t, struct std::char_traits<wchar_t>, class std::allocator<wchar_t>>
+public: __cdecl std::basic_string<wchar_t, struct std::char_traits<wchar_t>, class std::allocator<wchar_t>>::~basic_string<wchar_t, struct std::char_traits<wchar_t>, class std::allocator<wchar_t>>
+public: __cdecl std::error_category::error_category
+public: __cdecl std::error_condition::error_condition
+public: __cdecl std::exception::exception
+public: __cdecl std::invalid_argument::invalid_argument
+public: __cdecl std::length_error::length_error
+public: __cdecl std::locale::id::id
+public: __cdecl std::logic_error::logic_error
+public: __cdecl std::multimap<char const *, int, struct NvFlex::ltstr, class std::allocator<struct std::pair<char const *const, int>>>::multimap<char const *, int, struct NvFlex::ltstr, class std::allocator<struct std::pair<char const *const, int>>>
+public: __cdecl std::multimap<char const *, int, struct NvFlex::ltstr, class std::allocator<struct std::pair<char const *const, int>>>::~multimap<char const *, int, struct NvFlex::ltstr, class std::allocator<struct std::pair<char const *const, int>>>
+public: __cdecl std::multimap<wchar_t const *, int, struct NvFlex::ltwstr, class std::allocator<struct std::pair<wchar_t const *const, int>>>::multimap<wchar_t const *, int, struct NvFlex::ltwstr, class std::allocator<struct std::pair<wchar_t const *const, int>>>
+public: __cdecl std::multimap<wchar_t const *, int, struct NvFlex::ltwstr, class std::allocator<struct std::pair<wchar_t const *const, int>>>::~multimap<wchar_t const *, int, struct NvFlex::ltwstr, class std::allocator<struct std::pair<wchar_t const *const, int>>>
+public: __cdecl std::out_of_range::out_of_range
+public: __cdecl std::overflow_error::overflow_error
+public: __cdecl std::pair<class std::_Tree_iterator<class std::_Tree_val<struct std::_Tree_simple_types<struct std::pair<char const *const, int>>>>, class std::_Tree_iterator<class std::_Tree_val<struct std::_Tree_simple_types<struct std::pair<char const *const, int>>>>>::pair<class std::_Tree_iterator<class std::_Tree_val<struct std::_Tree_simple_types<struct std::pair<char const *const, int>>>>, class std::_Tree_iterator<class std::_Tree_val<struct std::_Tree_simple_types<struct std::pair<char const *const, int>>>>><class std::_Tree_iterator<class std::_Tree_val<struct std::_Tree_simple_types<struct std::pair<char const *const, int>>>> &, class std::_Tree_iterator<class std::_Tree_val<struct std::_Tree_simple_types<struct std::pair<char const *const, int>>>> &, void>
+public: __cdecl std::pair<class std::_Tree_iterator<class std::_Tree_val<struct std::_Tree_simple_types<struct std::pair<wchar_t const *const, int>>>>, bool>::pair<class std::_Tree_iterator<class std::_Tree_val<struct std::_Tree_simple_types<struct std::pair<wchar_t const *const, int>>>>, bool><class std::_Tree_iterator<class std::_Tree_val<struct std::_Tree_simple_types<struct std::pair<wchar_t const *const, int>>>> &, bool, void>
+public: __cdecl std::pair<class std::_Tree_iterator<class std::_Tree_val<struct std::_Tree_simple_types<struct std::pair<wchar_t const *const, int>>>>, bool>::pair<class std::_Tree_iterator<class std::_Tree_val<struct std::_Tree_simple_types<struct std::pair<wchar_t const *const, int>>>>, bool><class std::_Tree_iterator<class std::_Tree_val<struct std::_Tree_simple_types<struct std::pair<wchar_t const *const, int>>>>, bool, void>
+public: __cdecl std::pair<class std::_Tree_iterator<class std::_Tree_val<struct std::_Tree_simple_types<struct std::pair<wchar_t const *const, int>>>>, class std::_Tree_iterator<class std::_Tree_val<struct std::_Tree_simple_types<struct std::pair<wchar_t const *const, int>>>>>::pair<class std::_Tree_iterator<class std::_Tree_val<struct std::_Tree_simple_types<struct std::pair<wchar_t const *const, int>>>>, class std::_Tree_iterator<class std::_Tree_val<struct std::_Tree_simple_types<struct std::pair<wchar_t const *const, int>>>>><class std::_Tree_iterator<class std::_Tree_val<struct std::_Tree_simple_types<struct std::pair<wchar_t const *const, int>>>> &, class std::_Tree_iterator<class std::_Tree_val<struct std::_Tree_simple_types<struct std::pair<wchar_t const *const, int>>>> &, void>
+public: __cdecl std::pair<wchar_t const *, int>::pair<wchar_t const *, int><wchar_t const *&, int &, void>
+public: __cdecl std::pair<wchar_t const *const, int>::pair<wchar_t const *const, int><wchar_t const *, int, void>
+public: __cdecl std::regex_error::regex_error
+public: __cdecl std::runtime_error::runtime_error
+public: __cdecl std::vector<class XVector3<float>, class std::allocator<class XVector3<float>>>::vector<class XVector3<float>, class std::allocator<class XVector3<float>>>
+public: __cdecl std::vector<class XVector3<float>, class std::allocator<class XVector3<float>>>::~vector<class XVector3<float>, class std::allocator<class XVector3<float>>>
+public: __cdecl std::vector<class XVector4<float>, class std::allocator<class XVector4<float>>>::vector<class XVector4<float>, class std::allocator<class XVector4<float>>>
+public: __cdecl std::vector<class XVector4<float>, class std::allocator<class XVector4<float>>>::~vector<class XVector4<float>, class std::allocator<class XVector4<float>>>
+public: __cdecl std::vector<class std::basic_string<wchar_t, struct std::char_traits<wchar_t>, class std::allocator<wchar_t>>, class std::allocator<class std::basic_string<wchar_t, struct std::char_traits<wchar_t>, class std::allocator<wchar_t>>>>::vector<class std::basic_string<wchar_t, struct std::char_traits<wchar_t>, class std::allocator<wchar_t>>, class std::allocator<class std::basic_string<wchar_t, struct std::char_traits<wchar_t>, class std::allocator<wchar_t>>>>
+public: __cdecl std::vector<class std::basic_string<wchar_t, struct std::char_traits<wchar_t>, class std::allocator<wchar_t>>, class std::allocator<class std::basic_string<wchar_t, struct std::char_traits<wchar_t>, class std::allocator<wchar_t>>>>::~vector<class std::basic_string<wchar_t, struct std::char_traits<wchar_t>, class std::allocator<wchar_t>>, class std::allocator<class std::basic_string<wchar_t, struct std::char_traits<wchar_t>, class std::allocator<wchar_t>>>>
+public: __cdecl std::vector<float, class std::allocator<float>>::vector<float, class std::allocator<float>>
+public: __cdecl std::vector<float, class std::allocator<float>>::~vector<float, class std::allocator<float>>
+public: __cdecl std::vector<int, class std::allocator<int>>::vector<int, class std::allocator<int>>
+public: __cdecl std::vector<int, class std::allocator<int>>::~vector<int, class std::allocator<int>>
+public: __cdecl std::vector<struct FlexInflatable, class std::allocator<struct FlexInflatable>>::vector<struct FlexInflatable, class std::allocator<struct FlexInflatable>>
+public: __cdecl std::vector<struct FlexInflatable, class std::allocator<struct FlexInflatable>>::~vector<struct FlexInflatable, class std::allocator<struct FlexInflatable>>
+public: __cdecl std::vector<struct FlexSDFData *, class std::allocator<struct FlexSDFData *>>::vector<struct FlexSDFData *, class std::allocator<struct FlexSDFData *>>
+public: __cdecl std::vector<struct FlexSDFData *, class std::allocator<struct FlexSDFData *>>::~vector<struct FlexSDFData *, class std::allocator<struct FlexSDFData *>>
+public: __cdecl std::vector<struct FlexTriangleMeshDevice, class std::allocator<struct FlexTriangleMeshDevice>>::vector<struct FlexTriangleMeshDevice, class std::allocator<struct FlexTriangleMeshDevice>>
+public: __cdecl std::vector<struct FlexTriangleMeshDevice, class std::allocator<struct FlexTriangleMeshDevice>>::~vector<struct FlexTriangleMeshDevice, class std::allocator<struct FlexTriangleMeshDevice>>
+public: __cdecl std::vector<struct FlexTriangleMeshHost *, class std::allocator<struct FlexTriangleMeshHost *>>::vector<struct FlexTriangleMeshHost *, class std::allocator<struct FlexTriangleMeshHost *>>
+public: __cdecl std::vector<struct FlexTriangleMeshHost *, class std::allocator<struct FlexTriangleMeshHost *>>::~vector<struct FlexTriangleMeshHost *, class std::allocator<struct FlexTriangleMeshHost *>>
+public: __cdecl std::vector<struct IDXGIAdapter1 *, class std::allocator<struct IDXGIAdapter1 *>>::vector<struct IDXGIAdapter1 *, class std::allocator<struct IDXGIAdapter1 *>>
+public: __cdecl std::vector<struct IDXGIAdapter1 *, class std::allocator<struct IDXGIAdapter1 *>>::~vector<struct IDXGIAdapter1 *, class std::allocator<struct IDXGIAdapter1 *>>
+public: __cdecl std::vector<struct NvFlex::Texture3D *, class std::allocator<struct NvFlex::Texture3D *>>::vector<struct NvFlex::Texture3D *, class std::allocator<struct NvFlex::Texture3D *>>
+public: __cdecl std::vector<struct NvFlex::Texture3D *, class std::allocator<struct NvFlex::Texture3D *>>::~vector<struct NvFlex::Texture3D *, class std::allocator<struct NvFlex::Texture3D *>>
+public: __cdecl std::vector<struct NvFlex::TimerD3D11 *, class std::allocator<struct NvFlex::TimerD3D11 *>>::vector<struct NvFlex::TimerD3D11 *, class std::allocator<struct NvFlex::TimerD3D11 *>>
+public: __cdecl std::vector<struct NvFlex::TimerD3D11 *, class std::allocator<struct NvFlex::TimerD3D11 *>>::~vector<struct NvFlex::TimerD3D11 *, class std::allocator<struct NvFlex::TimerD3D11 *>>
+public: __cdecl std::vector<struct NvFlexSolver *, class std::allocator<struct NvFlexSolver *>>::vector<struct NvFlexSolver *, class std::allocator<struct NvFlexSolver *>>
+public: __cdecl std::vector<struct NvFlexSolver *, class std::allocator<struct NvFlexSolver *>>::~vector<struct NvFlexSolver *, class std::allocator<struct NvFlexSolver *>>
+public: __cdecl std::vector<unsigned __int64, class std::allocator<unsigned __int64>>::vector<unsigned __int64, class std::allocator<unsigned __int64>>
+public: __cdecl std::vector<unsigned __int64, class std::allocator<unsigned __int64>>::~vector<unsigned __int64, class std::allocator<unsigned __int64>>
+public: __cdecl std::vector<unsigned int, class std::allocator<unsigned int>>::vector<unsigned int, class std::allocator<unsigned int>>
+public: __cdecl std::vector<unsigned int, class std::allocator<unsigned int>>::~vector<unsigned int, class std::allocator<unsigned int>>
+public: __int64 __cdecl std::_String_const_iterator<class std::_String_val<struct std::_Simple_types<char>>>::operator-
+public: bool __cdecl NvFlex::ltstr::operator
+public: bool __cdecl NvFlex::ltwstr::operator
+public: bool __cdecl std::_Tree_const_iterator<class std::_Tree_val<struct std::_Tree_simple_types<struct std::pair<char const *const, int>>>>::operator!=
+public: bool __cdecl std::_Tree_const_iterator<class std::_Tree_val<struct std::_Tree_simple_types<struct std::pair<char const *const, int>>>>::operator==
+public: bool __cdecl std::_Tree_const_iterator<class std::_Tree_val<struct std::_Tree_simple_types<struct std::pair<wchar_t const *const, int>>>>::operator!=
+public: bool __cdecl std::_Tree_const_iterator<class std::_Tree_val<struct std::_Tree_simple_types<struct std::pair<wchar_t const *const, int>>>>::operator==
+public: bool __cdecl std::_Vector_const_iterator<class std::_Vector_val<struct std::_Simple_types<struct NvFlexSolver *>>>::operator!=
+public: bool __cdecl std::_Vector_const_iterator<class std::_Vector_val<struct std::_Simple_types<struct NvFlexSolver *>>>::operator==
+public: bool __cdecl std::_Vector_const_iterator<class std::_Vector_val<struct std::_Simple_types<unsigned int>>>::operator!=
+public: bool __cdecl std::_Vector_const_iterator<class std::_Vector_val<struct std::_Simple_types<unsigned int>>>::operator==
+public: bool __cdecl std::error_category::operator==
+public: bool __cdecl std::error_condition::operator==
+public: bool __cdecl type_info::operator!=
+public: bool __cdecl type_info::operator==
+public: char & __cdecl std::basic_string<char, struct std::char_traits<char>, class std::allocator<char>>::operator[]
+public: char * __cdecl UnDecorator::operator char *
+public: class DName & __cdecl DName::operator+=
+public: class DName & __cdecl DName::operator=
+public: class DName & __cdecl DName::operator|=
+public: class DName __cdecl DName::operator+
+public: class DName __cdecl Replicator::operator[]
+public: class Replicator & __cdecl Replicator::operator+=
+public: class XVector3<float> & __cdecl XVector3<float>::operator+=
+public: class XVector3<float> & __cdecl XVector3<float>::operator-=
+public: class XVector3<float> & __cdecl std::vector<class XVector3<float>, class std::allocator<class XVector3<float>>>::operator[]
+public: class XVector3<float> __cdecl XVector3<float>::operator-
+public: class XVector4<float> & __cdecl std::vector<class XVector4<float>, class std::allocator<class XVector4<float>>>::operator[]
+public: class std::_String_const_iterator<class std::_String_val<struct std::_Simple_types<char>>> & __cdecl std::_String_const_iterator<class std::_String_val<struct std::_Simple_types<char>>>::operator+=
+public: class std::_String_iterator<class std::_String_val<struct std::_Simple_types<char>>> & __cdecl std::_String_iterator<class std::_String_val<struct std::_Simple_types<char>>>::operator+=
+public: class std::_String_iterator<class std::_String_val<struct std::_Simple_types<char>>> __cdecl std::_String_iterator<class std::_String_val<struct std::_Simple_types<char>>>::operator+
+public: class std::_Tree_const_iterator<class std::_Tree_val<struct std::_Tree_simple_types<struct std::pair<char const *const, int>>>> & __cdecl std::_Tree_const_iterator<class std::_Tree_val<struct std::_Tree_simple_types<struct std::pair<char const *const, int>>>>::operator++
+public: class std::_Tree_const_iterator<class std::_Tree_val<struct std::_Tree_simple_types<struct std::pair<char const *const, int>>>> __cdecl std::_Tree_const_iterator<class std::_Tree_val<struct std::_Tree_simple_types<struct std::pair<char const *const, int>>>>::operator++
+public: class std::_Tree_const_iterator<class std::_Tree_val<struct std::_Tree_simple_types<struct std::pair<wchar_t const *const, int>>>> & __cdecl std::_Tree_const_iterator<class std::_Tree_val<struct std::_Tree_simple_types<struct std::pair<wchar_t const *const, int>>>>::operator++
+public: class std::_Tree_const_iterator<class std::_Tree_val<struct std::_Tree_simple_types<struct std::pair<wchar_t const *const, int>>>> & __cdecl std::_Tree_const_iterator<class std::_Tree_val<struct std::_Tree_simple_types<struct std::pair<wchar_t const *const, int>>>>::operator--
+public: class std::_Tree_const_iterator<class std::_Tree_val<struct std::_Tree_simple_types<struct std::pair<wchar_t const *const, int>>>> __cdecl std::_Tree_const_iterator<class std::_Tree_val<struct std::_Tree_simple_types<struct std::pair<wchar_t const *const, int>>>>::operator++
+public: class std::_Tree_iterator<class std::_Tree_val<struct std::_Tree_simple_types<struct std::pair<char const *const, int>>>> & __cdecl std::_Tree_iterator<class std::_Tree_val<struct std::_Tree_simple_types<struct std::pair<char const *const, int>>>>::operator++
+public: class std::_Tree_iterator<class std::_Tree_val<struct std::_Tree_simple_types<struct std::pair<wchar_t const *const, int>>>> & __cdecl std::_Tree_iterator<class std::_Tree_val<struct std::_Tree_simple_types<struct std::pair<wchar_t const *const, int>>>>::operator++
+public: class std::_Tree_iterator<class std::_Tree_val<struct std::_Tree_simple_types<struct std::pair<wchar_t const *const, int>>>> & __cdecl std::_Tree_iterator<class std::_Tree_val<struct std::_Tree_simple_types<struct std::pair<wchar_t const *const, int>>>>::operator--
+public: class std::_Tree_iterator<class std::_Tree_val<struct std::_Tree_simple_types<struct std::pair<wchar_t const *const, int>>>> __cdecl std::multimap<wchar_t const *, int, struct NvFlex::ltwstr, class std::allocator<struct std::pair<wchar_t const *const, int>>>::insert<struct std::pair<wchar_t const *, int>>
+public: class std::_Tree_unchecked_const_iterator<class std::_Tree_val<struct std::_Tree_simple_types<struct std::pair<char const *const, int>>>, struct std::_Iterator_base0> & __cdecl std::_Tree_unchecked_const_iterator<class std::_Tree_val<struct std::_Tree_simple_types<struct std::pair<char const *const, int>>>, struct std::_Iterator_base0>::operator++
+public: class std::_Tree_unchecked_const_iterator<class std::_Tree_val<struct std::_Tree_simple_types<struct std::pair<wchar_t const *const, int>>>, struct std::_Iterator_base0> & __cdecl std::_Tree_unchecked_const_iterator<class std::_Tree_val<struct std::_Tree_simple_types<struct std::pair<wchar_t const *const, int>>>, struct std::_Iterator_base0>::operator++
+public: class std::_Tree_unchecked_const_iterator<class std::_Tree_val<struct std::_Tree_simple_types<struct std::pair<wchar_t const *const, int>>>, struct std::_Iterator_base0> & __cdecl std::_Tree_unchecked_const_iterator<class std::_Tree_val<struct std::_Tree_simple_types<struct std::pair<wchar_t const *const, int>>>, struct std::_Iterator_base0>::operator--
+public: class std::basic_string<wchar_t, struct std::char_traits<wchar_t>, class std::allocator<wchar_t>> & __cdecl std::vector<class std::basic_string<wchar_t, struct std::char_traits<wchar_t>, class std::allocator<wchar_t>>, class std::allocator<class std::basic_string<wchar_t, struct std::char_traits<wchar_t>, class std::allocator<wchar_t>>>>::operator[]
+public: class std::exception & __cdecl std::exception::operator=
+public: float & __cdecl std::vector<float, class std::allocator<float>>::operator[]
+public: int & __cdecl std::vector<int, class std::allocator<int>>::operator[]
+public: static char const *const & __cdecl std::_Tmap_traits<char const *, int, struct NvFlex::ltstr, class std::allocator<struct std::pair<char const *const, int>>, 1>::_Kfn<char const *const, int>
+public: static void * __cdecl NvFlex::Allocable::operator new
+public: static void __cdecl NvFlex::Allocable::operator delete
+public: static void __cdecl NvFlex::RadixSortImpl::swap<struct NvFlex::RadixSortImpl::Counter>
+public: static void __cdecl NvFlex::RadixSortImpl::swap<struct NvFlex::RadixSortImpl::Side>
+public: static void __cdecl std::allocator_traits<class std::allocator<char>>::construct<char *, char *&>
+public: static void __cdecl std::allocator_traits<class std::allocator<char>>::destroy<char *>
+public: static void __cdecl std::allocator_traits<class std::allocator<class XVector3<float>>>::construct<class XVector3<float>>
+public: static void __cdecl std::allocator_traits<class std::allocator<class XVector3<float>>>::destroy<class XVector3<float>>
+public: static void __cdecl std::allocator_traits<class std::allocator<class XVector4<float>>>::construct<class XVector4<float>, class XVector4<float> const &>
+public: static void __cdecl std::allocator_traits<class std::allocator<class XVector4<float>>>::destroy<class XVector4<float>>
+public: static void __cdecl std::allocator_traits<class std::allocator<class std::basic_string<wchar_t, struct std::char_traits<wchar_t>, class std::allocator<wchar_t>>>>::construct<class std::basic_string<wchar_t, struct std::char_traits<wchar_t>, class std::allocator<wchar_t>>, class std::basic_string<wchar_t, struct std::char_traits<wchar_t>, class std::allocator<wchar_t>>>
+public: static void __cdecl std::allocator_traits<class std::allocator<class std::basic_string<wchar_t, struct std::char_traits<wchar_t>, class std::allocator<wchar_t>>>>::destroy<class std::basic_string<wchar_t, struct std::char_traits<wchar_t>, class std::allocator<wchar_t>>>
+public: static void __cdecl std::allocator_traits<class std::allocator<float>>::construct<float, float &>
+public: static void __cdecl std::allocator_traits<class std::allocator<float>>::construct<float, float const &>
+public: static void __cdecl std::allocator_traits<class std::allocator<int>>::construct<int, int &>
+public: static void __cdecl std::allocator_traits<class std::allocator<int>>::construct<int, int const &>
+public: static void __cdecl std::allocator_traits<class std::allocator<struct FlexInflatable>>::construct<struct FlexInflatable>
+public: static void __cdecl std::allocator_traits<class std::allocator<struct FlexInflatable>>::destroy<struct FlexInflatable>
+public: static void __cdecl std::allocator_traits<class std::allocator<struct FlexTriangleMeshDevice>>::construct<struct FlexTriangleMeshDevice>
+public: static void __cdecl std::allocator_traits<class std::allocator<struct FlexTriangleMeshDevice>>::destroy<struct FlexTriangleMeshDevice>
+public: static void __cdecl std::allocator_traits<class std::allocator<struct FlexTriangleMeshHost *>>::construct<struct FlexTriangleMeshHost *, struct FlexTriangleMeshHost *&>
+public: static void __cdecl std::allocator_traits<class std::allocator<struct FlexTriangleMeshHost *>>::construct<struct FlexTriangleMeshHost *, struct FlexTriangleMeshHost *const &>
+public: static void __cdecl std::allocator_traits<class std::allocator<struct IDXGIAdapter1 *>>::construct<struct IDXGIAdapter1 *, struct IDXGIAdapter1 *&>
+public: static void __cdecl std::allocator_traits<class std::allocator<struct IDXGIAdapter1 *>>::construct<struct IDXGIAdapter1 *, struct IDXGIAdapter1 *const &>
+public: static void __cdecl std::allocator_traits<class std::allocator<struct NvFlexSolver *>>::construct<struct NvFlexSolver *, struct NvFlexSolver *>
+public: static void __cdecl std::allocator_traits<class std::allocator<struct std::_Tree_node<struct std::pair<char const *const, int>, void *>>>::construct<struct std::_Tree_node<struct std::pair<char const *const, int>, void *> *, struct std::_Tree_node<struct std::pair<char const *const, int>, void *> *&>
+public: static void __cdecl std::allocator_traits<class std::allocator<struct std::_Tree_node<struct std::pair<char const *const, int>, void *>>>::destroy<struct std::_Tree_node<struct std::pair<char const *const, int>, void *> *>
+public: static void __cdecl std::allocator_traits<class std::allocator<struct std::_Tree_node<struct std::pair<char const *const, int>, void *>>>::destroy<struct std::pair<char const *const, int>>
+public: static void __cdecl std::allocator_traits<class std::allocator<struct std::_Tree_node<struct std::pair<wchar_t const *const, int>, void *>>>::construct<struct std::_Tree_node<struct std::pair<wchar_t const *const, int>, void *> *, struct std::_Tree_node<struct std::pair<wchar_t const *const, int>, void *> *&>
+public: static void __cdecl std::allocator_traits<class std::allocator<struct std::_Tree_node<struct std::pair<wchar_t const *const, int>, void *>>>::construct<struct std::pair<wchar_t const *const, int>, struct std::pair<wchar_t const *, int>>
+public: static void __cdecl std::allocator_traits<class std::allocator<struct std::_Tree_node<struct std::pair<wchar_t const *const, int>, void *>>>::destroy<struct std::_Tree_node<struct std::pair<wchar_t const *const, int>, void *> *>
+public: static void __cdecl std::allocator_traits<class std::allocator<struct std::_Tree_node<struct std::pair<wchar_t const *const, int>, void *>>>::destroy<struct std::pair<wchar_t const *const, int>>
+public: static void __cdecl std::allocator_traits<class std::allocator<unsigned int>>::construct<unsigned int, unsigned int>
+public: static void __cdecl std::allocator_traits<class std::allocator<wchar_t>>::construct<wchar_t *, wchar_t *&>
+public: static void __cdecl std::allocator_traits<class std::allocator<wchar_t>>::destroy<wchar_t *>
+public: static wchar_t const *const & __cdecl std::_Tmap_traits<wchar_t const *, int, struct NvFlex::ltwstr, class std::allocator<struct std::pair<wchar_t const *const, int>>, 1>::_Kfn<wchar_t const *const, int>
+public: struct FlexInflatable & __cdecl std::vector<struct FlexInflatable, class std::allocator<struct FlexInflatable>>::operator[]
+public: struct FlexTriangleMeshDevice & __cdecl std::vector<struct FlexTriangleMeshDevice, class std::allocator<struct FlexTriangleMeshDevice>>::operator[]
+public: struct FlexTriangleMeshHost *& __cdecl std::vector<struct FlexTriangleMeshHost *, class std::allocator<struct FlexTriangleMeshHost *>>::operator[]
+public: struct ID3D11Buffer *& __cdecl NvFlex::VectorCached<struct ID3D11Buffer *, 8>::operator[]
+public: struct ID3D11SamplerState *& __cdecl NvFlex::VectorCached<struct ID3D11SamplerState *, 8>::operator[]
+public: struct ID3D11ShaderResourceView *& __cdecl NvFlex::VectorCached<struct ID3D11ShaderResourceView *, 16>::operator[]
+public: struct ID3D11UnorderedAccessView *& __cdecl NvFlex::VectorCached<struct ID3D11UnorderedAccessView *, 8>::operator[]
+public: struct IDXGIAdapter1 *& __cdecl std::vector<struct IDXGIAdapter1 *, class std::allocator<struct IDXGIAdapter1 *>>::operator[]
+public: struct NvFlex::ContextD3D11::Status & __cdecl NvFlex::VectorCached<struct NvFlex::ContextD3D11::Status, 16>::operator[]
+public: struct NvFlex::DynamicHeapAllocator<struct NvFlex::DynamicDescriptorHeapD3D12::HeapData>::Heap & __cdecl NvFlex::VectorCached<struct NvFlex::DynamicHeapAllocator<struct NvFlex::DynamicDescriptorHeapD3D12::HeapData>::Heap, 16>::operator[]
+public: struct NvFlex::HeapAllocator<struct NvFlex::DescriptorHeapD3D12::HeapData>::Heap & __cdecl NvFlex::VectorCached<struct NvFlex::HeapAllocator<struct NvFlex::DescriptorHeapD3D12::HeapData>::Heap, 16>::operator[]
+public: struct NvFlex::Texture3D *& __cdecl std::vector<struct NvFlex::Texture3D *, class std::allocator<struct NvFlex::Texture3D *>>::operator[]
+public: struct NvFlex::TimerD3D11 *& __cdecl std::vector<struct NvFlex::TimerD3D11 *, class std::allocator<struct NvFlex::TimerD3D11 *>>::operator[]
+public: struct NvFlex::VersionedBuffer<struct NvFlex::BufferD3D12::BufferData>::Buffer & __cdecl NvFlex::VectorCached<struct NvFlex::VersionedBuffer<struct NvFlex::BufferD3D12::BufferData>::Buffer, 16>::operator[]
+public: struct NvFlex::VersionedBuffer<struct NvFlex::ConstantBufferD3D12::BufferData>::Buffer & __cdecl NvFlex::VectorCached<struct NvFlex::VersionedBuffer<struct NvFlex::ConstantBufferD3D12::BufferData>::Buffer, 16>::operator[]
+public: struct NvFlex::VersionedBuffer<struct NvFlex::Texture3DD3D12::BufferData>::Buffer & __cdecl NvFlex::VectorCached<struct NvFlex::VersionedBuffer<struct NvFlex::Texture3DD3D12::BufferData>::Buffer, 16>::operator[]
+public: struct NvFlexSolver *& __cdecl std::vector<struct NvFlexSolver *, class std::allocator<struct NvFlexSolver *>>::operator[]
+public: struct std::_Tree_node<struct std::pair<wchar_t const *const, int>, void *> * __cdecl std::_Tree_buy<struct std::pair<wchar_t const *const, int>, class std::allocator<struct std::pair<wchar_t const *const, int>>>::_Buynode<struct std::pair<wchar_t const *, int>>
+public: struct std::pair<char const *const, int> & __cdecl std::_Tree_iterator<class std::_Tree_val<struct std::_Tree_simple_types<struct std::pair<char const *const, int>>>>::operator*
+public: struct std::pair<char const *const, int> * __cdecl std::_Tree_iterator<class std::_Tree_val<struct std::_Tree_simple_types<struct std::pair<char const *const, int>>>>::operator->
+public: struct std::pair<char const *const, int> const & __cdecl std::_Tree_const_iterator<class std::_Tree_val<struct std::_Tree_simple_types<struct std::pair<char const *const, int>>>>::operator*
+public: struct std::pair<class std::_Tree_iterator<class std::_Tree_val<struct std::_Tree_simple_types<struct std::pair<wchar_t const *const, int>>>>, bool> __cdecl std::_Tree<class std::_Tmap_traits<wchar_t const *, int, struct NvFlex::ltwstr, class std::allocator<struct std::pair<wchar_t const *const, int>>, 1>>::insert<struct std::pair<wchar_t const *, int>>
+public: struct std::pair<wchar_t const *const, int> & __cdecl std::_Tree_iterator<class std::_Tree_val<struct std::_Tree_simple_types<struct std::pair<wchar_t const *const, int>>>>::operator*
+public: struct std::pair<wchar_t const *const, int> * __cdecl std::_Tree_iterator<class std::_Tree_val<struct std::_Tree_simple_types<struct std::pair<wchar_t const *const, int>>>>::operator->
+public: struct std::pair<wchar_t const *const, int> const & __cdecl std::_Tree_const_iterator<class std::_Tree_val<struct std::_Tree_simple_types<struct std::pair<wchar_t const *const, int>>>>::operator*
+public: unsigned __int64 & __cdecl std::vector<unsigned __int64, class std::allocator<unsigned __int64>>::operator[]
+public: unsigned int & __cdecl std::vector<unsigned int, class std::allocator<unsigned int>>::operator[]
+public: unsigned int __cdecl std::atomic_uint::operator unsigned int
+public: unsigned int __cdecl std::atomic_uint::operator++
+public: unsigned int __cdecl std::atomic_uint::operator--
+public: unsigned int __cdecl std::atomic_uint::operator=
+public: virtual __cdecl CAutoCriticalSection::~CAutoCriticalSection
+public: virtual __cdecl CSingletonCriticalSection::~CSingletonCriticalSection
+public: virtual __cdecl FlexDeviceDesc::~FlexDeviceDesc
+public: virtual __cdecl NvFlex::Buffer::~Buffer
+public: virtual __cdecl NvFlex::BufferD3D11::~BufferD3D11
+public: virtual __cdecl NvFlex::BufferD3D12::~BufferD3D12
+public: virtual __cdecl NvFlex::ComputeShader::~ComputeShader
+public: virtual __cdecl NvFlex::ComputeShaderD3D11::~ComputeShaderD3D11
+public: virtual __cdecl NvFlex::ComputeShaderD3D12::~ComputeShaderD3D12
+public: virtual __cdecl NvFlex::ConstantBuffer::~ConstantBuffer
+public: virtual __cdecl NvFlex::ConstantBufferD3D11::~ConstantBufferD3D11
+public: virtual __cdecl NvFlex::ConstantBufferD3D12::~ConstantBufferD3D12
+public: virtual __cdecl NvFlex::Context::~Context
+public: virtual __cdecl NvFlex::ContextD3D11::~ContextD3D11
+public: virtual __cdecl NvFlex::ContextD3D12::~ContextD3D12
+public: virtual __cdecl NvFlex::Device::~Device
+public: virtual __cdecl NvFlex::DeviceD3D11::~DeviceD3D11
+public: virtual __cdecl NvFlex::DeviceD3D12::~DeviceD3D12
+public: virtual __cdecl NvFlex::Fence::~Fence
+public: virtual __cdecl NvFlex::FenceD3D11::~FenceD3D11
+public: virtual __cdecl NvFlex::FenceD3D12::~FenceD3D12
+public: virtual __cdecl NvFlex::Object::~Object
+public: virtual __cdecl NvFlex::RadixSortImpl::~RadixSortImpl
+public: virtual __cdecl NvFlex::Texture3D::~Texture3D
+public: virtual __cdecl NvFlex::Texture3DD3D11::~Texture3DD3D11
+public: virtual __cdecl NvFlex::Texture3DD3D12::~Texture3DD3D12
+public: virtual __cdecl NvFlex::Timer::~Timer
+public: virtual __cdecl NvFlex::TimerD3D11::~TimerD3D11
+public: virtual __cdecl NvFlex::TimerD3D12::~TimerD3D12
+public: virtual __cdecl NvFlex::TimerPool::~TimerPool
+public: virtual __cdecl NvFlex::TimerPoolD3D11::~TimerPoolD3D11
+public: virtual __cdecl NvFlex::TimerPoolD3D12::~TimerPoolD3D12
+public: virtual __cdecl std::_Generic_error_category::~_Generic_error_category
+public: virtual __cdecl std::_Iostream_error_category::~_Iostream_error_category
+public: virtual __cdecl std::_System_error_category::~_System_error_category
+public: virtual __cdecl std::__non_rtti_object::~__non_rtti_object
+public: virtual __cdecl std::bad_alloc::~bad_alloc
+public: virtual __cdecl std::bad_cast::~bad_cast
+public: virtual __cdecl std::bad_exception::~bad_exception
+public: virtual __cdecl std::bad_function_call::~bad_function_call
+public: virtual __cdecl std::bad_typeid::~bad_typeid
+public: virtual __cdecl std::error_category::~error_category
+public: virtual __cdecl std::exception::~exception
+public: virtual __cdecl std::invalid_argument::~invalid_argument
+public: virtual __cdecl std::length_error::~length_error
+public: virtual __cdecl std::logic_error::~logic_error
+public: virtual __cdecl std::out_of_range::~out_of_range
+public: virtual __cdecl std::overflow_error::~overflow_error
+public: virtual __cdecl std::regex_error::~regex_error
+public: virtual __cdecl std::runtime_error::~runtime_error
+public: virtual __cdecl type_info::~type_info
+public: void __cdecl std::_Wrap_alloc<class std::allocator<char>>::construct<char *, char *&>
+public: void __cdecl std::_Wrap_alloc<class std::allocator<char>>::destroy<char *>
+public: void __cdecl std::_Wrap_alloc<class std::allocator<class XVector3<float>>>::destroy<class XVector3<float>>
+public: void __cdecl std::_Wrap_alloc<class std::allocator<class XVector4<float>>>::construct<class XVector4<float>, class XVector4<float> const &>
+public: void __cdecl std::_Wrap_alloc<class std::allocator<class XVector4<float>>>::destroy<class XVector4<float>>
+public: void __cdecl std::_Wrap_alloc<class std::allocator<class std::basic_string<wchar_t, struct std::char_traits<wchar_t>, class std::allocator<wchar_t>>>>::construct<class std::basic_string<wchar_t, struct std::char_traits<wchar_t>, class std::allocator<wchar_t>>, class std::basic_string<wchar_t, struct std::char_traits<wchar_t>, class std::allocator<wchar_t>>>
+public: void __cdecl std::_Wrap_alloc<class std::allocator<class std::basic_string<wchar_t, struct std::char_traits<wchar_t>, class std::allocator<wchar_t>>>>::destroy<class std::basic_string<wchar_t, struct std::char_traits<wchar_t>, class std::allocator<wchar_t>>>
+public: void __cdecl std::_Wrap_alloc<class std::allocator<float>>::construct<float, float &>
+public: void __cdecl std::_Wrap_alloc<class std::allocator<float>>::construct<float, float const &>
+public: void __cdecl std::_Wrap_alloc<class std::allocator<int>>::construct<int, int &>
+public: void __cdecl std::_Wrap_alloc<class std::allocator<int>>::construct<int, int const &>
+public: void __cdecl std::_Wrap_alloc<class std::allocator<struct FlexInflatable>>::destroy<struct FlexInflatable>
+public: void __cdecl std::_Wrap_alloc<class std::allocator<struct FlexTriangleMeshDevice>>::destroy<struct FlexTriangleMeshDevice>
+public: void __cdecl std::_Wrap_alloc<class std::allocator<struct FlexTriangleMeshHost *>>::construct<struct FlexTriangleMeshHost *, struct FlexTriangleMeshHost *&>
+public: void __cdecl std::_Wrap_alloc<class std::allocator<struct FlexTriangleMeshHost *>>::construct<struct FlexTriangleMeshHost *, struct FlexTriangleMeshHost *const &>
+public: void __cdecl std::_Wrap_alloc<class std::allocator<struct IDXGIAdapter1 *>>::construct<struct IDXGIAdapter1 *, struct IDXGIAdapter1 *&>
+public: void __cdecl std::_Wrap_alloc<class std::allocator<struct IDXGIAdapter1 *>>::construct<struct IDXGIAdapter1 *, struct IDXGIAdapter1 *const &>
+public: void __cdecl std::_Wrap_alloc<class std::allocator<struct NvFlexSolver *>>::construct<struct NvFlexSolver *, struct NvFlexSolver *>
+public: void __cdecl std::_Wrap_alloc<class std::allocator<struct std::_Tree_node<struct std::pair<char const *const, int>, void *>>>::construct<struct std::_Tree_node<struct std::pair<char const *const, int>, void *> *, struct std::_Tree_node<struct std::pair<char const *const, int>, void *> *&>
+public: void __cdecl std::_Wrap_alloc<class std::allocator<struct std::_Tree_node<struct std::pair<char const *const, int>, void *>>>::destroy<struct std::_Tree_node<struct std::pair<char const *const, int>, void *> *>
+public: void __cdecl std::_Wrap_alloc<class std::allocator<struct std::_Tree_node<struct std::pair<char const *const, int>, void *>>>::destroy<struct std::pair<char const *const, int>>
+public: void __cdecl std::_Wrap_alloc<class std::allocator<struct std::_Tree_node<struct std::pair<wchar_t const *const, int>, void *>>>::construct<struct std::_Tree_node<struct std::pair<wchar_t const *const, int>, void *> *, struct std::_Tree_node<struct std::pair<wchar_t const *const, int>, void *> *&>
+public: void __cdecl std::_Wrap_alloc<class std::allocator<struct std::_Tree_node<struct std::pair<wchar_t const *const, int>, void *>>>::construct<struct std::pair<wchar_t const *const, int>, struct std::pair<wchar_t const *, int>>
+public: void __cdecl std::_Wrap_alloc<class std::allocator<struct std::_Tree_node<struct std::pair<wchar_t const *const, int>, void *>>>::destroy<struct std::_Tree_node<struct std::pair<wchar_t const *const, int>, void *> *>
+public: void __cdecl std::_Wrap_alloc<class std::allocator<struct std::_Tree_node<struct std::pair<wchar_t const *const, int>, void *>>>::destroy<struct std::pair<wchar_t const *const, int>>
+public: void __cdecl std::_Wrap_alloc<class std::allocator<unsigned int>>::construct<unsigned int, unsigned int>
+public: void __cdecl std::_Wrap_alloc<class std::allocator<wchar_t>>::construct<wchar_t *, wchar_t *&>
+public: void __cdecl std::_Wrap_alloc<class std::allocator<wchar_t>>::destroy<wchar_t *>
+public: void __cdecl std::allocator<char>::construct<char *, char *&>
+public: void __cdecl std::allocator<char>::destroy<char *>
+public: void __cdecl std::allocator<class XVector3<float>>::destroy<class XVector3<float>>
+public: void __cdecl std::allocator<class XVector4<float>>::destroy<class XVector4<float>>
+public: void __cdecl std::allocator<class std::basic_string<wchar_t, struct std::char_traits<wchar_t>, class std::allocator<wchar_t>>>::construct<class std::basic_string<wchar_t, struct std::char_traits<wchar_t>, class std::allocator<wchar_t>>, class std::basic_string<wchar_t, struct std::char_traits<wchar_t>, class std::allocator<wchar_t>>>
+public: void __cdecl std::allocator<class std::basic_string<wchar_t, struct std::char_traits<wchar_t>, class std::allocator<wchar_t>>>::destroy<class std::basic_string<wchar_t, struct std::char_traits<wchar_t>, class std::allocator<wchar_t>>>
+public: void __cdecl std::allocator<float>::construct<float, float &>
+public: void __cdecl std::allocator<int>::construct<int, int &>
+public: void __cdecl std::allocator<struct FlexInflatable>::destroy<struct FlexInflatable>
+public: void __cdecl std::allocator<struct FlexTriangleMeshDevice>::destroy<struct FlexTriangleMeshDevice>
+public: void __cdecl std::allocator<struct FlexTriangleMeshHost *>::construct<struct FlexTriangleMeshHost *, struct FlexTriangleMeshHost *&>
+public: void __cdecl std::allocator<struct IDXGIAdapter1 *>::construct<struct IDXGIAdapter1 *, struct IDXGIAdapter1 *&>
+public: void __cdecl std::allocator<struct NvFlexSolver *>::construct<struct NvFlexSolver *, struct NvFlexSolver *>
+public: void __cdecl std::allocator<struct std::_Tree_node<struct std::pair<char const *const, int>, void *>>::construct<struct std::_Tree_node<struct std::pair<char const *const, int>, void *> *, struct std::_Tree_node<struct std::pair<char const *const, int>, void *> *&>
+public: void __cdecl std::allocator<struct std::_Tree_node<struct std::pair<char const *const, int>, void *>>::destroy<struct std::_Tree_node<struct std::pair<char const *const, int>, void *> *>
+public: void __cdecl std::allocator<struct std::_Tree_node<struct std::pair<char const *const, int>, void *>>::destroy<struct std::pair<char const *const, int>>
+public: void __cdecl std::allocator<struct std::_Tree_node<struct std::pair<wchar_t const *const, int>, void *>>::construct<struct std::_Tree_node<struct std::pair<wchar_t const *const, int>, void *> *, struct std::_Tree_node<struct std::pair<wchar_t const *const, int>, void *> *&>
+public: void __cdecl std::allocator<struct std::_Tree_node<struct std::pair<wchar_t const *const, int>, void *>>::construct<struct std::pair<wchar_t const *const, int>, struct std::pair<wchar_t const *, int>>
+public: void __cdecl std::allocator<struct std::_Tree_node<struct std::pair<wchar_t const *const, int>, void *>>::destroy<struct std::_Tree_node<struct std::pair<wchar_t const *const, int>, void *> *>
+public: void __cdecl std::allocator<struct std::_Tree_node<struct std::pair<wchar_t const *const, int>, void *>>::destroy<struct std::pair<wchar_t const *const, int>>
+public: void __cdecl std::allocator<unsigned int>::construct<unsigned int, unsigned int>
+public: void __cdecl std::allocator<wchar_t>::construct<wchar_t *, wchar_t *&>
+public: void __cdecl std::allocator<wchar_t>::destroy<wchar_t *>
+public: wchar_t & __cdecl std::basic_string<wchar_t, struct std::char_traits<wchar_t>, class std::allocator<wchar_t>>::operator[]
+struct DxBufferExt && __cdecl std::_Move<struct DxBufferExt &>
+struct DxComputeBuffer && __cdecl std::_Move<struct DxComputeBuffer &>
+struct FlexInflatable * __cdecl std::_Allocate<struct FlexInflatable>
+struct FlexInflatable * __cdecl std::_Val_type<struct FlexInflatable *>
+struct FlexTriangleMeshDevice * __cdecl std::_Allocate<struct FlexTriangleMeshDevice>
+struct FlexTriangleMeshDevice * __cdecl std::_Val_type<struct FlexTriangleMeshDevice *>
+struct FlexTriangleMeshHost *& __cdecl std::forward<struct FlexTriangleMeshHost *&>
+struct FlexTriangleMeshHost ** __cdecl std::_Allocate<struct FlexTriangleMeshHost *>
+struct FlexTriangleMeshHost ** __cdecl std::_Unchecked<struct FlexTriangleMeshHost **>
+struct FlexTriangleMeshHost ** __cdecl std::_Uninit_move<struct FlexTriangleMeshHost **, struct FlexTriangleMeshHost **, struct std::_Wrap_alloc<class std::allocator<struct FlexTriangleMeshHost *>>>
+struct FlexTriangleMeshHost ** __cdecl std::_Uninit_move<struct FlexTriangleMeshHost *, struct FlexTriangleMeshHost *, struct FlexTriangleMeshHost *>
+struct FlexTriangleMeshHost ** __cdecl std::_Uninitialized_move<struct FlexTriangleMeshHost **, struct FlexTriangleMeshHost **, struct std::_Wrap_alloc<class std::allocator<struct FlexTriangleMeshHost *>>>
+struct FlexTriangleMeshHost ** __cdecl std::_Val_type<struct FlexTriangleMeshHost **>
+struct FlexTriangleMeshHost **& __cdecl std::_Rechecked<struct FlexTriangleMeshHost **, struct FlexTriangleMeshHost **>
+struct FlexTriangleMeshHost *const & __cdecl std::forward<struct FlexTriangleMeshHost *const &>
+struct FlexTriangleMeshHost *const * __cdecl std::addressof<struct FlexTriangleMeshHost *const>
+struct IDXGIAdapter1 *& __cdecl std::forward<struct IDXGIAdapter1 *&>
+struct IDXGIAdapter1 ** __cdecl std::_Allocate<struct IDXGIAdapter1 *>
+struct IDXGIAdapter1 ** __cdecl std::_Unchecked<struct IDXGIAdapter1 **>
+struct IDXGIAdapter1 ** __cdecl std::_Uninit_move<struct IDXGIAdapter1 **, struct IDXGIAdapter1 **, struct std::_Wrap_alloc<class std::allocator<struct IDXGIAdapter1 *>>>
+struct IDXGIAdapter1 ** __cdecl std::_Uninit_move<struct IDXGIAdapter1 *, struct IDXGIAdapter1 *, struct IDXGIAdapter1 *>
+struct IDXGIAdapter1 ** __cdecl std::_Uninitialized_move<struct IDXGIAdapter1 **, struct IDXGIAdapter1 **, struct std::_Wrap_alloc<class std::allocator<struct IDXGIAdapter1 *>>>
+struct IDXGIAdapter1 ** __cdecl std::_Val_type<struct IDXGIAdapter1 **>
+struct IDXGIAdapter1 **& __cdecl std::_Rechecked<struct IDXGIAdapter1 **, struct IDXGIAdapter1 **>
+struct IDXGIAdapter1 *const & __cdecl std::forward<struct IDXGIAdapter1 *const &>
+struct IDXGIAdapter1 *const * __cdecl std::addressof<struct IDXGIAdapter1 *const>
+struct NvFlex::Texture3D ** __cdecl std::_Allocate<struct NvFlex::Texture3D *>
+struct NvFlex::Texture3D ** __cdecl std::_Fill_n<struct NvFlex::Texture3D **, unsigned __int64, struct NvFlex::Texture3D *>
+struct NvFlex::Texture3D ** __cdecl std::_Unchecked<struct NvFlex::Texture3D **>
+struct NvFlex::Texture3D ** __cdecl std::_Uninit_move<struct NvFlex::Texture3D **, struct NvFlex::Texture3D **, struct std::_Wrap_alloc<class std::allocator<struct NvFlex::Texture3D *>>>
+struct NvFlex::Texture3D ** __cdecl std::_Uninit_move<struct NvFlex::Texture3D *, struct NvFlex::Texture3D *, struct NvFlex::Texture3D *>
+struct NvFlex::Texture3D ** __cdecl std::_Uninitialized_move<struct NvFlex::Texture3D **, struct NvFlex::Texture3D **, struct std::_Wrap_alloc<class std::allocator<struct NvFlex::Texture3D *>>>
+struct NvFlex::Texture3D ** __cdecl std::_Val_type<struct NvFlex::Texture3D **>
+struct NvFlex::Texture3D **& __cdecl std::_Rechecked<struct NvFlex::Texture3D **, struct NvFlex::Texture3D **>
+struct NvFlex::TimerD3D11 ** __cdecl std::_Allocate<struct NvFlex::TimerD3D11 *>
+struct NvFlex::TimerD3D11 ** __cdecl std::_Fill_n<struct NvFlex::TimerD3D11 **, unsigned __int64, struct NvFlex::TimerD3D11 *>
+struct NvFlex::TimerD3D11 ** __cdecl std::_Unchecked<struct NvFlex::TimerD3D11 **>
+struct NvFlex::TimerD3D11 ** __cdecl std::_Uninit_move<struct NvFlex::TimerD3D11 **, struct NvFlex::TimerD3D11 **, struct std::_Wrap_alloc<class std::allocator<struct NvFlex::TimerD3D11 *>>>
+struct NvFlex::TimerD3D11 ** __cdecl std::_Uninit_move<struct NvFlex::TimerD3D11 *, struct NvFlex::TimerD3D11 *, struct NvFlex::TimerD3D11 *>
+struct NvFlex::TimerD3D11 ** __cdecl std::_Uninitialized_move<struct NvFlex::TimerD3D11 **, struct NvFlex::TimerD3D11 **, struct std::_Wrap_alloc<class std::allocator<struct NvFlex::TimerD3D11 *>>>
+struct NvFlex::TimerD3D11 ** __cdecl std::_Val_type<struct NvFlex::TimerD3D11 **>
+struct NvFlex::TimerD3D11 **& __cdecl std::_Rechecked<struct NvFlex::TimerD3D11 **, struct NvFlex::TimerD3D11 **>
+struct NvFlexSolver *&& __cdecl std::_Move<struct NvFlexSolver *&>
+struct NvFlexSolver *&& __cdecl std::forward<struct NvFlexSolver *>
+struct NvFlexSolver ** __cdecl std::_Allocate<struct NvFlexSolver *>
+struct NvFlexSolver ** __cdecl std::_Find<struct NvFlexSolver **, struct NvFlexSolver *>
+struct NvFlexSolver ** __cdecl std::_Move<struct NvFlexSolver **, struct NvFlexSolver **>
+struct NvFlexSolver ** __cdecl std::_Remove<struct NvFlexSolver **, struct NvFlexSolver *>
+struct NvFlexSolver ** __cdecl std::_Unchecked<class std::_Vector_val<struct std::_Simple_types<struct NvFlexSolver *>>>
+struct NvFlexSolver ** __cdecl std::_Unchecked<struct NvFlexSolver **>
+struct NvFlexSolver ** __cdecl std::_Uninit_move<struct NvFlexSolver **, struct NvFlexSolver **, struct std::_Wrap_alloc<class std::allocator<struct NvFlexSolver *>>>
+struct NvFlexSolver ** __cdecl std::_Uninit_move<struct NvFlexSolver *, struct NvFlexSolver *, struct NvFlexSolver *>
+struct NvFlexSolver ** __cdecl std::_Uninitialized_move<struct NvFlexSolver **, struct NvFlexSolver **, struct std::_Wrap_alloc<class std::allocator<struct NvFlexSolver *>>>
+struct NvFlexSolver ** __cdecl std::_Val_type<struct NvFlexSolver **>
+struct NvFlexSolver ** __cdecl std::addressof<struct NvFlexSolver *>
+struct NvFlexSolver **& __cdecl std::_Rechecked<struct NvFlexSolver **, struct NvFlexSolver **>
+struct std::_Nonscalar_ptr_iterator_tag __cdecl std::_Ptr_cat<class XVector3<float>, class XVector3<float>>
+struct std::_Nonscalar_ptr_iterator_tag __cdecl std::_Ptr_cat<class XVector4<float>, class XVector4<float>>
+struct std::_Nonscalar_ptr_iterator_tag __cdecl std::_Ptr_cat<class std::basic_string<wchar_t, struct std::char_traits<wchar_t>, class std::allocator<wchar_t>>, class std::basic_string<wchar_t, struct std::char_traits<wchar_t>, class std::allocator<wchar_t>>>
+struct std::_Nonscalar_ptr_iterator_tag __cdecl std::_Ptr_cat<struct FlexInflatable, struct FlexInflatable>
+struct std::_Nonscalar_ptr_iterator_tag __cdecl std::_Ptr_cat<struct FlexTriangleMeshDevice, struct FlexTriangleMeshDevice>
+struct std::_Scalar_ptr_iterator_tag __cdecl std::_Ptr_cat<float, float>
+struct std::_Scalar_ptr_iterator_tag __cdecl std::_Ptr_cat<int, int>
+struct std::_Scalar_ptr_iterator_tag __cdecl std::_Ptr_cat<struct FlexSDFData *, struct FlexSDFData *>
+struct std::_Scalar_ptr_iterator_tag __cdecl std::_Ptr_cat<struct FlexTriangleMeshHost *, struct FlexTriangleMeshHost *>
+struct std::_Scalar_ptr_iterator_tag __cdecl std::_Ptr_cat<struct IDXGIAdapter1 *, struct IDXGIAdapter1 *>
+struct std::_Scalar_ptr_iterator_tag __cdecl std::_Ptr_cat<struct NvFlex::Texture3D *, struct NvFlex::Texture3D *>
+struct std::_Scalar_ptr_iterator_tag __cdecl std::_Ptr_cat<struct NvFlex::TimerD3D11 *, struct NvFlex::TimerD3D11 *>
+struct std::_Scalar_ptr_iterator_tag __cdecl std::_Ptr_cat<struct NvFlexSolver *, struct NvFlexSolver *>
+struct std::_Scalar_ptr_iterator_tag __cdecl std::_Ptr_cat<unsigned __int64, unsigned __int64>
+struct std::_Scalar_ptr_iterator_tag __cdecl std::_Ptr_cat<unsigned int, unsigned int>
+struct std::_Tree_node<struct std::pair<char const *const, int>, void *> * __cdecl std::_Allocate<struct std::_Tree_node<struct std::pair<char const *const, int>, void *>>
+struct std::_Tree_node<struct std::pair<char const *const, int>, void *> *& __cdecl std::forward<struct std::_Tree_node<struct std::pair<char const *const, int>, void *> *&>
+struct std::_Tree_node<struct std::pair<char const *const, int>, void *> ** __cdecl std::addressof<struct std::_Tree_node<struct std::pair<char const *const, int>, void *> *>
+struct std::_Tree_node<struct std::pair<wchar_t const *const, int>, void *> * __cdecl std::_Allocate<struct std::_Tree_node<struct std::pair<wchar_t const *const, int>, void *>>
+struct std::_Tree_node<struct std::pair<wchar_t const *const, int>, void *> *& __cdecl std::forward<struct std::_Tree_node<struct std::pair<wchar_t const *const, int>, void *> *&>
+struct std::_Tree_node<struct std::pair<wchar_t const *const, int>, void *> ** __cdecl std::addressof<struct std::_Tree_node<struct std::pair<wchar_t const *const, int>, void *> *>
+struct std::pair<char const *const, int> * __cdecl std::addressof<struct std::pair<char const *const, int>>
+struct std::pair<wchar_t const *, int> && __cdecl std::forward<struct std::pair<wchar_t const *, int>>
+struct std::pair<wchar_t const *, int> __cdecl std::make_pair<wchar_t const *&, int &>
+struct std::pair<wchar_t const *const, int> & __cdecl std::forward<struct std::pair<wchar_t const *const, int> &>
+struct std::pair<wchar_t const *const, int> * __cdecl std::addressof<struct std::pair<wchar_t const *const, int>>
+unsigned __int64 * __cdecl std::_Allocate<unsigned __int64>
+unsigned __int64 * __cdecl std::_Fill_n<unsigned __int64 *, unsigned __int64, unsigned __int64>
+unsigned __int64 * __cdecl std::_Unchecked<unsigned __int64 *>
+unsigned __int64 * __cdecl std::_Uninit_move<unsigned __int64 *, unsigned __int64 *, struct std::_Wrap_alloc<class std::allocator<unsigned __int64>>>
+unsigned __int64 * __cdecl std::_Uninit_move<unsigned __int64, unsigned __int64, unsigned __int64>
+unsigned __int64 * __cdecl std::_Uninitialized_move<unsigned __int64 *, unsigned __int64 *, struct std::_Wrap_alloc<class std::allocator<unsigned __int64>>>
+unsigned __int64 * __cdecl std::_Val_type<unsigned __int64 *>
+unsigned __int64 *& __cdecl std::_Rechecked<unsigned __int64 *, unsigned __int64 *>
+unsigned __int64 const & __cdecl std::min<unsigned __int64>
+unsigned int && __cdecl std::_Move<unsigned int &>
+unsigned int && __cdecl std::forward<unsigned int>
+unsigned int * __cdecl std::_Allocate<unsigned int>
+unsigned int * __cdecl std::_Find<unsigned int *, unsigned __int64>
+unsigned int * __cdecl std::_Move<unsigned int *, unsigned int *>
+unsigned int * __cdecl std::_Remove<unsigned int *, unsigned __int64>
+unsigned int * __cdecl std::_Unchecked<class std::_Vector_val<struct std::_Simple_types<unsigned int>>>
+unsigned int * __cdecl std::_Unchecked<unsigned int *>
+unsigned int * __cdecl std::_Uninit_move<unsigned int *, unsigned int *, struct std::_Wrap_alloc<class std::allocator<unsigned int>>>
+unsigned int * __cdecl std::_Uninit_move<unsigned int, unsigned int, unsigned int>
+unsigned int * __cdecl std::_Uninitialized_move<unsigned int *, unsigned int *, struct std::_Wrap_alloc<class std::allocator<unsigned int>>>
+unsigned int * __cdecl std::_Val_type<unsigned int *>
+unsigned int * __cdecl std::addressof<unsigned int>
+unsigned int *& __cdecl std::_Rechecked<unsigned int *, unsigned int *>
+unsigned int const & __cdecl std::min<unsigned int>
+void * __cdecl operator new
+void __cdecl NvFlex::COMRelease<struct ID3D10Blob *>
+void __cdecl NvFlex::COMRelease<struct ID3D11Buffer *>
+void __cdecl NvFlex::COMRelease<struct ID3D11ComputeShader *>
+void __cdecl NvFlex::COMRelease<struct ID3D11Device *>
+void __cdecl NvFlex::COMRelease<struct ID3D11DeviceContext *>
+void __cdecl NvFlex::COMRelease<struct ID3D11Query *>
+void __cdecl NvFlex::COMRelease<struct ID3D11Resource *>
+void __cdecl NvFlex::COMRelease<struct ID3D11SamplerState *>
+void __cdecl NvFlex::COMRelease<struct ID3D11ShaderResourceView *>
+void __cdecl NvFlex::COMRelease<struct ID3D11Texture1D *>
+void __cdecl NvFlex::COMRelease<struct ID3D11Texture2D *>
+void __cdecl NvFlex::COMRelease<struct ID3D11Texture3D *>
+void __cdecl NvFlex::COMRelease<struct ID3D11UnorderedAccessView *>
+void __cdecl NvFlex::COMRelease<struct ID3D12CommandAllocator *>
+void __cdecl NvFlex::COMRelease<struct ID3D12CommandQueue *>
+void __cdecl NvFlex::COMRelease<struct ID3D12CommandSignature *>
+void __cdecl NvFlex::COMRelease<struct ID3D12DescriptorHeap *>
+void __cdecl NvFlex::COMRelease<struct ID3D12Device *>
+void __cdecl NvFlex::COMRelease<struct ID3D12Fence *>
+void __cdecl NvFlex::COMRelease<struct ID3D12GraphicsCommandList *>
+void __cdecl NvFlex::COMRelease<struct ID3D12PipelineState *>
+void __cdecl NvFlex::COMRelease<struct ID3D12QueryHeap *>
+void __cdecl NvFlex::COMRelease<struct ID3D12Resource *>
+void __cdecl NvFlex::COMRelease<struct ID3D12RootSignature *>
+void __cdecl NvFlex::COMRelease<struct ID3DUserDefinedAnnotation *>
+void __cdecl NvFlex::COMRelease<struct IDXGIAdapter *>
+void __cdecl NvFlex::COMRelease<struct IDXGIAdapter1 *>
+void __cdecl NvFlex::COMRelease<struct IDXGIDevice *>
+void __cdecl NvFlex::COMRelease<struct IDXGIFactory *>
+void __cdecl NvFlex::COMRelease<struct IDXGIFactory1 *>
+void __cdecl NvFlex::COMRelease<struct IDXGISwapChain *>
+void __cdecl std::_Destroy_range<struct std::_Wrap_alloc<class std::allocator<class XVector3<float>>>>
+void __cdecl std::_Destroy_range<struct std::_Wrap_alloc<class std::allocator<class XVector4<float>>>>
+void __cdecl std::_Destroy_range<struct std::_Wrap_alloc<class std::allocator<class std::basic_string<wchar_t, struct std::char_traits<wchar_t>, class std::allocator<wchar_t>>>>>
+void __cdecl std::_Destroy_range<struct std::_Wrap_alloc<class std::allocator<float>>>
+void __cdecl std::_Destroy_range<struct std::_Wrap_alloc<class std::allocator<int>>>
+void __cdecl std::_Destroy_range<struct std::_Wrap_alloc<class std::allocator<struct FlexInflatable>>>
+void __cdecl std::_Destroy_range<struct std::_Wrap_alloc<class std::allocator<struct FlexSDFData *>>>
+void __cdecl std::_Destroy_range<struct std::_Wrap_alloc<class std::allocator<struct FlexTriangleMeshDevice>>>
+void __cdecl std::_Destroy_range<struct std::_Wrap_alloc<class std::allocator<struct FlexTriangleMeshHost *>>>
+void __cdecl std::_Destroy_range<struct std::_Wrap_alloc<class std::allocator<struct IDXGIAdapter1 *>>>
+void __cdecl std::_Destroy_range<struct std::_Wrap_alloc<class std::allocator<struct NvFlex::Texture3D *>>>
+void __cdecl std::_Destroy_range<struct std::_Wrap_alloc<class std::allocator<struct NvFlex::TimerD3D11 *>>>
+void __cdecl std::_Destroy_range<struct std::_Wrap_alloc<class std::allocator<struct NvFlexSolver *>>>
+void __cdecl std::_Destroy_range<struct std::_Wrap_alloc<class std::allocator<unsigned __int64>>>
+void __cdecl std::_Destroy_range<struct std::_Wrap_alloc<class std::allocator<unsigned int>>>
+void __cdecl std::_Uninit_def_fill_n<class XVector3<float> *, unsigned __int64, class std::allocator<class XVector3<float>>, class XVector3<float>>
+void __cdecl std::_Uninit_def_fill_n<float, unsigned __int64, float>
+void __cdecl std::_Uninit_def_fill_n<int, unsigned __int64, int>
+void __cdecl std::_Uninit_def_fill_n<struct FlexInflatable *, unsigned __int64, class std::allocator<struct FlexInflatable>, struct FlexInflatable>
+void __cdecl std::_Uninit_def_fill_n<struct FlexTriangleMeshDevice *, unsigned __int64, class std::allocator<struct FlexTriangleMeshDevice>, struct FlexTriangleMeshDevice>
+void __cdecl std::_Uninit_def_fill_n<struct NvFlex::Texture3D *, unsigned __int64, struct NvFlex::Texture3D *>
+void __cdecl std::_Uninit_def_fill_n<struct NvFlex::TimerD3D11 *, unsigned __int64, struct NvFlex::TimerD3D11 *>
+void __cdecl std::_Uninit_def_fill_n<unsigned __int64, unsigned __int64, unsigned __int64>
+void __cdecl std::_Uninit_fill_n<class XVector4<float> *, unsigned __int64, class XVector4<float>, class std::allocator<class XVector4<float>>, class XVector4<float>>
+void __cdecl std::_Uninitialized_default_fill_n<class XVector3<float> *, unsigned __int64, struct std::_Wrap_alloc<class std::allocator<class XVector3<float>>>>
+void __cdecl std::_Uninitialized_default_fill_n<float *, unsigned __int64, struct std::_Wrap_alloc<class std::allocator<float>>>
+void __cdecl std::_Uninitialized_default_fill_n<int *, unsigned __int64, struct std::_Wrap_alloc<class std::allocator<int>>>
+void __cdecl std::_Uninitialized_default_fill_n<struct FlexInflatable *, unsigned __int64, struct std::_Wrap_alloc<class std::allocator<struct FlexInflatable>>>
+void __cdecl std::_Uninitialized_default_fill_n<struct FlexTriangleMeshDevice *, unsigned __int64, struct std::_Wrap_alloc<class std::allocator<struct FlexTriangleMeshDevice>>>
+void __cdecl std::_Uninitialized_default_fill_n<struct NvFlex::Texture3D **, unsigned __int64, struct std::_Wrap_alloc<class std::allocator<struct NvFlex::Texture3D *>>>
+void __cdecl std::_Uninitialized_default_fill_n<struct NvFlex::TimerD3D11 **, unsigned __int64, struct std::_Wrap_alloc<class std::allocator<struct NvFlex::TimerD3D11 *>>>
+void __cdecl std::_Uninitialized_default_fill_n<unsigned __int64 *, unsigned __int64, struct std::_Wrap_alloc<class std::allocator<unsigned __int64>>>
+void __cdecl std::_Uninitialized_fill_n<class XVector4<float> *, unsigned __int64, class XVector4<float>, struct std::_Wrap_alloc<class std::allocator<class XVector4<float>>>>
+void __cdecl std::swap<char>
+void __cdecl std::swap<int>
+void __cdecl std::swap<struct DxBufferExt>
+void __cdecl std::swap<struct DxComputeBuffer>
+wchar_t * __cdecl std::_Allocate<wchar_t>
+wchar_t * __cdecl std::addressof<wchar_t>
+wchar_t *& __cdecl std::forward<wchar_t *&>
+wchar_t const *& __cdecl std::forward<wchar_t const *&>
+wchar_t const *&& __cdecl std::forward<wchar_t const *>
