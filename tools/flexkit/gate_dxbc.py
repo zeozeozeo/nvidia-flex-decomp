@@ -68,9 +68,15 @@ def _counts_ok(a: Counter, b: Counter) -> tuple[bool, list[dict]]:
 
 
 def reconstructed(idx: int) -> Path | None:
-    for h in sorted(SHADER_DIR.glob(f"{idx:03d}_*.hlsl")):
-        return h
-    return None
+    """The single reconstructed HLSL for this index (first in sorted order)."""
+    cands = sorted(SHADER_DIR.glob(f"{idx:03d}_*.hlsl"))
+    return cands[0] if cands else None
+
+
+def duplicates(idx: int) -> list[str]:
+    """More than one HLSL for an index means two authors collided."""
+    cands = sorted(SHADER_DIR.glob(f"{idx:03d}_*.hlsl"))
+    return [p.name for p in cands[1:]]
 
 
 def compile_shader(hlsl: Path, out: Path) -> bool:
@@ -95,6 +101,9 @@ def compile_shader(hlsl: Path, out: Path) -> bool:
 
 def gate_one(original_asm: Path, idx: int) -> dict:
     res = {"shader": original_asm.name, "index": idx, "ok": False}
+    dups = duplicates(idx)
+    if dups:
+        res["duplicates"] = dups
     hlsl = reconstructed(idx)
     if hlsl is None:
         res["detail"] = "not_reconstructed"
@@ -163,6 +172,8 @@ def render(r: dict) -> str:
         if res["ok"]:
             continue
         L.append(f"\nFAIL {res['shader']}: {res.get('detail', '')}")
+        if res.get("duplicates"):
+            L.append(f"  duplicate HLSL for this index: {res['duplicates']}")
         for name, c in (res.get("checks") or {}).items():
             if not c.get("ok"):
                 L.append(f"  {name}: {json.dumps({k: v for k, v in c.items() if k != 'ok'})[:300]}")
