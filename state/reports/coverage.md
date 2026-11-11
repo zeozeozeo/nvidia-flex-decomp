@@ -93,7 +93,7 @@ Units: **3189**
 ## Known limitations
 
 - GPU parity (G3) not executed: no NVIDIA device on this host; `flexkit gate gpu --all` reports `skipped:no-gpu`.
-- D3D solver shaders: 65/84 structurally matched, 16 blocked with a recorded front-end limit, 3 still unreconstructed (indices [68, 75, 78]). HLSL is compiled by vkd3d-shader while the originals come from Microsoft fxc/dxc, so opcode-level equality is unattainable here; the gate therefore checks the shader interface.
+- D3D solver shaders: 65/84 structurally matched, 19 blocked with a recorded front-end limit, 0 still unreconstructed (indices []). HLSL is compiled by vkd3d-shader while the originals come from Microsoft fxc/dxc, so opcode-level equality is unattainable here; the gate therefore checks the shader interface.
 - nvflex: 39 strong symbols absent, all internal `__global__` launch wrappers: with `-rdc=true` (required for the shared `__constant__ gParams`/`gBounds`) nvcc 13 device-links them as local symbols, while CUDA 9.2 exported them `GLOBAL DEFAULT`. The public `NvFlex*` surface and every `__device_stub__` are exported, so the consumer-visible ABI is complete.
 - nvflexext: 2 strong symbol(s) absent; the Ext device kernel launch wrappers are `GLOBAL HIDDEN` under nvcc 13 for the verbatim shipped source, while CUDA 9.2 exported them `GLOBAL DEFAULT`.
 - REA's Ghidra provider requires an MCP client restart to pick up the pinned 12.1.4 install; pseudocode in this tree was produced offline with the same Ghidra via `flexkit decomp`.
@@ -109,4 +109,4 @@ Units: **3189**
 - headers_identical: `True`
 - vendored_untouched: `True`
 - gpu_gate: `skipped:no-gpu (FLEX_GPU!=1)`
-- dxbc: `{'shaders': 84, 'matched': 65, 'blocked_with_evidence': 16, 'blocked_indices': [1, 5, 9, 16, 27, 28, 31, 45, 46, 48, 49, 50, 51, 54, 61, 70], 'not_reconstructed': 3, 'not_reconstructed_indices': [68, 75, 78]}`
+- dxbc: `{'shaders': 84, 'matched': 65, 'blocked_with_evidence': 19, 'blocked_indices': [1, 5, 9, 16, 27, 28, 31, 45, 46, 48, 49, 50, 51, 54, 61, 68, 70, 75, 78], 'not_reconstructed': 0, 'not_reconstructed_indices': []}`
