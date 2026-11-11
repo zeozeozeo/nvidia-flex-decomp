@@ -11,6 +11,12 @@
 //
 // The shipped object's .text is identical in the debug and release archives, so
 // the -O3 debug-object line table is also the release baseline.
+
+// SolveShapes<true/false> are blocked kernel units (no definition in the
+// reconstructed library yet); see the comment at their launch site.
+#ifndef FLEXDECOMP_HAVE_SOLVESHAPES
+#define FLEXDECOMP_HAVE_SOLVESHAPES 0
+#endif
 #include "nvflex/all.h"
 #include "NvFlex.h"
 
@@ -225,7 +231,7 @@ extern __global__ void CompactDiffuseParticles(const Vec4* diffusePositions,
                                                Vec4* diffusePositionsNew,
                                                Vec4* diffuseVelocitiesNew,
                                                const int* numDiffuseParticles,
-                                               const int* numDiffuseParticlesNew);
+                                               int* numDiffuseParticlesNew);
 
 // ---------------------------------------------------------------------------
 // helpers
@@ -681,8 +687,16 @@ void Update(NvFlexSolver* s, float dt, int substep, int numSubsteps)
         }
 
         // 4260-4312 Solve Shapes
+        //
+        // The two SolveShapes<true/false> device kernels are blocked in the
+        // ledger (PTX 11675-19602 decoded only partially by their owner), so no
+        // definition exists in the reconstructed library.  Referencing them
+        // would make libnvflex.so fail to link for every module consumer; the
+        // launch is therefore compiled out until the kernels land.  Flip
+        // FLEXDECOMP_HAVE_SOLVESHAPES to 1 (or drop the guard) then.
         {
             DetailTimer timer("Solve Shapes", lib->mTimers);
+#if FLEXDECOMP_HAVE_SOLVESHAPES
             if (s->mNumRigids != 0)
             {
                 if (s->mRigidPlasticThresholds != 0 && s->mRigidPlasticCreeps != 0)
@@ -700,6 +714,7 @@ void Update(NvFlexSolver* s, float dt, int substep, int numSubsteps)
                         sortedNewPositions, s->mRigidRotations, s->mRigidTranslations, s->mNormals,
                         deltas, s->mNumRigids, 0.0f);
             }
+#endif
         }
 
         // 4320-4332 Apply Deltas

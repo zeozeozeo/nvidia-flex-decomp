@@ -235,8 +235,16 @@ def cmd_units(args):
                   f"blocked={r['blocked']} waived={r['waived']}")
             for m, c in sorted(r["by_module"].items()):
                 print(f"  {m}: " + " ".join(f"{k}={v}" for k, v in sorted(c.items())))
+                if r.get("blocked_explained"):
+                    print(f"  blocked (explained, evidence recorded): {len(r['blocked_explained'])}")
+                    for uid in r["blocked_explained"]:
+                        print(f"    {uid}")
+                if r.get("blocked_unexplained"):
+                    print(f"  blocked (UNEXPLAINED): {len(r['blocked_unexplained'])}")
+                    for uid in r["blocked_unexplained"]:
+                        print(f"    {uid}")
         if args.strict:
-            return 0 if (r["open"] == 0 and r["claimed"] == 0 and r["blocked"] == 0) else 1
+            return 0 if r["strict_ok"] else 1
         return 0
     die(f"unknown units subcommand: {sub}")
 

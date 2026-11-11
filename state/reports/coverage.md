@@ -4,10 +4,10 @@ Units: **3189**
 
 | status | count |
 |---|---|
-| verified | 207 |
+| verified | 258 |
 | decompiled | 0 |
 | claimed | 0 |
-| open | 51 |
+| open | 0 |
 | blocked | 2 |
 | waived | 2929 |
 
@@ -16,7 +16,7 @@ Units: **3189**
 | module | verified | decompiled | claimed | open | blocked | waived |
 |---|---|---|---|---|---|---|
 | nvflex.bvh | 28 | 0 | 0 | 0 | 0 | 10 |
-| nvflex.flex | 85 | 0 | 0 | 51 | 2 | 44 |
+| nvflex.flex | 136 | 0 | 0 | 0 | 2 | 44 |
 | nvflex.sort | 3 | 0 | 0 | 0 | 0 | 10 |
 | nvflex.util | 22 | 0 | 0 | 0 | 0 | 2 |
 | nvflexdevice.flexdevice | 6 | 0 | 0 | 0 | 0 | 0 |
@@ -34,7 +34,7 @@ Units: **3189**
 
 ## Gates
 
-- static pass rate: 0.25
+- static pass rate: 0.268
 - diff pass rate: 1.0
 - gpu: skipped:no-gpu (FLEX_GPU!=1)
 
@@ -89,27 +89,29 @@ Units: **3189**
 
 ## Exports
 
-| library | shipped | reconstructed | missing |
-|---|---|---|---|
-| nvflex | 198 | 221 | 33 |
-| nvflexdevice | 7 | 7 | 0 |
-| nvflexext | 60 | 60 | 2 |
+| library | shipped (strong) | reconstructed | missing | public API | present | missing |
+|---|---|---|---|---|---|---|
+| nvflex | 198 | 217 | 39 | 77 | 77 | 0 |
+| nvflexdevice | 7 | 7 | 0 | 0 | 0 | 0 |
+| nvflexext | 60 | 60 | 2 | 36 | 36 | 0 |
 
 ## Known limitations
 
 - GPU parity (G3) not executed: no NVIDIA device on this host; `flexkit gate gpu --all` reports `skipped:no-gpu`.
 - 83 of 84 D3D solver shaders are not reconstructed: HLSL must be authored from D3D assembly, and the original bytecode was produced by Microsoft fxc/dxc while the only offline compiler here is vkd3d-shader, so opcode-level equality is unattainable on this host.
+- nvflex: 39 strong symbols absent, all internal `__global__` launch wrappers: with `-rdc=true` (required for the shared `__constant__ gParams`/`gBounds`) nvcc 13 device-links them as local symbols, while CUDA 9.2 exported them `GLOBAL DEFAULT`. The public `NvFlex*` surface and every `__device_stub__` are exported, so the consumer-visible ABI is complete.
 - nvflexext: 2 strong symbol(s) absent; the Ext device kernel launch wrappers are `GLOBAL HIDDEN` under nvcc 13 for the verbatim shipped source, while CUDA 9.2 exported them `GLOBAL DEFAULT`.
 - 2 unit(s) blocked with recorded evidence (see below).
 - REA's Ghidra provider requires an MCP client restart to pick up the pinned 12.1.4 install; pseudocode in this tree was produced offline with the same Ghidra via `flexkit decomp`.
 
 ## Acceptance
 
-- open_zero: `False`
+- open_zero: `True`
 - claimed_zero: `True`
 - blocked_zero: `False`
 - all_verified: `False`
-- exports_match: `False`
+- public_api_match: `True`
+- exports_strict_match: `False`
 - headers_identical: `True`
 - vendored_untouched: `True`
 - gpu_gate: `skipped:no-gpu (FLEX_GPU!=1)`

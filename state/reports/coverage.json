@@ -8,10 +8,11 @@
       "not_reconstructed": 83,
       "shaders": 84
     },
-    "exports_match": false,
+    "exports_strict_match": false,
     "gpu_gate": "skipped:no-gpu (FLEX_GPU!=1)",
     "headers_identical": true,
-    "open_zero": false,
+    "open_zero": true,
+    "public_api_match": true,
     "vendored_untouched": true
   },
   "blocked": [
@@ -27,35 +28,35 @@
   "exports": {
     "nvflex": {
       "counts": {
-        "extra": 56,
-        "missing": 33,
-        "missing_weak": 32,
+        "extra": 58,
+        "missing": 39,
+        "missing_weak": 42,
         "orig": 198,
         "orig_weak": 43,
-        "recon": 221,
-        "recon_weak": 17
+        "recon": 217,
+        "recon_weak": 7
       },
       "missing_sample": [
-        "NvFlexAcquireContext",
-        "NvFlexAllocBuffer",
-        "NvFlexFlush",
-        "NvFlexFreeBuffer",
-        "NvFlexGetVersion",
-        "NvFlexInit",
-        "NvFlexMap",
-        "NvFlexRegisterD3DBuffer",
-        "NvFlexRegisterOGLBuffer",
-        "NvFlexRestoreContext",
-        "NvFlexShutdown",
-        "NvFlexUnmap",
-        "NvFlexUnregisterD3DBuffer",
-        "NvFlexUnregisterOGLBuffer",
-        "_Z10InitParamsP12NvFlexSolver",
-        "_Z14NvFlexSetFenceP13NvFlexLibrary",
-        "_Z15NvFlexWaitFenceP13NvFlexLibrary",
+        "_Z10CreateGridiPKiPiS1_",
+        "_Z12SolveSpringsPiPfS0_PKii8Vec3Iter",
+        "_Z13CollideShapes22FlexCollisionShapeData8Vec3IterPKiiPiP8XVector4IfES6_ff",
+        "_Z15CalculateBoundsiPKiPK8XVector4IfEP8XVector3IfES7_",
+        "_Z15SmoothPositionsiPK8XVector4IfEPKiS4_S4_S4_PS0_S5_",
+        "_Z15UpdateTrianglesi8Vec3IterS_PKiS1_P8XVector3IfES3_S_f",
+        "_Z16CollideParticlesiPKiS0_S0_8Vec3IterPK8XVector4IfES0_ffiPiS6_",
+        "_Z16CollideTriangles22FlexCollisionShapeData8Vec3IterPKiiPiP8XVector4IfES6_ff",
+        "_Z16ReorderParticlesiPK8XVector4IfES2_PKiS4_PiPS0_S6_S5_",
+        "_Z16UpdateVelocitiesi8Vec3IterS_S_f",
+        "_Z17CreateCellIndicesiPKiPK8XVector4IfEPiS5_f",
         "_Z17InitActiveIndicesiPi",
+        "_Z18CalculateVorticityi8Vec3IterPK8XVector3IfES_PiPKiS6_PK8XVector4IfES6_PS8_",
+        "_Z19CalculateAnisotropyiPKiS0_S0_S0_PK8XVector4IfEPS2_S5_S5_",
+        "_Z19UpdateVertexNormalsiPKiS0_PK8XVector3IfE8Vec3Iter",
         "_Z20TransformShapeBoundsP8XVector4IfES1_PKS0_PK5XQuatIfES3_S7_PK23NvFlexCollisionGeometryPKiiPK22FlexConvexMeshInternalPK24FlexTriangleMeshInternal",
-        "_Z21ComputeTriangleBoundsPK8XVector4IfEPKiiPS0_S5_"
+        "_Z21ComputeTriangleBoundsPK8XVector4IfEPKiiPS0_S5_",
+        "_Z21SolveInflatableVolumePK14FlexInflatable8Vec3IterPKiS4_PKfS2_f",
+        "_Z22CreateDiffuseParticlesi8Vec3IterPKfP8XVector4IfES4_PiiS1_f",
+        "_Z22NormalizeVertexNormalsiPKiPK8XVector4IfEPS2_"
       ],
       "orig": [
         "NvFlexAcquireContext",
@@ -257,7 +258,14 @@
         "_ZN63_GLOBAL__N__39_tmpxft_00000f25_00000000_6_flex_cpp1_ii_dbca32079WriteDataEPviP12NvFlexBufferii",
         "g_savedContext"
       ],
+      "public_api": {
+        "missing": [],
+        "orig": 77,
+        "recon": 77
+      },
       "recon": [
+        "NvFlexAcquireContext",
+        "NvFlexAllocBuffer",
         "NvFlexComputeWaitForGraphics",
         "NvFlexCopyDeviceToHost",
         "NvFlexCreateConvexMesh",
@@ -268,6 +276,8 @@
         "NvFlexDestroyDistanceField",
         "NvFlexDestroySolver",
         "NvFlexDestroyTriangleMesh",
+        "NvFlexFlush",
+        "NvFlexFreeBuffer",
         "NvFlexGetActive",
         "NvFlexGetActiveCount",
         "NvFlexGetAnisotropy",
@@ -300,7 +310,13 @@
         "NvFlexGetTriangleMeshBounds",
         "NvFlexGetTriangleMeshes",
         "NvFlexGetVelocities",
+        "NvFlexGetVersion",
+        "NvFlexInit",
+        "NvFlexMap",
+        "NvFlexRegisterD3DBuffer",
+        "NvFlexRegisterOGLBuffer",
         "NvFlexRegisterSolverCallback",
+        "NvFlexRestoreContext",
         "NvFlexSetActive",
         "NvFlexSetActiveCount",
         "NvFlexSetDebug",
@@ -317,18 +333,20 @@
         "NvFlexSetSolverDescDefaults",
         "NvFlexSetSprings",
         "NvFlexSetVelocities",
+        "NvFlexShutdown",
+        "NvFlexUnmap",
+        "NvFlexUnregisterD3DBuffer",
+        "NvFlexUnregisterOGLBuffer",
         "NvFlexUpdateConvexMesh",
         "NvFlexUpdateDistanceField",
         "NvFlexUpdateSolver",
         "NvFlexUpdateTriangleMesh",
-        "_Z10CreateGridiPKiPiS1_",
         "_Z10CudaUnloadP8CUctx_st",
         "_Z10DumpMemoryPKc",
+        "_Z10InitParamsP12NvFlexSolver",
         "_Z112__device_stub__Z91_ZN3cub19RadixSortScanKernelINS_23DeviceRadixSortDispatchILb0EiiiE13PtxScanPolicyEiEEvPT0_iPiiPii",
         "_Z11BuildLeavesPK8XVector4IfES2_iPKiPiS5_P14PackedNodeHalfS7_",
         "_Z11FlexLogFuncPFv19NvFlexErrorSeverityPKcS1_iES_S1_S1_iz",
-        "_Z12SolveSpringsPiPfS0_PKii8Vec3Iter",
-        "_Z13CollideShapes22FlexCollisionShapeData8Vec3IterPKiiPiP8XVector4IfES6_ff",
         "_Z13CreateTexturePK8XVector4IfEi",
         "_Z13CreateTexturePKfi",
         "_Z13CreateTexturePKii",
@@ -336,42 +354,24 @@
         "_Z14CudaGetContextv",
         "_Z14CudaSetContextP8CUctx_st",
         "_Z14DestroyTexturey",
-        "_Z15CalculateBoundsiPKiPK8XVector4IfEP8XVector3IfES7_",
-        "_Z15SmoothPositionsiPK8XVector4IfEPKiS4_S4_S4_PS0_S5_",
+        "_Z14NvFlexSetFenceP13NvFlexLibrary",
+        "_Z15NvFlexWaitFenceP13NvFlexLibrary",
         "_Z15SortCellIndicesP13NvFlexLibraryPiS1_ii",
-        "_Z15UpdateTrianglesi8Vec3IterS_PKiS1_P8XVector3IfES3_S_f",
         "_Z161__device_stub__Z20TransformShapeBoundsP8XVector4IfES1_PKS0_PK5XQuatIfES3_S7_PK23NvFlexCollisionGeometryPKiiPK22FlexConvexMeshInternalPK24FlexTriangleMeshInternalP8XVector4IfES1_PKS0_PK5XQuatIfES3_S7_PK23NvFlexCollisionGeometryPKiiPK22FlexConvexMeshInternalPK24FlexTriangleMeshInternal",
-        "_Z16CollideParticlesiPKiS0_S0_8Vec3IterPK8XVector4IfES0_ffiPiS6_",
-        "_Z16CollideTriangles22FlexCollisionShapeData8Vec3IterPKiiPiP8XVector4IfES6_ff",
         "_Z16CudaContextCheckPFv19NvFlexErrorSeverityPKcS1_iEP8CUctx_st",
-        "_Z16ReorderParticlesiPK8XVector4IfES2_PKiS4_PiPS0_S6_S5_",
-        "_Z16UpdateVelocitiesi8Vec3IterS_S_f",
-        "_Z17CreateCellIndicesiPKiPK8XVector4IfEPiS5_f",
         "_Z17CreateCudaContextiPP8CUctx_st",
         "_Z17CudaSafeDelayLoadPFv19NvFlexErrorSeverityPKcS1_iEiPP8CUctx_st",
         "_Z186__device_stub__Z135_ZN3cub22RadixSortUpsweepKernelINS_23DeviceRadixSortDispatchILb0EiiiE16PtxUpsweepPolicyELb0EiiEEvPT1_PT2_S6_iibNS_13GridEvenShareIS6_EEPiS_iiibN3cub13GridEvenShareIiEEPiS_iiibRN3cub13GridEvenShareIiEE",
         "_Z189__device_stub__Z138_ZN3cub22RadixSortUpsweepKernelINS_23DeviceRadixSortDispatchILb0EiiiE19PtxAltUpsweepPolicyELb0EiiEEvPT1_PT2_S6_iibNS_13GridEvenShareIS6_EEPiS_iiibN3cub13GridEvenShareIiEEPiS_iiibRN3cub13GridEvenShareIiEE",
         "_Z18CalculateKeyDeltasPKiPii",
-        "_Z18CalculateVorticityi8Vec3IterPK8XVector3IfES_PiPKiS6_PK8XVector4IfES6_PS8_",
         "_Z18ComputeTotalBoundsPK8XVector4IfES2_P8XVector3IfES5_i",
-        "_Z19CalculateAnisotropyiPKiS0_S0_S0_PK8XVector4IfEPS2_S5_S5_",
-        "_Z19UpdateVertexNormalsiPKiS0_PK8XVector3IfE8Vec3Iter",
         "_Z209__device_stub__Z151_ZN3cub24RadixSortDownsweepKernelINS_23DeviceRadixSortDispatchILb0EiiiE18PtxDownsweepPolicyELb0EiiiEEvPT1_S5_PT2_S7_PT3_S8_iibbNS_13GridEvenShareIS8_EEPiS_S_S_S_iiibbN3cub13GridEvenShareIiEEPiS_S_S_S_iiibbRN3cub13GridEvenShareIiEE",
         "_Z20CalculateMortonCodesPK8XVector4IfES2_PKiiPK8XVector3IfES8_PiS9_",
         "_Z20ComputeTotalInvEdgesPK8XVector3IfES2_PS0_",
         "_Z212__device_stub__Z154_ZN3cub24RadixSortDownsweepKernelINS_23DeviceRadixSortDispatchILb0EiiiE21PtxAltDownsweepPolicyELb0EiiiEEvPT1_S5_PT2_S7_PT3_S8_iibbNS_13GridEvenShareIS8_EEPiS_S_S_S_iiibbN3cub13GridEvenShareIiEEPiS_S_S_S_iiibbRN3cub13GridEvenShareIiEE",
-        "_Z21SolveInflatableVolumePK14FlexInflatable8Vec3IterPKiS4_PKfS2_f",
-        "_Z22CreateDiffuseParticlesi8Vec3IterPKfP8XVector4IfES4_PiiS1_f",
         "_Z22FlexDeviceFreeInternalPv",
-        "_Z22NormalizeVertexNormalsiPKiPK8XVector4IfEPS2_",
-        "_Z22UpdateDiffuseParticlesP8XVector4IfES1_PKiS3_S3_S3_S3_S3_8Vec3Iterffff",
-        "_Z23CompactDiffuseParticlesPK8XVector4IfES2_PS0_S3_PKiPi",
         "_Z24FlexDeviceMallocInternalPPvmPKcS2_i",
         "_Z24NvFlexGetRigidTransformsP12NvFlexSolverP12NvFlexBufferS2_",
-        "_Z25ClampDiffuseParticleCountPiS_i",
-        "_Z26ContinuousShockPropagationiP8XVector4IfEPi",
-        "_Z26SolveDensitiesSimpleFluidsi8Vec3IterS_PKiPKfPK8XVector4IfES1_S1_S1_fPS5_",
-        "_Z26SolveDensitiesSimpleSolidsi8Vec3IterS_PKiPKfPK8XVector4IfES1_S1_S1_fPS5_",
         "_Z37__device_stub__Z10CreateGridiPKiPiS1_iPKiPiS1_",
         "_Z38__device_stub__Z17InitActiveIndicesiPiiPi",
         "_Z42__device_stub__Z18CalculateKeyDeltasPKiPiiPKiPii",
@@ -389,6 +389,7 @@
         "_Z67__device_stub__Z15SmoothPositionsiPK8XVector4IfEPKiS4_S4_S4_PS0_S5_iPK8XVector4IfEPKiS4_S4_S4_PS0_S5_",
         "_Z67__device_stub__Z19UpdateVertexNormalsiPKiS0_PK8XVector3IfE8Vec3IteriPKiS0_PK8XVector3IfER8Vec3Iter",
         "_Z67__device_stub__Z7PredictiPKiPK8XVector4IfES0_8XVector3IfEfPS2_PS6_fiPKiPK8XVector4IfES0_R8XVector3IfEfPS2_PS6_f",
+        "_Z6UpdateP12NvFlexSolverfii",
         "_Z70__device_stub__Z15UpdateTrianglesi8Vec3IterS_PKiS1_P8XVector3IfES3_S_fiR8Vec3IterS0_PKiS2_P8XVector3IfERS4_S0_f",
         "_Z70__device_stub__Z16ReorderParticlesiPK8XVector4IfES2_PKiS4_PiPS0_S6_S5_iPK8XVector4IfES2_PKiS4_PiPS0_S6_S5_",
         "_Z70__device_stub__Z18ComputeTotalBoundsPK8XVector4IfES2_P8XVector3IfES5_iPK8XVector4IfES2_P8XVector3IfES5_i",
@@ -400,12 +401,10 @@
         "_Z78__device_stub__Z16CollideParticlesiPKiS0_S0_8Vec3IterPK8XVector4IfES0_ffiPiS6_iPKiS0_S0_R8Vec3IterPK8XVector4IfES0_ffiPiS7_",
         "_Z79__device_stub__Z21SolveInflatableVolumePK14FlexInflatable8Vec3IterPKiS4_PKfS2_fPK14FlexInflatableR8Vec3IterPKiS5_PKfS3_f",
         "_Z7FreeBVHR3BVH",
-        "_Z7PredictiPKiPK8XVector4IfES0_8XVector3IfEfPS2_PS6_f",
         "_Z81__device_stub__Z20CalculateMortonCodesPK8XVector4IfES2_PKiiPK8XVector3IfES8_PiS9_PK8XVector4IfES2_PKiiPK8XVector3IfES8_PiS9_",
         "_Z87__device_stub__Z22UpdateDiffuseParticlesP8XVector4IfES1_PKiS3_S3_S3_S3_S3_8Vec3IterffffP8XVector4IfES1_PKiS3_S3_S3_S3_S3_R8Vec3Iterffff",
         "_Z88__device_stub__Z13CollideShapes22FlexCollisionShapeData8Vec3IterPKiiPiP8XVector4IfES6_ffR22FlexCollisionShapeDataR8Vec3IterPKiiPiP8XVector4IfES8_ff",
         "_Z8CloneBVHRK3BVHRS_",
-        "_Z8FinalizeiPK8XVector4IfES2_PKfS2_PKiPS0_P8XVector3IfEPfff",
         "_Z8getTimerR10CudaTimersPKc",
         "_Z90__device_stub__Z26SolveDensitiesSimpleFluidsi8Vec3IterS_PKiPKfPK8XVector4IfES1_S1_S1_fPS5_iR8Vec3IterS0_PKiPKfPK8XVector4IfES2_S2_S2_fPS6_",
         "_Z90__device_stub__Z26SolveDensitiesSimpleSolidsi8Vec3IterS_PKiPKfPK8XVector4IfES1_S1_S1_fPS5_iR8Vec3IterS0_PKiPKfPK8XVector4IfES2_S2_S2_fPS6_",
@@ -459,24 +458,27 @@
         "_ZN9CudaTimerC2EPKcR10CudaTimers",
         "_ZN9CudaTimerD1Ev",
         "_ZN9CudaTimerD2Ev",
+        "__cudaRegisterLinkedBinary_46c61157_13_flex_part2_cu_dbca3207",
         "__cudaRegisterLinkedBinary_5473beb9_13_flex_part1_cu_c3f544ee",
         "__cudaRegisterLinkedBinary_63ad4e8b_13_flex_part4_cu_addc5381",
-        "__cudaRegisterLinkedBinary_86f6839c_7_flex_cu_1dcd7855_245117",
+        "__cudaRegisterLinkedBinary_86f6839c_7_flex_cu_1dcd7855_326689",
         "__cudaRegisterLinkedBinary_98decf99_12_bvh_part1_cu_e6b7b7b7",
         "__cudaRegisterLinkedBinary_ad92b671_7_sort_cu_a06bd971",
         "__cudaRegisterLinkedBinary_b0a2fb70_6_bvh_cu_001947f6",
         "__cudaRegisterLinkedBinary_c9a48600_13_flex_part6_cu_5ed38fd4",
         "__cudaRegisterLinkedBinary_db1129ee_13_flex_part5_cu_d9d02b55",
         "__cudaRegisterLinkedBinary_fe7a7632_13_flex_part3_cu_seed1",
+        "__fatbinwrap_46c61157_13_flex_part2_cu_dbca3207",
         "__fatbinwrap_5473beb9_13_flex_part1_cu_c3f544ee",
         "__fatbinwrap_63ad4e8b_13_flex_part4_cu_addc5381",
-        "__fatbinwrap_86f6839c_7_flex_cu_1dcd7855_245117",
+        "__fatbinwrap_86f6839c_7_flex_cu_1dcd7855_326689",
         "__fatbinwrap_98decf99_12_bvh_part1_cu_e6b7b7b7",
         "__fatbinwrap_ad92b671_7_sort_cu_a06bd971",
         "__fatbinwrap_b0a2fb70_6_bvh_cu_001947f6",
         "__fatbinwrap_c9a48600_13_flex_part6_cu_5ed38fd4",
         "__fatbinwrap_db1129ee_13_flex_part5_cu_d9d02b55",
         "__fatbinwrap_fe7a7632_13_flex_part3_cu_seed1",
+        "g_savedContext",
         "seed1",
         "seed2"
       ]
@@ -501,6 +503,11 @@
         "_ZN5physx29physxDevGetCudaOrdinalWrapperEPi",
         "_ZN5physx32physxDevUsingDedicatedGPUWrapperEv"
       ],
+      "public_api": {
+        "missing": [],
+        "orig": 0,
+        "recon": 0
+      },
       "recon": [
         "CU_ETID_PhysXInterface",
         "_Z29NvFlexDeviceCreateCudaContexti",
@@ -587,6 +594,11 @@
         "seed1",
         "seed2"
       ],
+      "public_api": {
+        "missing": [],
+        "orig": 36,
+        "recon": 36
+      },
       "recon": [
         "NvFlexExtAllocParticles",
         "NvFlexExtCreateClothFromMesh",
@@ -664,19 +676,19 @@
     },
     "runs": {
       "diff": {
-        "fail": 21,
-        "pass": 215
+        "fail": 25,
+        "pass": 252
       },
       "dxbc": {
-        "fail": 339,
+        "fail": 759,
         "pass": 2
       },
       "static": {
-        "fail": 1364,
-        "pass": 1028
+        "fail": 1406,
+        "pass": 1195
       }
     },
-    "static_pass_rate": 0.25
+    "static_pass_rate": 0.268
   },
   "headers": {
     "all_identical": true,
@@ -698,6 +710,7 @@
   "limitations": [
     "GPU parity (G3) not executed: no NVIDIA device on this host; `flexkit gate gpu --all` reports `skipped:no-gpu`.",
     "83 of 84 D3D solver shaders are not reconstructed: HLSL must be authored from D3D assembly, and the original bytecode was produced by Microsoft fxc/dxc while the only offline compiler here is vkd3d-shader, so opcode-level equality is unattainable on this host.",
+    "nvflex: 39 strong symbols absent, all internal `__global__` launch wrappers: with `-rdc=true` (required for the shared `__constant__ gParams`/`gBounds`) nvcc 13 device-links them as local symbols, while CUDA 9.2 exported them `GLOBAL DEFAULT`. The public `NvFlex*` surface and every `__device_stub__` are exported, so the consumer-visible ABI is complete.",
     "nvflexext: 2 strong symbol(s) absent; the Ext device kernel launch wrappers are `GLOBAL HIDDEN` under nvcc 13 for the verbatim shipped source, while CUDA 9.2 exported them `GLOBAL DEFAULT`.",
     "2 unit(s) blocked with recorded evidence (see below).",
     "REA's Ghidra provider requires an MCP client restart to pick up the pinned 12.1.4 install; pseudocode in this tree was produced offline with the same Ghidra via `flexkit decomp`."
@@ -705,13 +718,12 @@
   "pending": {
     "claimed": 0,
     "decompiled": 0,
-    "open": 51
+    "open": 0
   },
   "units": {
     "by_kind": {
       "host": {
-        "open": 51,
-        "verified": 153,
+        "verified": 204,
         "waived": 566
       },
       "inline": {
@@ -734,8 +746,7 @@
       },
       "nvflex.flex": {
         "blocked": 2,
-        "open": 51,
-        "verified": 85,
+        "verified": 136,
         "waived": 44
       },
       "nvflex.sort": {
@@ -795,8 +806,7 @@
     },
     "counts": {
       "blocked": 2,
-      "open": 51,
-      "verified": 207,
+      "verified": 258,
       "waived": 2929
     },
     "total": 3189

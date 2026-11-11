@@ -1,0 +1,13 @@
+{
+  "allow_missing_calls": [
+    "_ZdlPv",
+    "_Unwind_Resume"
+  ],
+  "divergence_reason": "delete-on-throw landing pad: the class constructor is not declared in recovered.h, so g++/nvcc emits no EH cleanup around `new`; the constructor cannot throw",
+  "harness": "no differential vector: unit issues CUDA runtime calls (no GPU on this host); G1 only",
+  "parity": "needs-gpu",
+  "signature": "NvFlexRegisterOGLBuffer(NvFlexLibrary*, int, int, int)",
+  "source": "src/cuda/flex.cu",
+  "symbol": "NvFlexRegisterOGLBuffer",
+  "unit": "nvflex.flex#NvFlexRegisterOGLBuffer"
+}

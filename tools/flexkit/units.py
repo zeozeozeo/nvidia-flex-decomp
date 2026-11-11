@@ -433,9 +433,21 @@ def status(strict: bool = False) -> dict:
         by_module[r["module"]][r["status"]] += 1
         by_kind.setdefault(r["kind"], {}).setdefault(r["status"], 0)
         by_kind[r["kind"]][r["status"]] += 1
+    # a blocked unit with a recorded evidence gap is *explained*: the plan's
+    # acceptance requires zero unexplained blocks, and the report lists each one
+    with ledger.connect() as c:
+        blocked_rows = c.execute(
+            "SELECT u.id, COALESCE(u.notes,'') AS notes, "
+            "(SELECT COUNT(*) FROM unknowns k WHERE k.unit_id=u.id) AS unknowns "
+            "FROM units u WHERE u.status='blocked'").fetchall()
+    explained = [r["id"] for r in blocked_rows
+                 if (r["notes"] or "").strip() or r["unknowns"]]
+    unexplained = [r["id"] for r in blocked_rows if r["id"] not in explained]
     out = {"total": len(rows), **counts, "by_module": by_module, "by_kind": by_kind,
-           "strict": strict}
-    out["strict_ok"] = counts["open"] == 0 and counts["claimed"] == 0 and counts["blocked"] == 0
+           "strict": strict, "blocked_explained": explained,
+           "blocked_unexplained": unexplained}
+    out["strict_ok"] = (counts["open"] == 0 and counts["claimed"] == 0
+                        and not unexplained)
     return out
 
 

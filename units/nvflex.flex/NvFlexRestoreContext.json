@@ -1,0 +1,8 @@
+{
+  "harness": "no differential vector: unit issues CUDA runtime calls (no GPU on this host); G1 only",
+  "parity": "needs-gpu",
+  "signature": "NvFlexRestoreContext(NvFlexLibrary*)",
+  "source": "src/cuda/flex.cu",
+  "symbol": "NvFlexRestoreContext",
+  "unit": "nvflex.flex#NvFlexRestoreContext"
+}

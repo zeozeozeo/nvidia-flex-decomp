@@ -1,0 +1,24 @@
+{
+  "allow_missing_calls": [
+    "_Unwind_Resume",
+    "_Znwm",
+    "cudaEventCreate",
+    "cudaEventRecord",
+    "cudaLaunchKernel",
+    "__cudaPopCallConfiguration",
+    "__cxa_guard_acquire",
+    "__cxa_guard_release",
+    "_ZSt29_Rb_tree_insert_and_rebalancebSt18_Rb_tree_node_baseS0_RS_",
+    "_ZNSt6vectorI14CudaRangeTimerSaIS0_EE14_M_fill_insertEN9__gnu_cxx17__normal_iteratorIPS0_S2_EEmRKS0_"
+  ],
+  "allow_missing_strings": [
+    "Update Triangles"
+  ],
+  "divergence_reason": "kernel-launch and timer plumbing that the shipped -O3 object inlines into Update: cudaLaunchKernel/__cudaPopCallConfiguration (CUDA 9.2 launch expansion), the CudaTimer constructor body (CudaRangeTimerPool::alloc/initRange, std::vector/std::_Rb_tree node allocation => _Znwm, __cxa_guard_acquire/release, _Unwind_Resume) and cudaEventRecord/cudaEventCreate. The reconstruction keeps those in their owning translation units (util.cpp / flex.part1.cu) and calls the out-of-line C1/D1 symbols, which is what the shipped library does at link level. Behaviour identical; only inlining placement differs.",
+  "harness": "no differential vector: unit issues CUDA runtime calls (no GPU on this host); G1 only",
+  "parity": "needs-gpu",
+  "signature": "Update(NvFlexSolver*, float, int, int)",
+  "source": "src/cuda/flex.cu",
+  "symbol": "_Z6UpdateP12NvFlexSolverfii",
+  "unit": "nvflex.flex#_Z6UpdateP12NvFlexSolverfii"
+}

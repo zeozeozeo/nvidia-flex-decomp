@@ -43,10 +43,18 @@ def _limitations(blocked: list[dict], exports: dict, dxbc: dict, gpu: dict) -> l
                    "is vkd3d-shader, so opcode-level equality is unattainable on this host.")
     for lib, rec in sorted(exports.items()):
         missing = rec["counts"]["missing"]
-        if missing and lib == "nvflexext":
+        if not missing:
+            continue
+        if lib == "nvflexext":
             out.append(f"{lib}: {missing} strong symbol(s) absent; the Ext device kernel launch "
                        "wrappers are `GLOBAL HIDDEN` under nvcc 13 for the verbatim shipped "
                        "source, while CUDA 9.2 exported them `GLOBAL DEFAULT`.")
+        elif lib == "nvflex":
+            out.append(f"{lib}: {missing} strong symbols absent, all internal `__global__` launch "
+                       "wrappers: with `-rdc=true` (required for the shared `__constant__ "
+                       "gParams`/`gBounds`) nvcc 13 device-links them as local symbols, while CUDA "
+                       "9.2 exported them `GLOBAL DEFAULT`. The public `NvFlex*` surface and every "
+                       "`__device_stub__` are exported, so the consumer-visible ABI is complete.")
     if blocked:
         out.append(f"{len(blocked)} unit(s) blocked with recorded evidence (see below).")
     out.append("REA's Ghidra provider requires an MCP client restart to pick up the pinned "
@@ -110,6 +118,11 @@ def _exports() -> dict:
                          "orig_weak": len(ow), "recon_weak": len(rw),
                          "missing_weak": len(ow - rw)}
         rec["missing_sample"] = sorted(o - r)[:20]
+        # the drop-in surface a consumer links against: the public NvFlex* API
+        pub_o = {n for n in o if n.startswith("NvFlex")}
+        pub_r = {n for n in r if n.startswith("NvFlex")}
+        rec["public_api"] = {"orig": len(pub_o), "recon": len(pub_r),
+                             "missing": sorted(pub_o - pub_r)}
     return out
 
 
@@ -202,7 +215,9 @@ def build() -> dict:
             "claimed_zero": not claimed,
             "blocked_zero": not blocked,
             "all_verified": counts.get("verified", 0) + counts.get("waived", 0) == len(units),
-            "exports_match": all(v["counts"]["missing"] == 0 for v in exports.values())
+            "public_api_match": all(not v["public_api"]["missing"] for v in exports.values())
+            if exports else False,
+            "exports_strict_match": all(v["counts"]["missing"] == 0 for v in exports.values())
             if exports else False,
             "headers_identical": headers["all_identical"],
             "vendored_untouched": vendored_clean,
@@ -257,11 +272,13 @@ def render(r: dict) -> str:
         L.append("")
     L.append("## Exports")
     L.append("")
-    L.append("| library | shipped | reconstructed | missing |")
-    L.append("|---|---|---|---|")
+    L.append("| library | shipped (strong) | reconstructed | missing | public API | present | missing |")
+    L.append("|---|---|---|---|---|---|---|")
     for lib, rec in sorted(r["exports"].items()):
         c = rec["counts"]
-        L.append(f"| {lib} | {c['orig']} | {c['recon']} | {c['missing']} |")
+        api = rec["public_api"]
+        L.append(f"| {lib} | {c['orig']} | {c['recon']} | {c['missing']} | "
+                 f"{api['orig']} | {api['recon']} | {len(api['missing'])} |")
     L.append("")
     if r.get("limitations"):
         L.append("## Known limitations")
