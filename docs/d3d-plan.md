@@ -141,3 +141,45 @@ Constant-buffer element structs taken from `RDEF` need `float4`-aligned padding
   emitted as `float4`/`float3`/`float2`/`float` runs, never as `float pad[N]`.
 * vkd3d-shader emits more instructions than fxc for the same source; the opcode
   multiset stays advisory in the gate and is not a fidelity claim.
+
+## Test harness: Wine (verified on this host)
+
+The D3D backend **is testable here**, despite no NVIDIA GPU: Wine 11.21 runs the
+shipped D3D11 stack on the Intel Vulkan driver, and it honours a DLL dropped
+next to the demo executable.
+
+Baseline — the shipped demo runs:
+
+```bash
+cd FleX/bin/win64
+WINEPREFIX=$HOME/.wine-flexdecomp WINEDEBUG=-all wine NvFlexDemoReleaseD3D_x64.exe
+# Flex: Warning: D3D11 Async compute was requested, but is not supported by this
+#   vendor 238 - ..\..\dx\contextD3D11\DeviceD3D11.cpp:178
+# Compute Device: Intel(R) HD Graphics 4000
+# Reshaping / Created soft in 92.98 ms Skinned in 1.91 ...
+```
+
+That run also leaks the backend's source layout from embedded strings:
+
+```
+..\..\dx\flex.cpp
+..\..\dx\utils.cpp
+..\..\dx\contextD3D11\DeviceD3D11.cpp
+..\..\dx\contextD3D12\DeviceD3D12.cpp
+```
+
+Drop-in replacement — a DLL built here is loaded in place of the shipped one
+(`WINEDEBUG=+loaddll` shows `Loaded L"Z:\tmp\d3dtest\NvFlexReleaseD3D_x64.dll"
+... native`):
+
+```bash
+python3 tools/parity/d3d/make_stub_dll.py /tmp/d3dprobe   # 83 exports, mingw-w64
+cp FleX/bin/win64/*.dll FleX/bin/win64/NvFlexDemoReleaseD3D_x64.exe /tmp/d3dtest/
+cp /tmp/d3dprobe/NvFlexReleaseD3D_x64.dll /tmp/d3dtest/
+cd /tmp/d3dtest && WINEPREFIX=$HOME/.wine-flexdecomp wine NvFlexDemoReleaseD3D_x64.exe
+```
+
+So the acceptance path for the D3D backend is: cross-compile `recon/src/dx/**`
+with `x86_64-w64-mingw32-g++` (mingw-w64 16.2 + `d3d11.h`/`d3d12.h` are
+installed), drop the DLL into a copy of `FleX/bin/win64`, and compare the demo's
+output against the shipped DLL. `FleX/` itself is never modified.
