@@ -1,0 +1,9 @@
+work/
+state/*.db
+state/*.db-*
+state/evidence/
+build/
+recon/build/
+tools/parity/gen/
+__pycache__/
+*.pyc
