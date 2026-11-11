@@ -127,6 +127,12 @@ def cmd_d3dcontext(args):
     if args.object:
         print(d3dcontext.list_object(args.object))
         return 0
+    if args.cls:
+        txt = d3dcontext.class_layout(args.cls)
+        if txt is None:
+            die(f"no class matching {args.cls!r}")
+        print(txt)
+        return 0
     b = d3dcontext.build(args.query)
     if b is None:
         die(f"no function matching {args.query!r}")
@@ -408,6 +414,7 @@ def build_parser() -> argparse.ArgumentParser:
     s = sub.add_parser("d3dcontext", help="evidence bundle for one D3D function")
     s.add_argument("query", nargs="?", default="")
     s.add_argument("--object", help="list an object's functions instead")
+    s.add_argument("--cls", help="print a class layout (bases, vtable, members)")
     s.add_argument("--json", action="store_true")
     s.set_defaults(func=cmd_d3dcontext)
 
