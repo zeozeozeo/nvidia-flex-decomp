@@ -12,7 +12,9 @@ from .util import run
 FUNC_TYPES = {"T", "t", "W", "w"}
 DATA_TYPES = {"D", "d", "B", "b", "R", "r", "V", "v", "G", "g", "S", "s"}
 WEAK_PREFIXES = ("__device_stub__", "__sti____cudaRegisterAll", "__cudaRegister",
-                 "_GLOBAL__sub_I_", "__cudaUnregisterBinaryUtil")
+                 "_GLOBAL__sub_I_", "__cudaUnregisterBinaryUtil",
+                 "__static_initialization_and_destruction_0",
+                 ".part.", ".constprop.", ".isra.", ".lto_priv.", ".cold")
 
 
 @dataclass

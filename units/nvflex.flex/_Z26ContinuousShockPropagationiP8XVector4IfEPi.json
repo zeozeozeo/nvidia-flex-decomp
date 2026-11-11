@@ -1,0 +1,24 @@
+{
+  "args": [
+    "int numParticles",
+    "Vec4* positions",
+    "int* neighborCounts"
+  ],
+  "inlined_away": [],
+  "launch": {
+    "block": [
+      256,
+      1,
+      1
+    ],
+    "grid": "ceil(numParticles/256)"
+  },
+  "outputs": [],
+  "parity": "kernel",
+  "ptx_entry": "_Z26ContinuousShockPropagationiP8XVector4IfEPi",
+  "ptx_lines": "958-1073",
+  "signature": "ContinuousShockPropagation(int, XVector4<float>*, int*)",
+  "source": "src/cuda/flex.cu:1087",
+  "symbol": "_Z26ContinuousShockPropagationiP8XVector4IfEPi",
+  "unit": "nvflex.flex#_Z26ContinuousShockPropagationiP8XVector4IfEPi"
+}

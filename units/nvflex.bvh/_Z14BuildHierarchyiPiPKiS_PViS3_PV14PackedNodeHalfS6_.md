@@ -72,4 +72,8 @@ are exactly what the `.i = ...; .b = ...;` assignments compile to.
   [0.4, 2.5]); `calls` empty on both sides. The reconstruction's extra
   instructions are the ternary `min`/`max` spills of the volatile node arrays
   (the original keeps them in `%f` registers across the loop).
+- Host ABI: declared `__global__ void FLEX_KERNEL_API`; nvcc ≥ 11 emits kernel
+  wrappers `GLOBAL HIDDEN` while the shipped object has `GLOBAL DEFAULT`, so the
+  attribute restores the exported thunk/stub (`T`/`W`) set. Mangling, PTX entry
+  and ratios unaffected.
 - G3: `skipped:no-gpu`.

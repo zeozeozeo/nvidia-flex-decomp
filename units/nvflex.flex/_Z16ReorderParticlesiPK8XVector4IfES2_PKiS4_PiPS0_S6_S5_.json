@@ -1,0 +1,30 @@
+{
+  "args": [
+    "int numParticles",
+    "const Vec4* positions",
+    "const Vec4* newPositions",
+    "const int* phases",
+    "const int* indices",
+    "int* reverseLookup",
+    "Vec4* sortedPositions",
+    "Vec4* sortedNewPositions",
+    "int* sortedPhases"
+  ],
+  "inlined_away": [],
+  "launch": {
+    "block": [
+      256,
+      1,
+      1
+    ],
+    "grid": "ceil(numParticles/256)"
+  },
+  "outputs": [],
+  "parity": "kernel",
+  "ptx_entry": "_Z16ReorderParticlesiPK8XVector4IfES2_PKiS4_PiPS0_S6_S5_",
+  "ptx_lines": "315-379",
+  "signature": "ReorderParticles(int, XVector4<float> const*, XVector4<float> const*, int const*, int const*, int*, XVector4<float>*, XVector4<float>*, int*)",
+  "source": "src/cuda/flex.cu:946",
+  "symbol": "_Z16ReorderParticlesiPK8XVector4IfES2_PKiS4_PiPS0_S6_S5_",
+  "unit": "nvflex.flex#_Z16ReorderParticlesiPK8XVector4IfES2_PKiS4_PiPS0_S6_S5_"
+}

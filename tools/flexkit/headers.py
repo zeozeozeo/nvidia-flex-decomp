@@ -570,8 +570,12 @@ def generate(force: bool = False) -> dict:
         written.append({"header": str(path), "stem": stem, "types": names})
 
     (HEADER_DIR / "all.h").write_text(
-        "// generated umbrella for recovered internal headers\n#pragma once\n"
-        '#include "recovered.h"\n')
+        "// generated umbrella: recovered internal types + the public API\n"
+        "#pragma once\n"
+        '#include "recovered.h"\n'
+        '#include "NvFlex.h"\n'
+        '#include "NvFlexExt.h"\n'
+        '#include "NvFlexDevice.h"\n')
 
     layout_mismatches = _layout_mismatches(
         canonical, {k: v for k, v in structs.items()},

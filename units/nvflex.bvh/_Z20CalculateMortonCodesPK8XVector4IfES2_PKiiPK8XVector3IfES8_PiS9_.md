@@ -54,4 +54,8 @@ was verified exhaustively (all 1024 inputs) to equal the canonical
 - `gate static` exits 0 (symbol, signature, PTX entry, layout).
 - PTX instruction ratio: original 120 / reconstruction 110 = **0.917** (band
   [0.4, 2.5]); `calls` set empty on both sides.
+- Host ABI: declared `__global__ void FLEX_KERNEL_API`; nvcc ≥ 11 emits kernel
+  wrappers `GLOBAL HIDDEN` while the shipped object has `GLOBAL DEFAULT`, so the
+  attribute restores the exported thunk/stub (`T`/`W`) set. Mangling, PTX entry
+  and ratios unaffected.
 - G3: `skipped:no-gpu` on this host.

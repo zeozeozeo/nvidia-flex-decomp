@@ -1,0 +1,26 @@
+{
+  "args": [
+    "const FlexInflatable* inflatables",
+    "Vec3Iter positions",
+    "const int* reverseLookup",
+    "const int* indices",
+    "float* lambdas"
+  ],
+  "inlined_away": [],
+  "launch": {
+    "block": [
+      256,
+      1,
+      1
+    ],
+    "grid": "num_inflatables (one block per inflatable)"
+  },
+  "outputs": [],
+  "parity": "kernel",
+  "ptx_entry": "_Z25CalculateInflatableVolumeILi256EEvPK14FlexInflatable8Vec3IterPKiS5_Pf",
+  "ptx_lines": "10828-11672",
+  "signature": "CalculateInflatableVolume<256>(FlexInflatable const*, Vec3Iter, int const*, int const*, float*)",
+  "source": "src/cuda/flex.cu",
+  "symbol": "_Z25CalculateInflatableVolumeILi256EEvPK14FlexInflatable8Vec3IterPKiS5_Pf",
+  "unit": "nvflex.flex#_Z25CalculateInflatableVolumeILi256EEvPK14FlexInflatable8Vec3IterPKiS5_Pf"
+}

@@ -1,0 +1,29 @@
+{
+  "args": [
+    "Vec3Iter prevPosition",
+    "Vec3Iter positions",
+    "int numParticles",
+    "const int* collisionCounts",
+    "const Vec4* collisionPlanes",
+    "const Vec4* collisionVelocities",
+    "const float* densities",
+    "Vec4* deltas"
+  ],
+  "inlined_away": [],
+  "launch": {
+    "block": [
+      256,
+      1,
+      1
+    ],
+    "grid": "ceil(numParticles/256)"
+  },
+  "outputs": [],
+  "parity": "kernel",
+  "ptx_entry": "_Z13SolveContactsILb0EEv8Vec3IterS0_iPKiPK8XVector4IfES6_PKfPS4_",
+  "ptx_lines": "19701-19878",
+  "signature": "SolveContacts<false>(Vec3Iter, Vec3Iter, int, int const*, XVector4<float> const*, XVector4<float> const*, float const*, XVector4<float>*)",
+  "source": "src/cuda/flex.cu",
+  "symbol": "_Z13SolveContactsILb0EEv8Vec3IterS0_iPKiPK8XVector4IfES6_PKfPS4_",
+  "unit": "nvflex.flex#_Z13SolveContactsILb0EEv8Vec3IterS0_iPKiPK8XVector4IfES6_PKfPS4_"
+}

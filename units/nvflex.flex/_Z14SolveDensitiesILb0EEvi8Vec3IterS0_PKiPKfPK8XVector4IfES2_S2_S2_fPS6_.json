@@ -1,0 +1,32 @@
+{
+  "args": [
+    "int numParticles",
+    "Vec3Iter prevPositions",
+    "Vec3Iter positions",
+    "const int* phases",
+    "const float* densities",
+    "const Vec4* normals",
+    "const int* contacts",
+    "const int* contactCounts",
+    "const int* indices",
+    "float dt",
+    "Vec4* deltas"
+  ],
+  "inlined_away": [],
+  "launch": {
+    "block": [
+      256,
+      1,
+      1
+    ],
+    "grid": "ceil(numParticles/256)"
+  },
+  "outputs": [],
+  "parity": "kernel",
+  "ptx_entry": "_Z14SolveDensitiesILb0EEvi8Vec3IterS0_PKiPKfPK8XVector4IfES2_S2_S2_fPS6_",
+  "ptx_lines": "10515-10825",
+  "signature": "SolveDensities<false>(int, Vec3Iter, Vec3Iter, int const*, float const*, XVector4<float> const*, int const*, int const*, int const*, float, XVector4<float>*)",
+  "source": "src/cuda/flex.cu",
+  "symbol": "_Z14SolveDensitiesILb0EEvi8Vec3IterS0_PKiPKfPK8XVector4IfES2_S2_S2_fPS6_",
+  "unit": "nvflex.flex#_Z14SolveDensitiesILb0EEvi8Vec3IterS0_PKiPKfPK8XVector4IfES2_S2_S2_fPS6_"
+}

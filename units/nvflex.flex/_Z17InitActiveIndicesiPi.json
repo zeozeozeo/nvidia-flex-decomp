@@ -1,0 +1,23 @@
+{
+  "args": [
+    "int numParticles",
+    "int* indices"
+  ],
+  "inlined_away": [],
+  "launch": {
+    "block": [
+      256,
+      1,
+      1
+    ],
+    "grid": "ceil(numParticles/256)"
+  },
+  "outputs": [],
+  "parity": "kernel",
+  "ptx_entry": "_Z17InitActiveIndicesiPi",
+  "ptx_lines": "43-69",
+  "signature": "InitActiveIndices(int, int*)",
+  "source": "src/cuda/flex.cu:680",
+  "symbol": "_Z17InitActiveIndicesiPi",
+  "unit": "nvflex.flex#_Z17InitActiveIndicesiPi"
+}

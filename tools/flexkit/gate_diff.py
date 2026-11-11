@@ -240,7 +240,15 @@ def generate_harness(unit: dict, spec: dict) -> str:
                 setup.append(f"  fd_zero((void*){name}, sizeof {name});")
             args.append(f"({t}){name}")
             if is_output:
-                ser.append(f"  put(fd, (const void*){name}, sizeof {name});")
+                ranges = spec_b.get("ignore_offsets") or []
+                if ranges:
+                    ser.append(f"  {{ unsigned char tmp[sizeof {name}]; "
+                               f"memcpy(tmp, {name}, sizeof {name}); "
+                               + " ".join(f"memset(tmp + {int(r[0])}, 0, {int(r[1])});"
+                                          for r in ranges if len(r) == 2)
+                               + " put(fd, (const void*)tmp, sizeof tmp); }")
+                else:
+                    ser.append(f"  put(fd, (const void*){name}, sizeof {name});")
         elif kind == "ref":
             storage.append(f"alignas(alignof({base})) unsigned char {name}[sizeof({base})];")
             setup.append(f"  fd_construct(({base}*){name});")
@@ -257,8 +265,8 @@ def generate_harness(unit: dict, spec: dict) -> str:
             else:
                 dom = spec.get("scalars", {}).get(str(i), [0])
                 cast = base
-                setup.append(f"  {cast} {name}_v = ({cast})({dom[0] if dom else 0});")
                 storage.append(f"  {cast} {name}_v = 0;")
+                setup.append(f"  {name}_v = ({cast})({dom[0] if dom else 0});")
                 args.append(f"{name}_v")
 
     out.append("namespace {")
@@ -331,6 +339,7 @@ def gate_unit(unit: dict, spec: dict | None = None, iterations: int = 0,
         res["ok"] = True
         return res
     rl = recon_lib(unit["module"])
+    variant = (spec.get("variant") or variant) if isinstance(spec, dict) else variant
     ol = orig_lib(unit["module"], variant)
     if not ol.exists():
         res["detail"] = "orig_library_missing"

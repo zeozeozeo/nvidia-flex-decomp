@@ -854,3 +854,203 @@ template __global__ void SolveContacts<false>(Vec3Iter, Vec3Iter, int, const int
 // PTX 22746-22753: an empty body; CUB's no-work kernel instantiated for void.
 // ---------------------------------------------------------------------------
 template __global__ void cub::EmptyKernel<void>();
+
+// ---------------------------------------------------------------------------
+// flexdecomp: src/cuda/flex.cu _Z15SolveVelocitiesILb1EEvi8Vec3IterPK8XVector3IfES0_PK8XVector4IfEPKiSA_SA_S8_SA_SA_fPS6_PfSC_
+// PTX 19881-21104 (T=true), 21107-22239 (T=false).  T enables the vorticity
+// confinement term: the per-neighbour curl accumulation (PTX 202-209) and the
+// curl epilogue (PTX 751-785) exist only in the ILb1EE entry.
+// ---------------------------------------------------------------------------
+template <bool T>
+__global__ void SolveVelocities(int numParticles, Vec3Iter sortedNewPositions,
+                                const XVector3<float>* velocities, Vec3Iter sortedNewVelocities,
+                                const XVector4<float>* curl, const int* phases,
+                                const int* contacts, const int* contactCounts,
+                                const XVector4<float>* collisionPlanes, const int* collisionCounts,
+                                const int* indices, float dt, XVector4<float>* deltas,
+                                float* densities, float* potentials) {
+    int i = blockIdx.x * blockDim.x + threadIdx.x;
+    if (i >= numParticles) return;
+
+    // PTX 40-43: both textures are the sorted arrays (352/360).
+    const float4 P = tex1Dfetch<float4>(gParams.kTextures.sortedNewPositionsTex, i);
+    const float4 V = tex1Dfetch<float4>(gParams.kTextures.sortedNewVelocitiesTex, i);
+
+    const int selfPhase = phases[i];
+    const int numNeighbors = contactCounts[i];
+
+    float3 visc = make_float3(0.0f, 0.0f, 0.0f);
+    float density = 0.0f;
+    float3 curlAccum = make_float3(0.0f, 0.0f, 0.0f);
+    float diffuse = 0.0f;
+    float fluidNeighbors = 0.0f;
+
+    if (numNeighbors >= 1) {
+        const float radiusSq = gParams.kRadiusSq;    // gParams+140
+        const float spiky1 = gParams.kSpiky1;        // gParams+152
+        const float spiky2 = gParams.kSpiky2;        // gParams+156
+        const float invRadius = gParams.kInvRadius;  // gParams+144
+        const float viscosity = gParams.kViscosity;  // gParams+228
+        const float diffuseThreshold = gParams.kDiffuseThreshold;  // gParams+240
+
+        for (int j = 0; j < numNeighbors; ++j) {
+            const int q = contacts[j * numParticles + i];
+            const float4 pn = tex1Dfetch<float4>(gParams.kTextures.sortedNewPositionsTex, q);
+
+            const float dx = P.x - pn.x;
+            const float dy = P.y - pn.y;
+            const float dz = P.z - pn.z;
+            const float distSq = dx * dx + dy * dy + dz * dz;
+
+            if (!(distSq > 0.0f && distSq <= radiusSq)) continue;
+            if (!(selfPhase & phases[q] & eNvFlexPhaseFluid)) continue;
+
+            const float4 vn = tex1Dfetch<float4>(gParams.kTextures.sortedNewVelocitiesTex, q);
+            const float dvx = vn.x - V.x;
+            const float dvy = vn.y - V.y;
+            const float dvz = vn.z - V.z;
+
+            const float dist = sqrtf(distSq);
+            const float inv = 1.0f / dist;
+            const float dirx = dx * inv;
+            const float diry = dy * inv;
+            const float dirz = dz * inv;
+
+            const float c = dist * invRadius;
+            const float w = 1.0f - c;
+            const float poly = spiky1 * (w * w);
+            density += poly;
+
+            visc.x += ((dvx * viscosity) * poly) * dt;
+            visc.y += ((dvy * viscosity) * poly) * dt;
+            visc.z += ((dvz * viscosity) * poly) * dt;
+
+            const float s = spiky2 * w;
+            if (T) {
+                const float4 cq = tex1Dfetch<float4>(gParams.kTextures.curlTex, q);
+                curlAccum.x -= (dirx * s) * cq.w;
+                curlAccum.y -= (diry * s) * cq.w;
+                curlAccum.z -= (dirz * s) * cq.w;
+            }
+
+            if (diffuseThreshold > 0.0f) {
+                const float dvSq = dvx * dvx + dvy * dvy + dvz * dvz;
+                float dvLen = 0.0f;
+                if (dvSq != 0.0f) dvLen = sqrtf(dvSq);
+                diffuse += poly * (dvLen - (dirx * dvx + diry * dvy + dirz * dvz));
+            }
+            fluidNeighbors += 1.0f;
+        }
+    }
+
+    // PTX 747-785: vorticity confinement.
+    if (T && density > 0.0f) {
+        const float4 ci = tex1Dfetch<float4>(gParams.kTextures.curlTex, i);
+        const float lenSq = curlAccum.x * curlAccum.x + curlAccum.y * curlAccum.y +
+                            curlAccum.z * curlAccum.z;
+        float3 wn = make_float3(0.0f, 0.0f, 0.0f);
+        if (lenSq > 0.0f) {
+            const float inv = 1.0f / sqrtf(lenSq);
+            wn.x = curlAccum.x * inv;
+            wn.y = curlAccum.y * inv;
+            wn.z = curlAccum.z * inv;
+        }
+        const float s = (dt * dt) * gParams.kInvRestDensity * gParams.kVorticityConfinement;
+        visc.x += s * (ci.z * wn.y - ci.y * wn.z);
+        visc.y += s * (ci.x * wn.z - ci.z * wn.x);
+        visc.z += s * (ci.y * wn.x - ci.x * wn.y);
+    }
+
+    // PTX 787-803: dissipation, scaled by the number of fluid neighbours.
+    if (gParams.kDissipation > 0.0f) {
+        const float s = (dt * fluidNeighbors) * gParams.kDissipation;
+        visc.x -= V.x * s;
+        visc.y -= V.y * s;
+        visc.z -= V.z * s;
+    }
+    // PTX 805-818: damping.
+    if (gParams.kDamping > 0.0f) {
+        const float s = dt * gParams.kDamping;
+        visc.x -= V.x * s;
+        visc.y -= V.y * s;
+        visc.z -= V.z * s;
+    }
+
+    // PTX 820-1154: restitution against the collision planes.
+    if (gParams.kRestitution > 0.0f) {
+        const int numCollisions = collisionCounts[i];
+        if (numCollisions != 0) {
+            const float3 vel = reinterpret_cast<const float3*>(velocities)[indices[i]];
+            const int maxContacts = gParams.kMaxContactsPerParticle;  // gParams+132
+            const int base = maxContacts * i;
+            const float thresh = gParams.kCollisionDistance * 1.001f;  // 0f3F8020C5
+            const float restitution = gParams.kRestitution;            // gParams+332
+
+            float3 lam = make_float3(0.0f, 0.0f, 0.0f);
+            float hits = 0.0f;
+            for (int c = 0; c < numCollisions; ++c) {
+                const float4 plane =
+                    reinterpret_cast<const float4*>(collisionPlanes)[base + c];
+                const float sep =
+                    (plane.w + (P.x * plane.x + P.y * plane.y + P.z * plane.z)) - thresh;
+                const float vn = vel.x * plane.x + vel.y * plane.y + vel.z * plane.z;
+                if (sep <= 0.0f && vn < 0.0f) {
+                    const float f =
+                        (V.x * plane.x + V.y * plane.y + V.z * plane.z) + vn * restitution;
+                    lam.x -= plane.x * f;
+                    lam.y -= plane.y * f;
+                    lam.z -= plane.z * f;
+                    hits += 1.0f;
+                }
+            }
+            const float s = (hits > 1.0f) ? (1.0f / hits) : 1.0f;
+            visc.x += lam.x * s;
+            visc.y += lam.y * s;
+            visc.z += lam.z * s;
+        }
+    }
+
+    // PTX 1156-1185: diffuse-particle potential.
+    if (gParams.kDiffuseThreshold > 0.0f) {
+        const float speedSq = V.x * V.x + V.y * V.y + V.z * V.z;
+        float potential = 0.0f;
+        if (selfPhase & eNvFlexPhaseFluid) {
+            const float a =
+                fmaxf(1.0f - 2.0f * density * gParams.kInvRestDensity, 0.0f);  // +180
+            potential = (speedSq * 3.0f) * (diffuse * a);
+        }
+        potentials[i] = potential;
+    }
+
+    // PTX 1186-1209: sleep test; a sleeping particle loses its velocity and is
+    // restored to the previous position.
+    const float3 newV = make_float3(V.x + visc.x, V.y + visc.y, V.z + visc.z);
+    const float newLenSq = newV.x * newV.x + newV.y * newV.y + newV.z * newV.z;
+    if (!(newLenSq >= gParams.kSleepThresholdSq)) {  // gParams+324
+        const float4 prev = tex1Dfetch<float4>(gParams.kTextures.sortedPositionsTex, i);
+        float4 out;
+        out.x = prev.x;
+        out.y = prev.y;
+        out.z = prev.z;
+        out.w = prev.w;
+        reinterpret_cast<float4*>(sortedNewPositions.x)[i] = out;
+        visc = make_float3(-V.x, -V.x, -V.x);  // PTX 1206-1208: all three become -V.x
+    }
+
+    float4 out;
+    out.x = visc.x;
+    out.y = visc.y;
+    out.z = visc.z;
+    out.w = 0.0f;
+    reinterpret_cast<float4*>(deltas)[i] = out;
+    densities[i] = density;
+}
+
+template __global__ void SolveVelocities<true>(int, Vec3Iter, const XVector3<float>*, Vec3Iter,
+                                               const XVector4<float>*, const int*, const int*,
+                                               const int*, const XVector4<float>*, const int*,
+                                               const int*, float, XVector4<float>*, float*, float*);
+template __global__ void SolveVelocities<false>(int, Vec3Iter, const XVector3<float>*, Vec3Iter,
+                                                const XVector4<float>*, const int*, const int*,
+                                                const int*, const XVector4<float>*, const int*,
+                                                const int*, float, XVector4<float>*, float*, float*);

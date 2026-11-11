@@ -1,0 +1,20 @@
+{
+  "args": [],
+  "inlined_away": [],
+  "launch": {
+    "block": [
+      1,
+      1,
+      1
+    ],
+    "grid": "[1,1,1]"
+  },
+  "outputs": [],
+  "parity": "kernel",
+  "ptx_entry": "_ZN3cub11EmptyKernelIvEEvv",
+  "ptx_lines": "22746-22753",
+  "signature": "cub::EmptyKernel<void>()",
+  "source": "src/cuda/flex.cu",
+  "symbol": "_ZN3cub11EmptyKernelIvEEvv",
+  "unit": "nvflex.flex#_ZN3cub11EmptyKernelIvEEvv"
+}

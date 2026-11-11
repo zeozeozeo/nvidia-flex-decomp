@@ -1,5 +1,10 @@
 {
   "address": "0x17c0",
+  "allow_missing_calls": [
+    "_ZN63_GLOBAL__N__39_tmpxft_00000d59_00000000_6_flex_cpp1_ii_dbca32078ReadDataEPFv19NvFlexErrorSeverityPKcS2_iEP12NvFlexBufferPKviPK14NvFlexCopyDesci",
+    "_ZN63_GLOBAL__N__39_tmpxft_00000f25_00000000_6_flex_cpp1_ii_dbca32078ReadDataEPFv19NvFlexErrorSeverityPKcS2_iEP12NvFlexBufferPKviPK14NvFlexCopyDesci"
+  ],
+  "allow_missing_calls_reason": "the buffer helpers are anonymous-namespace functions of flex.cu; the shipped dbg and rel objects embed different TU suffixes (_GLOBAL__N__..._00000d59 vs _00000f25) and the ledger registers only the dbg spelling, so the reconstructed TU-local counterpart cannot compare equal by name; both spellings are allowed here",
   "buffers": [
     {
       "arg": 0,

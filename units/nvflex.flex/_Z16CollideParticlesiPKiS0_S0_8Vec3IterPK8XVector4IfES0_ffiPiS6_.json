@@ -1,0 +1,33 @@
+{
+  "args": [
+    "int numParticles",
+    "const int* cellStarts",
+    "const int* cellEnds",
+    "const int* indices",
+    "Vec3Iter positions",
+    "const Vec4* restPositions",
+    "const int* sortedPhases",
+    "float cellSizeSq",
+    "float invCellSize",
+    "int maxNeighbors",
+    "int* particleNeighbors",
+    "int* particleNeighborCounts"
+  ],
+  "inlined_away": [],
+  "launch": {
+    "block": [
+      256,
+      1,
+      1
+    ],
+    "grid": "ceil(numParticles/256)"
+  },
+  "outputs": [],
+  "parity": "kernel",
+  "ptx_entry": "_Z16CollideParticlesiPKiS0_S0_8Vec3IterPK8XVector4IfES0_ffiPiS6_",
+  "ptx_lines": "382-955",
+  "signature": "CollideParticles(int, int const*, int const*, int const*, Vec3Iter, XVector4<float> const*, int const*, float, float, int, int*, int*)",
+  "source": "src/cuda/flex.cu:976",
+  "symbol": "_Z16CollideParticlesiPKiS0_S0_8Vec3IterPK8XVector4IfES0_ffiPiS6_",
+  "unit": "nvflex.flex#_Z16CollideParticlesiPKiS0_S0_8Vec3IterPK8XVector4IfES0_ffiPiS6_"
+}

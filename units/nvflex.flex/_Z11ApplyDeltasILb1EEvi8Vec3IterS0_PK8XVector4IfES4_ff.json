@@ -1,0 +1,28 @@
+{
+  "args": [
+    "int numParticles",
+    "Vec3Iter positions",
+    "Vec3Iter newPositions",
+    "const Vec4* deltas",
+    "const Vec4* forces",
+    "float relaxation",
+    "float damp"
+  ],
+  "inlined_away": [],
+  "launch": {
+    "block": [
+      256,
+      1,
+      1
+    ],
+    "grid": "ceil(numParticles/256)"
+  },
+  "outputs": [],
+  "parity": "kernel",
+  "ptx_entry": "_Z11ApplyDeltasILb1EEvi8Vec3IterS0_PK8XVector4IfES4_ff",
+  "ptx_lines": "19603-19651",
+  "signature": "ApplyDeltas<true>(int, Vec3Iter, Vec3Iter, XVector4<float> const*, XVector4<float> const*, float, float)",
+  "source": "src/cuda/flex.cu",
+  "symbol": "_Z11ApplyDeltasILb1EEvi8Vec3IterS0_PK8XVector4IfES4_ff",
+  "unit": "nvflex.flex#_Z11ApplyDeltasILb1EEvi8Vec3IterS0_PK8XVector4IfES4_ff"
+}

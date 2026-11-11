@@ -1,0 +1,30 @@
+{
+  "args": [
+    "int numParticles",
+    "const int* indices",
+    "const Vec4* positions",
+    "const int* phases",
+    "Vec3 velocity",
+    "float dt",
+    "Vec4* newPositions",
+    "Vec3* outVelocities",
+    "float maxVelocity"
+  ],
+  "inlined_away": [],
+  "launch": {
+    "block": [
+      256,
+      1,
+      1
+    ],
+    "grid": "ceil(numParticles/256)"
+  },
+  "outputs": [],
+  "parity": "kernel",
+  "ptx_entry": "_Z7PredictiPKiPK8XVector4IfES0_8XVector3IfEfPS2_PS6_f",
+  "ptx_lines": "72-177",
+  "signature": "Predict(int, int const*, XVector4<float> const*, int const*, XVector3<float>, float, XVector4<float>*, XVector3<float>*, float)",
+  "source": "src/cuda/flex.cu:688",
+  "symbol": "_Z7PredictiPKiPK8XVector4IfES0_8XVector3IfEfPS2_PS6_f",
+  "unit": "nvflex.flex#_Z7PredictiPKiPK8XVector4IfES0_8XVector3IfEfPS2_PS6_f"
+}

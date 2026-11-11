@@ -13,6 +13,14 @@
 
 #include <cub/block/block_reduce.cuh>
 
+// nvcc (>= 11) marks every __global__ launch wrapper and its __device_stub__
+// hidden; the shipped objects (CUDA 9.2) exported them as GLOBAL DEFAULT and
+// they are part of the library ABI (`_Z20CalculateMortonCodes...` etc. are
+// `T` in NvFlexDebugCUDA_x64.a and in the relinked library).  Restoring default
+// visibility keeps the exported symbol set identical; it does not affect the
+// mangled name, the PTX entry or intra-DSO references.
+#define FLEX_KERNEL_API __attribute__((visibility("default")))
+
 // ---------------------------------------------------------------------------
 // flexdecomp: src/cuda/bvh.cu:69 Morton3<1024>
 // ---------------------------------------------------------------------------
@@ -87,7 +95,7 @@ __device__ __forceinline__ void AtomicMin(float* address, float val)
 //
 // PTX: sm_30.ptx:17-163.  centre = (lower+upper)*0.5f, delta = centre-origin,
 // cell = delta*invEdges*512.0f, clamped with cvt.rzi + min(.,511) + max(0,.).
-__global__ void CalculateMortonCodes(const XVector4<float>* itemLowers,
+__global__ void FLEX_KERNEL_API CalculateMortonCodes(const XVector4<float>* itemLowers,
 	const XVector4<float>* itemUppers,
 	const int* itemPriorities,
 	int numItems,
@@ -123,7 +131,7 @@ __global__ void CalculateMortonCodes(const XVector4<float>* itemLowers,
 // ---------------------------------------------------------------------------
 // Deltas between adjacent (sorted) Morton keys; the launch count is
 // numItems-1 so keys[i+1] is always in range.  PTX: sm_30.ptx:165-199.
-__global__ void CalculateKeyDeltas(const int* keys, int* deltas, int numItems)
+__global__ void FLEX_KERNEL_API CalculateKeyDeltas(const int* keys, int* deltas, int numItems)
 {
 	int i = blockIdx.x * blockDim.x + threadIdx.x;
 
@@ -141,7 +149,7 @@ __global__ void CalculateKeyDeltas(const int* keys, int* deltas, int numItems)
 // and `i = index`, `b = 0` (PackedNodeHalf bitfield, DWARF).  Range leaf/right
 // arrays start out as the single-item range [i, i].
 // PTX: sm_30.ptx:201-283.
-__global__ void BuildLeaves(const XVector4<float>* itemLowers,
+__global__ void FLEX_KERNEL_API BuildLeaves(const XVector4<float>* itemLowers,
 	const XVector4<float>* itemUppers,
 	int numItems,
 	const int* indices,
@@ -183,7 +191,7 @@ __global__ void BuildLeaves(const XVector4<float>* itemLowers,
 // numChildren returns 1) merges both children's bounds into the parent and
 // climbs.  The thread whose range covers all items writes the root index.
 // PTX: sm_30.ptx:284-471.
-__global__ void BuildHierarchy(int numItems,
+__global__ void FLEX_KERNEL_API BuildHierarchy(int numItems,
 	int* rootNode,
 	const int* deltas,
 	int* numChildren,
@@ -303,7 +311,7 @@ struct Vec3Min
 	}
 };
 
-__global__ void ComputeTotalBounds(const XVector4<float>* itemLowers,
+__global__ void FLEX_KERNEL_API ComputeTotalBounds(const XVector4<float>* itemLowers,
 	const XVector4<float>* itemUppers,
 	XVector3<float>* totalLower,
 	XVector3<float>* totalUpper,
@@ -350,7 +358,7 @@ __global__ void ComputeTotalBounds(const XVector4<float>* itemLowers,
 // Reciprocal of the grid extent per axis, with the 1e-4f guard that keeps the
 // value finite for a degenerate (single-item) grid.
 // PTX: sm_30.ptx:1594-1631 (rcp.rn.f32 of (upper-lower)+1e-4f).
-__global__ void ComputeTotalInvEdges(const XVector3<float>* totalLower,
+__global__ void FLEX_KERNEL_API ComputeTotalInvEdges(const XVector3<float>* totalLower,
 	const XVector3<float>* totalUpper,
 	XVector3<float>* totalInvEdges)
 {
@@ -370,7 +378,16 @@ __global__ void ComputeTotalInvEdges(const XVector3<float>* totalLower,
 namespace cub
 {
 	template <typename T>
-	__global__ void EmptyKernel(void) { }
+	__global__ void FLEX_KERNEL_API EmptyKernel(void) { }
 
 	template __global__ void EmptyKernel<void>(void);
+
+	// CUB 1.3.2 odr-uses the instantiation as a function pointer in the
+	// device-properties probe (`EmptyKernelPtr Empty() { return
+	// EmptyKernel<T>; }`, util_device.cuh:122-130), which is what emits the
+	// exported host launch wrapper `w _ZN3cub11EmptyKernelIvEEvv`.  Reproduce
+	// that use so the shipped weak symbol stays part of the ABI.
+	typedef void (*EmptyKernelPtr)();
+
+	__attribute__((used)) static EmptyKernelPtr kEmptyKernel = EmptyKernel<void>;
 }

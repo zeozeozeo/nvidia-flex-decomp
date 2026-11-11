@@ -43,4 +43,8 @@ half and `& 0x7f` for the upper half (`work/decomp/nvflex.bvh/cudabvh.c`,
 - `gate static` exits 0.
 - PTX instruction ratio: original 58 / reconstruction 50 = **0.862**; `calls`
   empty on both sides.
+- Host ABI: declared `__global__ void FLEX_KERNEL_API`; nvcc ≥ 11 emits kernel
+  wrappers `GLOBAL HIDDEN` while the shipped object has `GLOBAL DEFAULT`, so the
+  attribute restores the exported thunk/stub (`T`/`W`) set. Mangling, PTX entry
+  and ratios unaffected.
 - G3: `skipped:no-gpu`.

@@ -49,4 +49,8 @@ reconstruction itself matches the original entry exactly.
   the operand-less-instruction-aware regex), ratio **1.000**; `calls` empty on
   both sides.
 - Symbol: weak `_ZN3cub11EmptyKernelIvEEvv`, PTX entry name identical.
+- Host wrapper: the instantiation is odr-used through `EmptyKernelPtr`
+  (mirroring `util_device.cuh:122-130`), which emits the shipped weak host
+  wrapper `w _ZN3cub11EmptyKernelIvEEvv` (283 B in the object); the final `.so`
+  localizes that weak symbol at device-link time, a link-level detail.
 - G3: `skipped:no-gpu`.

@@ -62,4 +62,8 @@ are CAS loops that only store when the current value is strictly worse
 - PTX instruction ratio: original 766 / reconstruction 787 = **1.027** (band
   [0.4, 2.5]); `calls` empty on both sides — the CUB collective is fully inlined
   in both.
+- Host ABI: declared `__global__ void FLEX_KERNEL_API`; nvcc ≥ 11 emits kernel
+  wrappers `GLOBAL HIDDEN` while the shipped object has `GLOBAL DEFAULT`, so the
+  attribute restores the exported thunk/stub (`T`/`W`) set. Mangling, PTX entry
+  and ratios unaffected.
 - G3: `skipped:no-gpu`.

@@ -5,6 +5,14 @@
 //   work/binary/obj/dbg/NvFlexDebugCUDA_x64/dump/util.cpp.disasm.txt    disasm
 //   work/dwarf/nvflex.util.json                    signatures, lines, layouts
 //
+// The shipped release object is compiled with _FORTIFY_SOURCE (FlexLogFunc calls
+// __vsnprintf_chk, not vsnprintf), so the same level is requested here before any
+// header is read; the debug object, built -O0 where fortification is inert, calls
+// the plain libc symbol.
+#if defined(__OPTIMIZE__) && !defined(_FORTIFY_SOURCE)
+#define _FORTIFY_SOURCE 2
+#endif
+
 // util.cpp is host C++ and the reconstruction is compiled without the CUDA
 // toolkit headers on the compiler include path (-I recon/include only), so the
 // CUDA driver/runtime interfaces the shipped object referenced are declared
@@ -107,8 +115,7 @@ struct cudaTextureDesc {
 	float maxMipmapLevelClamp;
 };
 
-struct cudaResourceViewDesc;
-typedef struct cudaResourceViewDesc* cudaResourceViewDesc_t;
+struct cudaResourceViewDesc;  // opaque: cudaCreateTextureObject's 4th argument (always null here)
 
 cudaError_t cudaSetDevice(int device);
 cudaError_t cudaMalloc(void** devPtr, size_t size);
@@ -148,7 +155,7 @@ typedef CUresult (*cuDriverGetVersion_t)(int* driverVersion);
 // recovered.h keeps pfnCuDriverGetVersion_t opaque (typedef void*), the real
 // driver prototype is cuDriverGetVersion_t above.
 
-// flexdecomp: driver entry points, resolved on first use (nm: .bss 0x8..0x30)
+// Driver entry points, resolved on first use (nm: .bss 0x8..0x30)
 static cuInit_t cuInit_f;
 static cuCtxGetCurrent_t cuCtxGetCurrent_f;
 static cuCtxSetCurrent_t cuCtxSetCurrent_f;
@@ -190,10 +197,12 @@ void FlexLogFunc(NvFlexErrorCallback func, NvFlexErrorSeverity type, const char*
 	FlexLogFunc((func), eNvFlexLogError, (msg), "./../../../src/cuda/util.cpp", (line), "")
 
 // flexdecomp: src/cuda/util.cpp:81 _ZL14GetProcAddressPvPKc
-// The shipped debug object keeps this helper out of line (nm: t 0x109); the
-// optimised build folds it into CudaSafeDelayLoad, so noinline preserves the
-// symbol the ledger tracks.
-static __attribute__((noinline)) void* GetProcAddress(void* handle, const char* name)
+// The shipped release object folds this helper into all six CudaSafeDelayLoad
+// call sites and keeps no out-of-line copy; at -O3 the reconstruction does the
+// same, so CudaSafeDelayLoad calls dlsym directly (object parity with
+// libnvflex_rel.so).  The debug object's out-of-line copy is the ledger's
+// provenance for the unit, which is therefore debug-only.
+static void* GetProcAddress(void* handle, const char* name)
 {
 	return dlsym(handle, name);
 }

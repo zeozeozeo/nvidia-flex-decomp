@@ -1,0 +1,27 @@
+{
+  "args": [
+    "int numParticles",
+    "const int* indices",
+    "const Vec4* positions",
+    "int* cellIndices",
+    "int* particleIndices",
+    "float invCellSize"
+  ],
+  "inlined_away": [],
+  "launch": {
+    "block": [
+      256,
+      1,
+      1
+    ],
+    "grid": "ceil(numParticles/256)"
+  },
+  "outputs": [],
+  "parity": "kernel",
+  "ptx_entry": "_Z17CreateCellIndicesiPKiPK8XVector4IfEPiS5_f",
+  "ptx_lines": "182-248",
+  "signature": "CreateCellIndices(int, int const*, XVector4<float> const*, int*, int*, float)",
+  "source": "src/cuda/flex.cu:725",
+  "symbol": "_Z17CreateCellIndicesiPKiPK8XVector4IfEPiS5_f",
+  "unit": "nvflex.flex#_Z17CreateCellIndicesiPKiPK8XVector4IfEPiS5_f"
+}

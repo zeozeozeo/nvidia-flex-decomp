@@ -18,3 +18,7 @@
 
 __constant__ KernelParams gParams;
 __constant__ KernelBounds gBounds;
+
+// Host-side PRNG state (`seed1`/`seed2`, referenced as undefined by cudaflex.o)
+// is defined in flex.part3.cu, the translation unit that consumes it.  Keeping a
+// single definition matters: a second one makes the shared link fail.

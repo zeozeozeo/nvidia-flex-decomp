@@ -11,10 +11,15 @@ from . import ledger, symbols
 from .util import jread, jwrite
 
 KERNEL_SYMBOL_PREFIX = ".text."
-STUB_PREFIXES = ("__device_stub__", "__sti____cudaRegisterAll", "__cudaRegister",
-                 "_GLOBAL__sub_I_", "__cudaUnregisterBinaryUtil", "__nv_",
-                 "__cudaUnregisterFatBinary", "__cudaRegisterVar",
-                 "__static_initialization_and_destruction_0")
+# Compiler-generated code, matched as a substring of the *mangled* name: CUDA
+# registration hooks are emitted as `_Z37__device_stub__...` etc., so a prefix
+# test on the mangled spelling misses them.
+STUB_MARKERS = ("__device_stub__", "__sti____cudaRegisterAll", "__cudaRegister",
+                "_GLOBAL__sub_I_", "__cudaUnregisterBinaryUtil", "__nv_",
+                "__cudaUnregisterFatBinary", "__cudaRegisterVar",
+                "__static_initialization_and_destruction_0")
+# compiler partitioning / interprocedural clones of an existing unit
+CLONE_MARKERS = (".part.", ".constprop.", ".isra.", ".lto_priv.", ".cold")
 
 
 def _now() -> str:
@@ -109,7 +114,9 @@ def _collect_units(module: str) -> list[dict]:
                 if sym in units:
                     continue
                 kind = "kernel" if sym in kernel_names else "host"
-                if any(sym.startswith(pre) for pre in STUB_PREFIXES):
+                if any(pre in sym for pre in STUB_MARKERS):
+                    kind = "stub"
+                elif any(c in sym for c in CLONE_MARKERS):
                     kind = "stub"
                 units[sym] = {
                     "symbol": sym,
@@ -139,7 +146,9 @@ def _collect_units(module: str) -> list[dict]:
             continue
         if s.name in kernel_names:
             kind = "kernel"
-        elif any(s.name.startswith(pre) for pre in STUB_PREFIXES):
+        elif any(pre in s.name for pre in STUB_MARKERS):
+            kind = "stub"
+        elif any(c in s.name for c in CLONE_MARKERS):
             kind = "stub"
         else:
             kind = "host"
@@ -178,7 +187,7 @@ def _collect_units(module: str) -> list[dict]:
             "address": u["address"],
             "byte_size": u["byte_size"],
             "status": "waived" if u["kind"] in ("stub", "inline") else "open",
-            "notes": ("compiler-generated CUDA registration" if u["kind"] == "stub"
+            "notes": ("compiler-generated CUDA registration / compiler clone" if u["kind"] == "stub"
                       else ("third-party header template instantiation (libstdc++/CUB); "
                             "covered by the enclosing unit" if u["kind"] == "inline" else None)),
         })
@@ -192,14 +201,22 @@ def build(force: bool = False) -> dict:
         conn.execute("DELETE FROM units")
     total = 0
     inserted = 0
+    repaired = 0
     per_module = {}
     for module in MODULES:
         rows = _collect_units(module)
         ins = 0
         with ledger.transaction(conn):
             for r in rows:
-                cur = conn.execute("SELECT id FROM units WHERE id=?", (r["id"],)).fetchone()
+                cur = conn.execute("SELECT status FROM units WHERE id=?", (r["id"],)).fetchone()
                 if cur:
+                    # repair classification of untouched rows (e.g. a symbol that
+                    # is now recognised as compiler-generated); never touch work
+                    if cur["status"] == "open" and r["status"] == "waived":
+                        conn.execute(
+                            "UPDATE units SET status='waived', kind=?, notes=? WHERE id=?",
+                            (r["kind"], r["notes"], r["id"]))
+                        repaired += 1
                     continue
                 conn.execute(
                     """INSERT INTO units(id, module, kind, symbol, demangled, source_file,
@@ -216,7 +233,8 @@ def build(force: bool = False) -> dict:
         inserted += ins
         total += len(rows)
     conn.close()
-    return {"inserted": inserted, "total": total, "modules": per_module}
+    return {"inserted": inserted, "repaired": repaired, "total": total,
+            "modules": per_module}
 
 
 def list_units(module: str | None = None, status: str | None = None, limit: int = 100) -> list[dict]:
@@ -311,20 +329,22 @@ def _gate_result(unit: str, gate: str) -> dict | None:
 def submit(unit: str, agent: str, evidence: list, notes: str | None = None) -> dict:
     ledger.init()
     conn = ledger.connect()
-    with ledger.transaction(conn):
-        row = conn.execute("SELECT status, owner FROM units WHERE id=?", (unit,)).fetchone()
-        if row is None:
-            conn.close()
-            return {"ok": False, "error": "unknown_unit", "unit": unit}
-        if row["owner"] and row["owner"] != agent:
-            conn.close()
-            return {"ok": False, "error": "owned_by_other", "owner": row["owner"], "unit": unit}
-        conn.execute(
-            "UPDATE units SET status='decompiled', owner=?, update_ts=?, evidence=?, notes=COALESCE(?, notes) WHERE id=?",
-            (agent, _now(), json.dumps(evidence, sort_keys=True), notes, unit))
-    row = conn.execute("SELECT * FROM units WHERE id=?", (unit,)).fetchone()
-    conn.close()
-    return {"ok": True, "unit": unit, "status": dict(row)["status"]}
+    try:
+        with ledger.transaction(conn):
+            row = conn.execute("SELECT status, owner FROM units WHERE id=?", (unit,)).fetchone()
+            if row is None:
+                return {"ok": False, "error": "unknown_unit", "unit": unit}
+            if row["owner"] and row["owner"] != agent:
+                return {"ok": False, "error": "owned_by_other", "owner": row["owner"],
+                        "unit": unit}
+            conn.execute(
+                "UPDATE units SET status='decompiled', owner=?, update_ts=?, evidence=?, "
+                "notes=COALESCE(?, notes) WHERE id=?",
+                (agent, _now(), json.dumps(evidence, sort_keys=True), notes, unit))
+        row = conn.execute("SELECT status FROM units WHERE id=?", (unit,)).fetchone()
+        return {"ok": True, "unit": unit, "status": dict(row)["status"]}
+    finally:
+        conn.close()
 
 
 def verify(unit: str, agent: str, ok: bool = True, detail: str | None = None) -> dict:

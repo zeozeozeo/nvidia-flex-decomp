@@ -1,0 +1,25 @@
+{
+  "args": [
+    "int numParticles",
+    "const int* cellIds",
+    "int* cellStarts",
+    "int* cellEnds"
+  ],
+  "inlined_away": [],
+  "launch": {
+    "block": [
+      256,
+      1,
+      1
+    ],
+    "grid": "ceil(numParticles/256)"
+  },
+  "outputs": [],
+  "parity": "kernel",
+  "ptx_entry": "_Z10CreateGridiPKiPiS1_",
+  "ptx_lines": "251-312",
+  "signature": "CreateGrid(int, int const*, int*, int*)",
+  "source": "src/cuda/flex.cu:740",
+  "symbol": "_Z10CreateGridiPKiPiS1_",
+  "unit": "nvflex.flex#_Z10CreateGridiPKiPiS1_"
+}

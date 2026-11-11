@@ -1,0 +1,36 @@
+{
+  "args": [
+    "int numParticles",
+    "Vec3Iter sortedNewPositions",
+    "const Vec3* velocities",
+    "Vec3Iter sortedNewVelocities",
+    "const Vec4* curl",
+    "const int* phases",
+    "const int* contacts",
+    "const int* contactCounts",
+    "const Vec4* collisionPlanes",
+    "const int* collisionCounts",
+    "const int* indices",
+    "float dt",
+    "Vec4* deltas",
+    "float* densities",
+    "float* potentials"
+  ],
+  "inlined_away": [],
+  "launch": {
+    "block": [
+      256,
+      1,
+      1
+    ],
+    "grid": "ceil(numParticles/256)"
+  },
+  "outputs": [],
+  "parity": "kernel",
+  "ptx_entry": "_Z15SolveVelocitiesILb1EEvi8Vec3IterPK8XVector3IfES0_PK8XVector4IfEPKiSA_SA_S8_SA_SA_fPS6_PfSC_",
+  "ptx_lines": "19881-21104",
+  "signature": "SolveVelocities<true>(int, Vec3Iter, XVector3<float> const*, Vec3Iter, XVector4<float> const*, int const*, int const*, int const*, XVector4<float> const*, int const*, int const*, float, XVector4<float>*, float*, float*)",
+  "source": "src/cuda/flex.cu",
+  "symbol": "_Z15SolveVelocitiesILb1EEvi8Vec3IterPK8XVector3IfES0_PK8XVector4IfEPKiSA_SA_S8_SA_SA_fPS6_PfSC_",
+  "unit": "nvflex.flex#_Z15SolveVelocitiesILb1EEvi8Vec3IterPK8XVector3IfES0_PK8XVector4IfEPKiSA_SA_S8_SA_SA_fPS6_PfSC_"
+}

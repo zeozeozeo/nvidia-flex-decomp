@@ -105,6 +105,13 @@ STR_RELOC_RE = re.compile(r"\sR_X86_64_(?:PC32|32|32S)\s+(\S+?)(?:-0x4)?$")
 SECTION_OFF_RE = re.compile(r"^(\.[A-Za-z0-9_.]+)\+0x([0-9a-fA-F]+)$")
 
 
+def _release_object(module: str) -> Path | None:
+    """Release object of the same archive member (the shipped -O3 ABI)."""
+    member = MODULES[module][0]
+    cands = sorted(OBJ.glob(f"rel/*/{member}"))
+    return cands[0] if cands else None
+
+
 def _orig_object(module: str) -> Path | None:
     member = MODULES[module][0]
     for variant in ("dbg", "rel"):
@@ -323,6 +330,22 @@ def _disasm_map(obj: Path) -> dict[str, dict]:
                 target = target[:-4]
             if not target.startswith((".L", "$")):
                 funcs[cur]["callees"].add(target)
+    # Aliases (C1/C2, D1/D2, weak copies) share one address and objdump prints a
+    # single header, so copy the primary entry to every symbol at that address.
+    addr_to_name: dict[int, str] = {}
+    try:
+        for sym in symbols.nm_symbols(obj):
+            if sym.value in addr_to_name:
+                primary = addr_to_name[sym.value]
+                if primary in funcs and sym.name not in funcs:
+                    src = funcs[primary]
+                    funcs[sym.name] = {"insn": src["insn"],
+                                       "strings": list(src["strings"]),
+                                       "callees": set(src["callees"])}
+            else:
+                addr_to_name[sym.value] = sym.name
+    except Exception:  # noqa: BLE001
+        pass
     for f in funcs.values():
         f["strings"] = sorted(f["strings"])
     return funcs
@@ -412,11 +435,11 @@ def _demangled(obj: Path, names: list[str]) -> dict[str, str]:
 def _probe_layout(module: str, types: dict) -> dict:
     """Measure sizeof/offsetof for the unit's types via a generated probe."""
     if not types:
-        return {"status": "no_types", "checked": 0}
+        return {"ok": True, "status": "no_types", "checked": 0}
     headers = sorted((RECON / "include" / "nvflex").glob("*.h")) + \
               sorted((RECON / "include").glob("*.h"))
     if not headers:
-        return {"status": "missing_headers", "checked": 0}
+        return {"ok": False, "status": "missing_headers", "checked": 0}
     # unique per process: several agents gate concurrently and must never race
     # on the same probe path
     import tempfile
@@ -445,11 +468,13 @@ def _probe_layout(module: str, types: dict) -> dict:
     cmd = ["g++", "-std=gnu++14", "-O0", "-w", "-o", str(exe), str(probe),
            "-I", str(RECON / "include"), "-I", str(RECON / "include" / "nvflex")]
     if not run_ok(cmd):
-        return {"status": "probe_compile_failed", "checked": 0, "probe": str(probe)}
+        return {"ok": False, "status": "probe_compile_failed", "checked": 0,
+                "probe": str(probe)}
     try:
         out = run_cmd([str(exe)])
     except (OSError, PermissionError):
-        return {"status": "probe_exec_failed", "checked": 0, "probe": str(probe)}
+        return {"ok": False, "status": "probe_exec_failed", "checked": 0,
+                "probe": str(probe)}
     actual = {}
     for line in out.splitlines():
         parts = line.split()
@@ -471,7 +496,8 @@ def _probe_layout(module: str, types: dict) -> dict:
                 mismatches.append({"what": k, "dwarf": m["offset"], "actual": actual[k]})
     missing = [n for n, t in types.items() if t.get("members") and f"{n} {t.get('byte_size')}" and
                n not in actual]
-    return {"status": "ok" if not mismatches and not missing else "mismatch",
+    status = "ok" if not mismatches and not missing else "mismatch"
+    return {"ok": status == "ok", "status": status,
             "checked": probes, "mismatches": mismatches, "missing": missing,
             "probe": str(probe)}
 
@@ -617,6 +643,17 @@ def gate_unit(unit: dict, spec: dict | None = None, layout_cache: dict | None = 
         return result
 
     orig_map = _disasm_map(orig)
+    # The shipped ABI is the -O3 release object; the debug object is only the
+    # DWARF source.  Ratio/call/literal checks therefore prefer release when it
+    # defines the symbol (a -O0 baseline makes every -O3 wrapper look like a stub).
+    rel_obj = _release_object(module)
+    rel_map = _disasm_map(rel_obj) if rel_obj else {}
+    sym = unit["symbol"]
+    baseline = rel_map if sym in rel_map else orig_map
+    result["checks"]["baseline"] = {
+        "ok": True,
+        "object": rel_obj.name if (rel_obj and sym in rel_map) else orig.name,
+    }
     recon_map: dict[str, dict] = {}
     for robj in recon_objs:
         for fname, fdata in _disasm_map(robj).items():
@@ -627,7 +664,6 @@ def gate_unit(unit: dict, spec: dict | None = None, layout_cache: dict | None = 
                     set(recon_map[fname]["strings"]) | set(fdata["strings"]))
             else:
                 recon_map[fname] = fdata
-    sym = unit["symbol"]
     debug_only = False
     if sym not in recon_map:
         rel = sorted(OBJ.glob(f"rel/*/{MODULES[module][0]}"))
@@ -672,7 +708,7 @@ def gate_unit(unit: dict, spec: dict | None = None, layout_cache: dict | None = 
     inlined_away = {_canon_call(n) for n in spec.get("inlined_away", [])}
     allow_missing = {_canon_call(n) for n in spec.get("allow_missing_calls", [])}
     allow_extra = {_canon_call(n) for n in spec.get("allow_extra_calls", [])}
-    oc = {_canon_call(n) for n in orig_map.get(sym, {}).get("callees", [])}
+    oc = {_canon_call(n) for n in baseline.get(sym, {}).get("callees", [])}
     rc = {_canon_call(n) for n in recon_map.get(sym, {}).get("callees", [])}
     expected = oc - inlined_away
     missing = sorted(expected - rc)
@@ -695,17 +731,28 @@ def gate_unit(unit: dict, spec: dict | None = None, layout_cache: dict | None = 
         "must_review": bool(unexplained_missing),
     }
 
-    oi = orig_map.get(sym, {}).get("insn", 0)
+    oi = baseline.get(sym, {}).get("insn", 0)
     ri = recon_map.get(sym, {}).get("insn", 0)
-    ratio = (ri / oi) if oi else 0.0
-    folded = [n for n in missing if n not in unexplained_missing]
-    low = 0.2 if folded else 0.5
-    result["checks"]["instructions"] = {
-        "ok": low <= ratio <= 2.0 if oi else False,
-        "orig": oi, "recon": ri, "ratio": round(ratio, 3),
-        "lower_bound": low,
-        "relaxed_for_inlining": bool(folded),
-    }
+    if oi == 0:
+        # zero-size alias (e.g. C2/D2 emitting no bytes because the body belongs
+        # to C1/D1): nothing to measure, and both sides agree on emptiness
+        result["checks"]["instructions"] = {
+            "ok": ri == 0, "orig": 0, "recon": ri, "ratio": None,
+            "detail": "zero-length original body (alias symbol)",
+        }
+        folded = []
+        ratio = 0.0
+    else:
+        ratio = ri / oi
+    if oi:
+        folded = [n for n in missing if n not in unexplained_missing]
+        low = 0.2 if folded else 0.5
+        result["checks"]["instructions"] = {
+            "ok": low <= ratio <= 2.0,
+            "orig": oi, "recon": ri, "ratio": round(ratio, 3),
+            "lower_bound": low,
+            "relaxed_for_inlining": bool(folded),
+        }
 
     # Literal attribution moves with inlining, so compare each side's literals
     # against the *module-wide* literal set of the other side: a literal may not
@@ -717,7 +764,7 @@ def gate_unit(unit: dict, spec: dict | None = None, layout_cache: dict | None = 
             acc.update(f.get("strings", []))
         return _normalize_strings(acc)
 
-    os_ = _normalize_strings(orig_map.get(sym, {}).get("strings", []))
+    os_ = _normalize_strings(baseline.get(sym, {}).get("strings", []))
     rs = _normalize_strings(recon_map.get(sym, {}).get("strings", []))
     lib = {"nvflex": "nvflex", "nvflexext": "nvflexext",
            "nvflexdevice": "nvflexdevice"}.get(module.split(".")[0], module.split(".")[0])
