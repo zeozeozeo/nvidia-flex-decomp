@@ -1,0 +1,20 @@
+{
+  "allow_missing_strings": [
+    "Update Triangles"
+  ],
+  "allow_missing_strings_reason": "GCC 15 merged the timer-name literals into one tail-shared `.rodata` blob (`...Solve InflatableUpdate Triangles`), so the individual literal is not recoverable as a NUL-terminated string by the gate's extractor; the exact bytes are present at flex.part4.cu (names vector).",
+  "evidence": [
+    "work/decomp/nvflex.flex/cudaflex.c:@00109740 (940 B)",
+    "work/dwarf/nvflex.flex.json:decl_line 6430",
+    "work/binary/obj/rel/NvFlexReleaseCUDA_x64/cudaflex.o (call/instruction baseline)",
+    "work/binary/obj/dbg/NvFlexDebugCUDA_x64/dump/cudaflex.disasm.txt (00109740)"
+  ],
+  "iterations": 0,
+  "kind": "host",
+  "parity": "needs-gpu",
+  "seed": 1234,
+  "signature": "NvFlexGetTimers",
+  "source": "src/cuda/flex.cu:6430",
+  "symbol": "NvFlexGetTimers",
+  "unit": "nvflex.flex#NvFlexGetTimers"
+}

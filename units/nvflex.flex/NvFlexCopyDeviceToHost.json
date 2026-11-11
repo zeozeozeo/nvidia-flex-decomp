@@ -1,0 +1,16 @@
+{
+  "evidence": [
+    "work/decomp/nvflex.flex/cudaflex.c:@00103cc0 (83 B)",
+    "work/dwarf/nvflex.flex.json:decl_line 6597",
+    "work/binary/obj/rel/NvFlexReleaseCUDA_x64/cudaflex.o (call/instruction baseline)",
+    "work/binary/obj/dbg/NvFlexDebugCUDA_x64/dump/cudaflex.disasm.txt (00103cc0)"
+  ],
+  "iterations": 0,
+  "kind": "host",
+  "parity": "needs-gpu",
+  "seed": 1234,
+  "signature": "NvFlexCopyDeviceToHost",
+  "source": "src/cuda/flex.cu:6597",
+  "symbol": "NvFlexCopyDeviceToHost",
+  "unit": "nvflex.flex#NvFlexCopyDeviceToHost"
+}

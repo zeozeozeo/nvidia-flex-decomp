@@ -1,0 +1,16 @@
+{
+  "evidence": [
+    "work/decomp/nvflex.flex/cudaflex.c:@00103b90 (77 B)",
+    "work/dwarf/nvflex.flex.json:decl_line 6380",
+    "work/binary/obj/rel/NvFlexReleaseCUDA_x64/cudaflex.o (call/instruction baseline)",
+    "work/binary/obj/dbg/NvFlexDebugCUDA_x64/dump/cudaflex.disasm.txt (00103b90)"
+  ],
+  "iterations": 64,
+  "kind": "host",
+  "parity": "pure-cpu",
+  "seed": 1234,
+  "signature": "NvFlexGetShapeBVH",
+  "source": "src/cuda/flex.cu:6380",
+  "symbol": "NvFlexGetShapeBVH",
+  "unit": "nvflex.flex#NvFlexGetShapeBVH"
+}

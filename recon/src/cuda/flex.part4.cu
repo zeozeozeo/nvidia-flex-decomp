@@ -112,15 +112,8 @@ namespace {
 
 typedef std::vector<CudaRangeTimer> CudaRangeTimerVector;
 
-struct CudaTimerNameLess
-{
-    bool operator()(const char* a, const char* b) const
-    {
-        return std::strcmp(a, b) < 0;
-    }
-};
-
-typedef std::map<const char*, int, CudaTimerNameLess> CudaTimerNameMap;
+// ltstr is the comparator declared for NameToTimerMap by the recovered header
+typedef std::map<const char*, int, ltstr> CudaTimerNameMap;
 
 inline CudaRangeTimerVector& timerPoolElems(CudaRangeTimerPool* pool)
 {
@@ -129,6 +122,9 @@ inline CudaRangeTimerVector& timerPoolElems(CudaRangeTimerPool* pool)
 
 typedef std::pair<CudaTimerNameMap::iterator, CudaTimerNameMap::iterator> CudaTimerNameRange;
 
+// The shipped getTimer is a 30-instruction wrapper: the tree search is out of
+// line (_Rb_tree::equal_range). GCC 15 inlines the header template into the
+// caller, so it is kept out of line here to preserve the same shape.
 __attribute__((noinline))
 CudaTimerNameRange timerNameRange(CudaTimerNameMap& map, const char* name)
 {

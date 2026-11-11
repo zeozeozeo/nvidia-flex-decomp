@@ -281,6 +281,8 @@ def _unused_elf_literals(paths: list[Path]) -> set[str]:
             with open(path, "rb") as f:
                 elf = ELFFile(f)
                 for sec in elf.iter_sections():
+                    if ".cst" in sec.name:
+                        continue
                     if not sec.name.startswith((".rodata", ".data.rel.ro", ".data")):
                         continue
                     try:
@@ -401,9 +403,12 @@ def _section_strings(obj: Path):
     with open(obj, "rb") as f:
         elf = ELFFile(f)
         for sec in elf.iter_sections():
-            if "rodata" in sec.name or sec.name in (".data", ".data.rel.ro"):
+            name = sec.name
+            if ".cst" in name:      # float/vector constant pools, not text
+                continue
+            if "rodata" in name or name in (".data", ".data.rel.ro"):
                 try:
-                    secdata[sec.name] = sec.data()
+                    secdata[name] = sec.data()
                 except Exception:  # noqa: BLE001
                     pass
         st = elf.get_section_by_name(".symtab")
@@ -418,7 +423,10 @@ def _section_strings(obj: Path):
                     continue
                 if secidx not in cache:
                     sec = elf.get_section(secidx)
-                    cache[secidx] = sec.data() if sec else b""
+                    if sec is not None and ".cst" in sec.name:
+                        cache[secidx] = b""
+                    else:
+                        cache[secidx] = sec.data() if sec else b""
                 text = _text_at(cache[secidx], sym["st_value"])
                 if text is not None:
                     labels[name] = text

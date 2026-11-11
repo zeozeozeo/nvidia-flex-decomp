@@ -1,0 +1,16 @@
+{
+  "evidence": [
+    "work/decomp/nvflex.flex/cudaflex.c:@00103870 (304 B)",
+    "work/dwarf/nvflex.flex.json:decl_line 6235",
+    "work/binary/obj/rel/NvFlexReleaseCUDA_x64/cudaflex.o (call/instruction baseline)",
+    "work/binary/obj/dbg/NvFlexDebugCUDA_x64/dump/cudaflex.disasm.txt (00103870)"
+  ],
+  "iterations": 0,
+  "kind": "host",
+  "parity": "needs-gpu",
+  "seed": 1234,
+  "signature": "NvFlexUpdateConvexMesh",
+  "source": "src/cuda/flex.cu:6235",
+  "symbol": "NvFlexUpdateConvexMesh",
+  "unit": "nvflex.flex#NvFlexUpdateConvexMesh"
+}

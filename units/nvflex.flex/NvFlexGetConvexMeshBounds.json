@@ -1,0 +1,16 @@
+{
+  "evidence": [
+    "work/decomp/nvflex.flex/cudaflex.c:@001039b0 (262 B)",
+    "work/dwarf/nvflex.flex.json:decl_line 6257",
+    "work/binary/obj/rel/NvFlexReleaseCUDA_x64/cudaflex.o (call/instruction baseline)",
+    "work/binary/obj/dbg/NvFlexDebugCUDA_x64/dump/cudaflex.disasm.txt (001039b0)"
+  ],
+  "iterations": 0,
+  "kind": "host",
+  "parity": "needs-gpu",
+  "seed": 1234,
+  "signature": "NvFlexGetConvexMeshBounds",
+  "source": "src/cuda/flex.cu:6257",
+  "symbol": "NvFlexGetConvexMeshBounds",
+  "unit": "nvflex.flex#NvFlexGetConvexMeshBounds"
+}

@@ -1,0 +1,16 @@
+{
+  "evidence": [
+    "work/decomp/nvflex.flex/cudaflex.c:@001096d0 (102 B)",
+    "work/dwarf/nvflex.flex.json:decl_line 6414",
+    "work/binary/obj/rel/NvFlexReleaseCUDA_x64/cudaflex.o (call/instruction baseline)",
+    "work/binary/obj/dbg/NvFlexDebugCUDA_x64/dump/cudaflex.disasm.txt (001096d0)"
+  ],
+  "iterations": 0,
+  "kind": "host",
+  "parity": "needs-gpu",
+  "seed": 1234,
+  "signature": "getTimer(CudaTimers&, char const*)",
+  "source": "src/cuda/flex.cu:6414",
+  "symbol": "_Z8getTimerR10CudaTimersPKc",
+  "unit": "nvflex.flex#_Z8getTimerR10CudaTimersPKc"
+}

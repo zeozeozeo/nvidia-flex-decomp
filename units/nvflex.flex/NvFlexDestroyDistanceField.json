@@ -1,0 +1,20 @@
+{
+  "allow_missing_calls": [
+    "memmove"
+  ],
+  "allow_missing_reason": "`std::vector::erase` emits a memmove of a zero-length tail in the shipped object (dead relocation emitted by GCC 4.8); GCC 15 proves the range empty and emits no call.",
+  "evidence": [
+    "work/decomp/nvflex.flex/cudaflex.c:@00107960 (283 B)",
+    "work/dwarf/nvflex.flex.json:decl_line 5871",
+    "work/binary/obj/rel/NvFlexReleaseCUDA_x64/cudaflex.o (call/instruction baseline)",
+    "work/binary/obj/dbg/NvFlexDebugCUDA_x64/dump/cudaflex.disasm.txt (00107960)"
+  ],
+  "iterations": 0,
+  "kind": "host",
+  "parity": "needs-gpu",
+  "seed": 1234,
+  "signature": "NvFlexDestroyDistanceField",
+  "source": "src/cuda/flex.cu:5871",
+  "symbol": "NvFlexDestroyDistanceField",
+  "unit": "nvflex.flex#NvFlexDestroyDistanceField"
+}

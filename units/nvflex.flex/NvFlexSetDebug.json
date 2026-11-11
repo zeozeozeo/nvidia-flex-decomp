@@ -1,0 +1,16 @@
+{
+  "evidence": [
+    "work/decomp/nvflex.flex/cudaflex.c:@00103740 (8 B)",
+    "work/dwarf/nvflex.flex.json:decl_line 6003",
+    "work/binary/obj/rel/NvFlexReleaseCUDA_x64/cudaflex.o (call/instruction baseline)",
+    "work/binary/obj/dbg/NvFlexDebugCUDA_x64/dump/cudaflex.disasm.txt (00103740)"
+  ],
+  "iterations": 64,
+  "kind": "host",
+  "parity": "pure-cpu",
+  "seed": 1234,
+  "signature": "NvFlexSetDebug",
+  "source": "src/cuda/flex.cu:6003",
+  "symbol": "NvFlexSetDebug",
+  "unit": "nvflex.flex#NvFlexSetDebug"
+}

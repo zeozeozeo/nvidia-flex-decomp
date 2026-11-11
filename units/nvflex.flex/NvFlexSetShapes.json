@@ -1,0 +1,16 @@
+{
+  "evidence": [
+    "work/decomp/nvflex.flex/cudaflex.c:@00106670 (1252 B)",
+    "work/dwarf/nvflex.flex.json:decl_line 6075",
+    "work/binary/obj/rel/NvFlexReleaseCUDA_x64/cudaflex.o (call/instruction baseline)",
+    "work/binary/obj/dbg/NvFlexDebugCUDA_x64/dump/cudaflex.disasm.txt (00106670)"
+  ],
+  "iterations": 0,
+  "kind": "host",
+  "parity": "needs-gpu",
+  "seed": 1234,
+  "signature": "NvFlexSetShapes",
+  "source": "src/cuda/flex.cu:6075",
+  "symbol": "NvFlexSetShapes",
+  "unit": "nvflex.flex#NvFlexSetShapes"
+}

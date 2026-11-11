@@ -1,0 +1,33 @@
+{
+  "allow_missing_calls": [
+    "_ZNSs4_Rep10_M_destroyERKSaIcE",
+    "_ZNSsC1EPKcRKSaIcE",
+    "_ZNSsC1ERKSs"
+  ],
+  "allow_missing_reason": "The shipped object uses the pre-C++11 libstdc++ `std::string` ABI (`_GLIBCXX_USE_CXX11_ABI=0`, `_ZNSs*` symbols). Modern libstdc++ only provides the C++11 SSO string, whose symbols have different mangling; the reconstructed construction/destruction of the same strings therefore calls `_ZNSt7__cxx1112basic_string...` instead.",
+  "allow_missing_strings": [
+    "Collide Fields",
+    "Collide Particles",
+    "Create Cell Indices",
+    "Reorder Particles",
+    "Sort Cell Indices",
+    "Total",
+    "Update Bounds",
+    "Update Triangles"
+  ],
+  "allow_missing_strings_reason": "GCC 15 merged the timer-name literals into one tail-shared `.rodata` blob, so the individual names are not recoverable as NUL-terminated strings by the gate's extractor; the exact bytes are present at flex.part4.cu (names vector).",
+  "evidence": [
+    "work/decomp/nvflex.flex/cudaflex.c:@00109af0 (8119 B)",
+    "work/dwarf/nvflex.flex.json:decl_line 6502",
+    "work/binary/obj/rel/NvFlexReleaseCUDA_x64/cudaflex.o (call/instruction baseline)",
+    "work/binary/obj/dbg/NvFlexDebugCUDA_x64/dump/cudaflex.disasm.txt (00109af0)"
+  ],
+  "iterations": 0,
+  "kind": "host",
+  "parity": "needs-gpu",
+  "seed": 1234,
+  "signature": "NvFlexGetDetailTimers",
+  "source": "src/cuda/flex.cu:6502",
+  "symbol": "NvFlexGetDetailTimers",
+  "unit": "nvflex.flex#NvFlexGetDetailTimers"
+}

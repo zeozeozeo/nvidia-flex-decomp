@@ -1,0 +1,16 @@
+{
+  "evidence": [
+    "work/decomp/nvflex.flex/cudaflex.c:@00103be0 (219 B)",
+    "work/dwarf/nvflex.flex.json:decl_line 6389",
+    "work/binary/obj/rel/NvFlexReleaseCUDA_x64/cudaflex.o (call/instruction baseline)",
+    "work/binary/obj/dbg/NvFlexDebugCUDA_x64/dump/cudaflex.disasm.txt (00103be0)"
+  ],
+  "iterations": 0,
+  "kind": "host",
+  "parity": "needs-gpu",
+  "seed": 1234,
+  "signature": "NvFlexGetDeviceLatency",
+  "source": "src/cuda/flex.cu:6389",
+  "symbol": "NvFlexGetDeviceLatency",
+  "unit": "nvflex.flex#NvFlexGetDeviceLatency"
+}

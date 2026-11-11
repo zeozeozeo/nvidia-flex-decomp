@@ -1,0 +1,16 @@
+{
+  "evidence": [
+    "work/decomp/nvflex.flex/cudaflex.c:@00112770 (194 B)",
+    "work/dwarf/nvflex.flex.json:decl_line 5948",
+    "work/binary/obj/rel/NvFlexReleaseCUDA_x64/cudaflex.o (call/instruction baseline)",
+    "work/binary/obj/dbg/NvFlexDebugCUDA_x64/dump/cudaflex.disasm.txt (00112770)"
+  ],
+  "iterations": 0,
+  "kind": "host",
+  "parity": "needs-gpu",
+  "seed": 1234,
+  "signature": "NvFlexUpdateSolver",
+  "source": "src/cuda/flex.cu:5948",
+  "symbol": "NvFlexUpdateSolver",
+  "unit": "nvflex.flex#NvFlexUpdateSolver"
+}

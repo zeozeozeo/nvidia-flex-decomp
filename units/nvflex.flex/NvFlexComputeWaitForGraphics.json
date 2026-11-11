@@ -1,0 +1,16 @@
+{
+  "evidence": [
+    "work/decomp/nvflex.flex/cudaflex.c:@00103d20 (2 B)",
+    "work/dwarf/nvflex.flex.json:decl_line 6608",
+    "work/binary/obj/rel/NvFlexReleaseCUDA_x64/cudaflex.o (call/instruction baseline)",
+    "work/binary/obj/dbg/NvFlexDebugCUDA_x64/dump/cudaflex.disasm.txt (00103d20)"
+  ],
+  "iterations": 64,
+  "kind": "host",
+  "parity": "pure-cpu",
+  "seed": 1234,
+  "signature": "NvFlexComputeWaitForGraphics",
+  "source": "src/cuda/flex.cu:6608",
+  "symbol": "NvFlexComputeWaitForGraphics",
+  "unit": "nvflex.flex#NvFlexComputeWaitForGraphics"
+}

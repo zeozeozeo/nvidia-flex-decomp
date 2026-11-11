@@ -1,0 +1,32 @@
+{
+  "buffer_note": "bytes 552..648 of NvFlexLibrary are NvResourceTracker (four std::vector members): their begin/end/capacity pointers are heap addresses that differ between the two loaded libraries; masked before comparison",
+  "buffers": [
+    {
+      "arg": 0,
+      "base": "NvFlexLibrary",
+      "count": 8,
+      "ignore_offsets": [
+        [
+          552,
+          648
+        ]
+      ],
+      "init": "zero",
+      "type": "NvFlexLibrary*"
+    }
+  ],
+  "evidence": [
+    "work/decomp/nvflex.flex/cudaflex.c:@00103ac0 (67 B)",
+    "work/dwarf/nvflex.flex.json:decl_line 6296",
+    "work/binary/obj/rel/NvFlexReleaseCUDA_x64/cudaflex.o (call/instruction baseline)",
+    "work/binary/obj/dbg/NvFlexDebugCUDA_x64/dump/cudaflex.disasm.txt (00103ac0)"
+  ],
+  "iterations": 64,
+  "kind": "host",
+  "parity": "pure-cpu",
+  "seed": 1234,
+  "signature": "NvFlexGetTriangleMeshes",
+  "source": "src/cuda/flex.cu:6296",
+  "symbol": "NvFlexGetTriangleMeshes",
+  "unit": "nvflex.flex#NvFlexGetTriangleMeshes"
+}
