@@ -13,3 +13,13 @@ Currently decompiled:
 Left to decompile:
 
 - DX11 backend (started)
+
+## Modules
+
+Main parts of the code.
+
+- [./recon] source root
+- [./recon/src/cuda] CUDA kernel sources
+- [./recon/src/device] CPU device host
+- [./recon/src/dx/shaders] HLSL compute shader sources
+- [./recon/src/dx] DX11 backend (WIP)
