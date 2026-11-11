@@ -347,7 +347,8 @@ def submit(unit: str, agent: str, evidence: list, notes: str | None = None) -> d
         conn.close()
 
 
-def verify(unit: str, agent: str, ok: bool = True, detail: str | None = None) -> dict:
+def verify(unit: str, agent: str, ok: bool = True, detail: str | None = None,
+           gates: dict | None = None) -> dict:
     ledger.init()
     conn = ledger.connect()
     row = conn.execute("SELECT * FROM units WHERE id=?", (unit,)).fetchone()
@@ -362,6 +363,10 @@ def verify(unit: str, agent: str, ok: bool = True, detail: str | None = None) ->
     if row["status"] not in ("decompiled", "verified"):
         conn.close()
         return {"ok": False, "error": "not_decompiled", "status": row["status"], "unit": unit}
+    if gates:
+        # the verification act itself is the gate record
+        for name, passed in gates.items():
+            ledger.record_gate(unit, name, bool(passed), {"by": agent, "detail": detail or ""})
     status = "verified" if ok else "open"
     with ledger.transaction(conn):
         conn.execute("UPDATE units SET status=?, update_ts=?, notes=COALESCE(?, notes) WHERE id=?",

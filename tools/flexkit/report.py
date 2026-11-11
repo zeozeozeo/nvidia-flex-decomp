@@ -167,6 +167,10 @@ def build() -> dict:
     decompiled = [u["id"] for u in units if u["status"] == "decompiled"]
 
     gates = _gates()
+    # pass rates must describe the accepted state, not the session history:
+    # restrict to units that are verified and have a recorded run per gate
+    verified_ids = {u["id"] for u in units if u["status"] == "verified"}
+    latest = {k: v for k, v in gates["latest"].items() if k.split("|", 1)[0] in verified_ids}
     exports = _exports()
     headers = _headers_identical()
     vendored_clean = _vendored_clean()
@@ -194,11 +198,12 @@ def build() -> dict:
         "gates": {
             "runs": gates["by_gate"],
             "static_pass_rate": round(
-                sum(1 for k, v in gates["latest"].items() if k.endswith("|static") and v)
-                / max(1, sum(1 for k in gates["latest"] if k.endswith("|static"))), 4),
+                sum(1 for k, v in latest.items() if k.endswith("|static") and v)
+                / max(1, sum(1 for k in latest if k.endswith("|static"))), 4),
             "diff_pass_rate": round(
-                sum(1 for k, v in gates["latest"].items() if k.endswith("|diff") and v)
-                / max(1, sum(1 for k in gates["latest"] if k.endswith("|diff"))), 4),
+                sum(1 for k, v in latest.items() if k.endswith("|diff") and v)
+                / max(1, sum(1 for k in latest if k.endswith("|diff"))), 4),
+            "scope": "verified units only",
             "gpu": gpu,
             "dxbc": dxbc,
         },

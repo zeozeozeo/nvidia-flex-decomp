@@ -4,8 +4,8 @@
     "blocked_zero": false,
     "claimed_zero": true,
     "dxbc": {
-      "matched": 0,
-      "not_reconstructed": 83,
+      "matched": 3,
+      "not_reconstructed": 79,
       "shaders": 84
     },
     "exports_strict_match": false,
@@ -461,7 +461,7 @@
         "__cudaRegisterLinkedBinary_46c61157_13_flex_part2_cu_dbca3207",
         "__cudaRegisterLinkedBinary_5473beb9_13_flex_part1_cu_c3f544ee",
         "__cudaRegisterLinkedBinary_63ad4e8b_13_flex_part4_cu_addc5381",
-        "__cudaRegisterLinkedBinary_86f6839c_7_flex_cu_1dcd7855_326689",
+        "__cudaRegisterLinkedBinary_86f6839c_7_flex_cu_1dcd7855_355334",
         "__cudaRegisterLinkedBinary_98decf99_12_bvh_part1_cu_e6b7b7b7",
         "__cudaRegisterLinkedBinary_ad92b671_7_sort_cu_a06bd971",
         "__cudaRegisterLinkedBinary_b0a2fb70_6_bvh_cu_001947f6",
@@ -471,7 +471,7 @@
         "__fatbinwrap_46c61157_13_flex_part2_cu_dbca3207",
         "__fatbinwrap_5473beb9_13_flex_part1_cu_c3f544ee",
         "__fatbinwrap_63ad4e8b_13_flex_part4_cu_addc5381",
-        "__fatbinwrap_86f6839c_7_flex_cu_1dcd7855_326689",
+        "__fatbinwrap_86f6839c_7_flex_cu_1dcd7855_355334",
         "__fatbinwrap_98decf99_12_bvh_part1_cu_e6b7b7b7",
         "__fatbinwrap_ad92b671_7_sort_cu_a06bd971",
         "__fatbinwrap_b0a2fb70_6_bvh_cu_001947f6",
@@ -666,8 +666,8 @@
   "gates": {
     "diff_pass_rate": 1.0,
     "dxbc": {
-      "matched": 0,
-      "not_reconstructed": 83,
+      "matched": 3,
+      "not_reconstructed": 79,
       "shaders": 84
     },
     "gpu": {
@@ -677,18 +677,19 @@
     "runs": {
       "diff": {
         "fail": 25,
-        "pass": 252
+        "pass": 289
       },
       "dxbc": {
-        "fail": 759,
-        "pass": 2
+        "fail": 1339,
+        "pass": 10
       },
       "static": {
         "fail": 1406,
-        "pass": 1195
+        "pass": 1453
       }
     },
-    "static_pass_rate": 0.268
+    "scope": "verified units only",
+    "static_pass_rate": 0.9961
   },
   "headers": {
     "all_identical": true,
@@ -709,7 +710,7 @@
   },
   "limitations": [
     "GPU parity (G3) not executed: no NVIDIA device on this host; `flexkit gate gpu --all` reports `skipped:no-gpu`.",
-    "83 of 84 D3D solver shaders are not reconstructed: HLSL must be authored from D3D assembly, and the original bytecode was produced by Microsoft fxc/dxc while the only offline compiler here is vkd3d-shader, so opcode-level equality is unattainable on this host.",
+    "79 of 84 D3D solver shaders are not reconstructed: HLSL must be authored from D3D assembly, and the original bytecode was produced by Microsoft fxc/dxc while the only offline compiler here is vkd3d-shader, so opcode-level equality is unattainable on this host.",
     "nvflex: 39 strong symbols absent, all internal `__global__` launch wrappers: with `-rdc=true` (required for the shared `__constant__ gParams`/`gBounds`) nvcc 13 device-links them as local symbols, while CUDA 9.2 exported them `GLOBAL DEFAULT`. The public `NvFlex*` surface and every `__device_stub__` are exported, so the consumer-visible ABI is complete.",
     "nvflexext: 2 strong symbol(s) absent; the Ext device kernel launch wrappers are `GLOBAL HIDDEN` under nvcc 13 for the verbatim shipped source, while CUDA 9.2 exported them `GLOBAL DEFAULT`.",
     "2 unit(s) blocked with recorded evidence (see below).",
