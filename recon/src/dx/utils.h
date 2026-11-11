@@ -20,6 +20,42 @@
 #include "NvFlex.h"
 
 // ---------------------------------------------------------------------------
+// NvFlexFormat — internal pixel-format enum (PDB: global `NvFlexFormat`)
+// ---------------------------------------------------------------------------
+// Values are the PDB enumeration (field list 0x1033); they index the DXGI
+// conversion table in Format.cpp.
+enum NvFlexFormat
+{
+    eNvFlexFormat_unknown = 0,
+    eNvFlexFormat_r32_typeless = 1,
+    eNvFlexFormat_r32_float = 2,
+    eNvFlexFormat_r32g32_float = 3,
+    eNvFlexFormat_r32g32b32a32_float = 4,
+    eNvFlexFormat_r16_float = 5,
+    eNvFlexFormat_r16g16_float = 6,
+    eNvFlexFormat_r16g16b16a16_float = 7,
+    eNvFlexFormat_r32_uint = 8,
+    eNvFlexFormat_r32g32_uint = 9,
+    eNvFlexFormat_r32g32b32a32_uint = 10,
+    eNvFlexFormat_r8_unorm = 11,
+    eNvFlexFormat_r8g8_unorm = 12,
+    eNvFlexFormat_r8g8b8a8_unorm = 13,
+    eNvFlexFormat_r16_unorm = 14,
+    eNvFlexFormat_r16g16_unorm = 15,
+    eNvFlexFormat_r16g16b16a16_unorm = 16,
+    eNvFlexFormat_d32_float = 17,
+    eNvFlexFormat_d24_unorm_s8_uint = 18,
+    eNvFlexFormat_r8_snorm = 19,
+    eNvFlexFormat_r8g8_snorm = 20,
+    eNvFlexFormat_r8g8b8a8_snorm = 21,
+    eNvFlexFormat_max = 22
+};
+
+// NvFlexContextDesc is defined by the context TU (Context.cpp); only the
+// pointer is needed here.
+struct NvFlexContextDesc;
+
+// ---------------------------------------------------------------------------
 // Math types used by the D3D backend
 // ---------------------------------------------------------------------------
 // The shipped backend uses the XVector3/XVector4 templates from the FleX maths
@@ -510,6 +546,15 @@ struct DxConstantBuffer
     void Copy(NvFlex::Context* context, const void* data, unsigned size);
     void Release();
 };
+
+// ---------------------------------------------------------------------------
+// Buffer clear dispatchers (utils.obj @0x4e350 / @0x4e440)
+// ---------------------------------------------------------------------------
+// `elementCount` is the byte length of `buffer`; the shaders work on 4-byte
+// (int) and 16-byte (float4) granularity respectively.
+void ClearBufferInt(NvFlexLibrary* lib, NvFlex::Buffer* buffer, int elementCount, int value);
+void ClearBufferFloat4(NvFlexLibrary* lib, NvFlex::Buffer* buffer, int elementCount,
+                       const XVector4<float>* value);
 
 // ---------------------------------------------------------------------------
 // Device-independent helpers (originally anonymous-namespace in every D3D TU)
