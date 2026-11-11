@@ -142,6 +142,18 @@ Constant-buffer element structs taken from `RDEF` need `float4`-aligned padding
 * vkd3d-shader emits more instructions than fxc for the same source; the opcode
   multiset stays advisory in the gate and is not a fidelity claim.
 
+## What must match, and what need not
+
+| fixed (observable) | free (internal) |
+|---|---|
+| the 83 exported `NvFlex*` C functions and their signatures (`NvFlex.h`, verbatim) | class names, member order, vtable order, padding of every backend class |
+| by-value public structs from `NvFlex.h` | how `ContextD3D11`, `Device`, `BufferD3D11`, `RadixSortImpl` are shaped |
+| the scenario trace (`version`, `library`, `solver`, `particles_hash`, `active`, `errors`) | allocator choice, cache sizes, thread strategy |
+
+Backend classes are only ever seen through opaque pointers, so a reconstruction
+is free to choose its own internal design; `flexkit d3dcontext --cls X` exists to
+learn *what* a class does, not to reproduce its byte layout.
+
 ## Acceptance gates
 
 | gate | command | proves |
