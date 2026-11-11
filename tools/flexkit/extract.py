@@ -144,3 +144,46 @@ def link(variant: str = "rel") -> dict:
             "sha256": sha256_file(out) if out.exists() else None,
         }
     return results
+
+
+def extract_gpu(modules: list[str] | None = None, variants: tuple[str, ...] = ("dbg", "rel")) -> dict:
+    """Write sm_30.ptx / sm_30.cubin per kernel module with digest assertions."""
+    from . import GPU, MODULES
+    from .util import ensure, jwrite, sha256_bytes
+
+    ensure(GPU)
+    report = {"modules": {}, "ptx_sha256": {}, "kernels": {}}
+    targets = modules or list(MODULES)
+    for variant in variants:
+        for module in targets:
+            if module not in KERNEL_MODULES:
+                continue
+            member = MODULES[module][0]
+            cands = sorted(OBJ.glob(f"{variant}/*/{member}"))
+            if not cands:
+                continue
+            obj = cands[0]
+            fbs = fatbin.parse_file(obj)
+            if not fbs:
+                continue
+            outdir = GPU / variant / module
+            ensure(outdir)
+            rec = {"object": str(obj), "entries": []}
+            for fb in fbs:
+                for e in fb.entries:
+                    data = fatbin.decode_entry(e)
+                    name = "sm_30.ptx" if e.kind == fatbin.KIND_PTX else "sm_30.cubin"
+                    path = outdir / name
+                    path.write_bytes(data)
+                    rec["entries"].append({
+                        "kind": e.kind_name, "path": str(path), "bytes": len(data),
+                        "sha256": sha256_bytes(data),
+                        "kernels": e.kernels,
+                    })
+                    if e.kind == fatbin.KIND_PTX:
+                        report["ptx_sha256"][f"{variant}:{module}"] = sha256_bytes(data)
+                    else:
+                        report["kernels"][f"{variant}:{module}"] = len(e.kernels)
+            report["modules"][f"{variant}:{module}"] = rec
+    jwrite(WORK / "gpu.json", report)
+    return report

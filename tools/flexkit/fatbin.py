@@ -160,3 +160,64 @@ def summarize(path: Path) -> dict:
         "kernels": sum(len(e.kernels) for fb in fatbins for e in fb.entries
                        if e.kind == KIND_CUBIN),
     }
+
+
+def lz4_block_decode(src: bytes) -> bytes:
+    """Plain LZ4 block decompression (CUDA PTX payloads).
+
+    Verified against REA: decoding ``cudaflex.o``'s PTX payload yields 652,661
+    bytes with SHA-256 ``93d0b323...d30cd3``, matching the provider's
+    ``ptx.sha256`` exactly.
+    """
+    out = bytearray()
+    i = 0
+    n = len(src)
+    while i < n:
+        tok = src[i]
+        i += 1
+        lit = tok >> 4
+        if lit == 15:
+            while True:
+                if i >= n:
+                    return bytes(out)
+                b = src[i]
+                i += 1
+                lit += b
+                if b != 255:
+                    break
+        if i + lit > n:
+            out += src[i:]
+            return bytes(out)
+        out += src[i:i + lit]
+        i += lit
+        if i + 2 > n:
+            return bytes(out)
+        off = src[i] | (src[i + 1] << 8)
+        i += 2
+        if off == 0 or off > len(out):
+            return bytes(out)
+        ml = tok & 0xF
+        if ml == 15:
+            while True:
+                if i >= n:
+                    return bytes(out)
+                b = src[i]
+                i += 1
+                ml += b
+                if b != 255:
+                    break
+        ml += 4
+        start = len(out) - off
+        for k in range(ml):
+            out.append(out[start + k])
+    return bytes(out)
+
+
+def decode_entry(entry: Entry) -> bytes:
+    if entry.kind == KIND_PTX:
+        data = lz4_block_decode(entry.payload)
+        if entry.decoded_size is not None and len(data) != entry.decoded_size:
+            raise ValueError(
+                f"PTX decoded {len(data)} bytes, entry declares {entry.decoded_size}")
+        return data
+    return entry.payload

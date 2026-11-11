@@ -59,7 +59,9 @@ class Typ:
         }
         if self.members:
             d["members"] = self.members
-        if self.enumerators:
+        if self.kind == "typedef" and self.enumerators:
+            d["underlying"] = self.enumerators[0].get("underlying")
+        elif self.enumerators:
             d["enumerators"] = self.enumerators
         return d
 
@@ -237,7 +239,8 @@ def _file_at(files: list[str], idx) -> str | None:
 def _member_layout(die):
     loc = die.attributes.get("DW_AT_data_member_location")
     if loc is None:
-        return 0, None
+        # no location: a static data member (occupies no storage in the object)
+        return None, None
     v = loc.value
     if isinstance(v, int):
         return v, None
@@ -304,6 +307,10 @@ def extract(obj: Path, module: str) -> dict:
                             dl = (c.attributes["DW_AT_decl_line"].value
                                   if "DW_AT_decl_line" in c.attributes else None)
                             tp = Typ(name=name, kind=kind, byte_size=bs, decl_file=df, decl_line=dl)
+                            if kind == "typedef" and "DW_AT_type" in c.attributes:
+                                tp.members = []
+                                tp_under = resolver.name_of(c.get_DIE_from_attribute("DW_AT_type"))
+                                tp.enumerators = [{"underlying": tp_under}] if tp_under else []
                             for m in c.iter_children():
                                 if m.tag == "DW_TAG_member":
                                     mname = m.attributes.get("DW_AT_name")
@@ -316,6 +323,14 @@ def extract(obj: Path, module: str) -> dict:
                                         "offset": off,
                                         "type": mt,
                                     }
+                                    if off is None:
+                                        mrec["static"] = True
+                                    bsz = m.attributes.get("DW_AT_bit_size")
+                                    if bsz is not None and isinstance(bsz.value, int):
+                                        mrec["bit_size"] = bsz.value
+                                    bo = m.attributes.get("DW_AT_bit_offset") or m.attributes.get("DW_AT_data_bit_offset")
+                                    if bo is not None and isinstance(bo.value, int):
+                                        mrec["bit_offset"] = bo.value
                                     if raw:
                                         mrec["expression"] = raw
                                     tp.members.append(mrec)
@@ -327,7 +342,8 @@ def extract(obj: Path, module: str) -> dict:
                                         "value": ev.value if ev else None,
                                     })
                             rec = tp.as_dict()
-                            if name not in all_types or (bs and not all_types[name].get("byte_size")):
+                            cur = all_types.get(name)
+                            if cur is None or (bs and not cur.get("byte_size")):
                                 all_types[name] = rec
                             types.append(rec)
                     elif tagname == "DW_TAG_subprogram":

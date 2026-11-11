@@ -85,6 +85,17 @@ def cmd_dwarf(args):
     return 0
 
 
+def cmd_headers(args):
+    from . import headers
+    r = headers.generate()
+    if args.json:
+        jprint(r)
+    else:
+        print(f"headers: {r.get('headers')} types={r.get('types')} hoists={r.get('hoists')}")
+        print(f"dir: {r.get('dir')}")
+    return 0 if r.get("headers") else 1
+
+
 def cmd_pdb(args):
     from . import pdb
     r = pdb.dump_all()
@@ -113,7 +124,10 @@ def cmd_units(args):
     sub = args.units_cmd
     if sub == "build":
         r = units.build(force=args.force)
-        jprint(r) if args.json else print(f"units: inserted={r['inserted']} total={r['total']}")
+        if args.json:
+            jprint(r)
+        else:
+            print(f"units: inserted={r['inserted']} total={r['total']}")
         return 0
     if sub == "list":
         r = units.list_units(module=args.module, status=args.status, limit=args.limit)
@@ -134,7 +148,10 @@ def cmd_units(args):
         return 0 if r else 1
     if sub == "release":
         r = units.release(agent=args.agent, unit=args.unit, stale_minutes=args.stale)
-        jprint(r) if args.json else print(f"released: {r['released']}")
+        if args.json:
+            jprint(r)
+        else:
+            print(f"released: {r['released']}")
         return 0
     if sub == "show":
         r = units.show(args.unit)
@@ -145,15 +162,24 @@ def cmd_units(args):
     if sub == "submit":
         ev = json.loads(args.evidence) if args.evidence else []
         r = units.submit(args.unit, args.agent, ev, notes=args.notes)
-        jprint(r) if args.json else print(f"{args.unit}: {r['status']}")
+        if args.json:
+            jprint(r)
+        else:
+            print(f"{args.unit}: {r.get('status', r)}")
         return 0 if r.get("ok") else 1
     if sub == "verify":
         r = units.verify(args.unit, args.agent, ok=not args.reject, detail=args.detail)
-        jprint(r) if args.json else print(f"{args.unit}: {r['status']}")
+        if args.json:
+            jprint(r)
+        else:
+            print(f"{args.unit}: {r.get('status', r)}")
         return 0 if r.get("ok") else 1
     if sub == "block":
         r = units.block(args.unit, args.reason)
-        jprint(r) if args.json else print(f"{args.unit}: blocked")
+        if args.json:
+            jprint(r)
+        else:
+            print(f"{args.unit}: blocked")
         return 0
     if sub == "status":
         r = units.status(strict=args.strict)
@@ -189,18 +215,27 @@ def cmd_gate(args):
     if gate == "static":
         from . import gate_static
         r = gate_static.run(unit=args.unit, module=args.module, all_=args.all)
-        jprint(r) if args.json else gate_static.render(r)
+        if args.json:
+            jprint(r)
+        else:
+            print(gate_static.render(r))
         return 0 if r.get("ok") else 1
     if gate == "diff":
         from . import gate_diff
         r = gate_diff.run(unit=args.unit, module=args.module, all_=args.all,
                           iterations=args.iterations, verbose=args.verbose)
-        jprint(r) if args.json else gate_diff.render(r)
+        if args.json:
+            jprint(r)
+        else:
+            print(gate_diff.render(r))
         return 0 if r.get("ok") else 1
     if gate == "gpu":
         from . import gate_gpu
         r = gate_gpu.run(unit=args.unit, module=args.module, all_=args.all)
-        jprint(r) if args.json else gate_gpu.render(r)
+        if args.json:
+            jprint(r)
+        else:
+            print(gate_gpu.render(r))
         return 0 if r.get("ok") in (True, None) else 1
     die(f"unknown gate: {gate}")
 
@@ -208,7 +243,10 @@ def cmd_gate(args):
 def cmd_calib(args):
     from . import calib
     r = calib.run(iterations=args.iterations)
-    jprint(r) if args.json else calib.render(r)
+    if args.json:
+        jprint(r)
+    else:
+        print(calib.render(r))
     return 0 if r.get("ok") else 1
 
 
@@ -250,6 +288,10 @@ def build_parser() -> argparse.ArgumentParser:
     s.add_argument("--module")
     s.add_argument("--json", action="store_true")
     s.set_defaults(func=cmd_dwarf)
+
+    s = sub.add_parser("headers", help="generate recovered internal headers from DWARF")
+    s.add_argument("--json", action="store_true")
+    s.set_defaults(func=cmd_headers)
 
     s = sub.add_parser("pdb", help="dump PDB types/functions/globals")
     s.add_argument("--json", action="store_true")
