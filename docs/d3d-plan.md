@@ -37,9 +37,9 @@
 
 ## Progress
 
-`bin/flexkit gate dxbc --dll NvFlexReleaseD3D_x64.dll` reports **33/84**
+`bin/flexkit gate dxbc --dll NvFlexReleaseD3D_x64.dll` reports **55/84**
 structurally matched (it reported 0/84 at the start of this phase; the Ext DLL
-stays at 1/1). 14 of those are the indices in the 000-020 slice documented
+stays at 1/1). 17 of those are the indices in the 000-020 slice documented
 below; 17 more are shaders this slice wrote before the per-range split
 (021-074) and the rest come from the other slices.
 
@@ -61,14 +61,16 @@ so the Ext DLL keeps its shipped `000_cs_5_0__execute.hlsl`; both DLL gates repo
 012 `ComputeTotalInvEdges`, 013 `CalculateKeyDeltas`,
 014 `ReorderParticles`, 015 `CompactDiffuseParticles`,
 017 `ClampDiffuseParticleCount`, 019 `ClearCellBuckets`,
-020 `SmoothPositions` — 14 of the 21 indices in this slice.
+020 `SmoothPositions`,
+006/008 `ComputeTotalBounds` and 018 `CalculateBounds` (the AMD shader-intrinsics
+paths, reconstructed by transcribing the extension UAV's `imm_atomic_cmp_exch`
+opcode groups) — 17 of the 21 indices in this slice.
 
 ### Not reconstructed in 001-020, with reasons
 | idx | kernel | reason |
 |---|---|---|
 | 001, 009, 016 | `BuildHierarchy`, `CalculateBounds` | `dcl_uav_structured_opc u7, 256` — NVAPI extension (opcode/counter) UAV; no HLSL spelling and the front end rejects `AppendStructuredBuffer` (`E5030`) |
 | 005 | `BuildHierarchy` | `dcl_uav_structured_glc` — globally-coherent UAV flag cannot be emitted from source |
-| 006, 008, 018 | `ComputeTotalBounds`, `CalculateBounds` | `dcl_uav_raw u7` = `AmdDxExtShaderIntrinsicsUAV`, used with `imm_atomic_cmp_exch` min/max sequences; `RWByteAddressBuffer` exposes only `Store`/`Store2` in this front end |
 
 ### Front-end limits (refined)
 
@@ -78,6 +80,30 @@ so the Ext DLL keeps its shipped `000_cs_5_0__execute.hlsl`; both DLL gates repo
 | `dcl_uav_structured_glc` (globally coherent flag) | **unreachable** — no source spelling |
 | `dcl_uav_raw` **reads** (`ld_raw`) | **unreachable** — `RWByteAddressBuffer` has only `Store`/`Store2` |
 | `dcl_uav_raw` **atomics** | **reachable** — verified on index 022 |
+
+#### Correction: raw-UAV atomics are writable
+
+An earlier revision of this file listed raw-UAV atomics as unreachable. That was
+wrong: the *member-function* form (`accum.InterlockedCompareExchange(...)`) fails
+with `E5005`, but the free-function intrinsic over an **indexed raw lvalue**
+compiles to exactly the shipped opcode:
+
+```hlsl
+RWByteAddressBuffer accum : register(u0);
+uint expected = 0u, old;
+InterlockedCompareExchange(accum[addr], expected, asuint(asfloat(expected) + v), old);
+```
+
+emits `imm_atomic_cmp_exch r, u0, addr, cmp, src` against `dcl_uav_raw u0`.
+Indices 006, 008 and 018 were re-opened on this basis and are now reconstructed:
+each `imm_atomic_cmp_exch u7, <opcode addr>, <value>, 0` of the AMD
+shader-intrinsics min/max sequence is written as
+`InterlockedCompareExchange(uav[addr], asuint(v.x), 0u, out_old)`, which
+reproduces all 30 CAS instructions per shader with identical addresses and
+operands (`dcl_uav_raw u7`, `dcl_tgsm_structured g0, 12, 256`).
+
+Still unreachable: raw-UAV *reads* (`ld_raw` from a `dcl_uav_raw` binding),
+`dcl_uav_structured_opc` and `dcl_uav_structured_glc`.
 
 The raw-UAV atomic case is worth recording: the member form
 (`accum.InterlockedCompareExchange(...)`) fails with `E5005`, but a free
