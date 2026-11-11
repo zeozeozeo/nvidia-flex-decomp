@@ -26,3 +26,10 @@ bool NvFlexDeviceCreateCudaContext(int ordinal)
 ## Unknowns
 
 None.
+
+## Codegen shape
+
+Baseline is the release object: 79 instructions, calls `{dlopen, dlsym,
+physxDevGetCudaOrdinalWrapper}`. The reconstruction inlines
+`CudaSafeDelayLoadImpl` into this function (144 instructions, ratio 1.82,
+calls 3/3 matched, only extra edge `_Unwind_Resume`).

@@ -42,3 +42,12 @@ budget the static gate measures. This is a codegen-level reproduction only.
 ## Unknowns
 
 None.
+
+## Codegen shape (both shipped objects)
+
+The release object (the static gate's baseline for this module) folds this
+forward into `CudaSafeDelayLoad`; the debug object keeps it out of line
+(12 instructions). Both shapes are in the object: `GetProcAddressImpl` is
+`always_inline` and is what the callers contain, while the shipped symbol
+`_ZL14GetProcAddressPvPKc` is the out-of-line wrapper (18 instructions,
+baseline 12, ratio 1.5, calls `dlsym` 1/1).

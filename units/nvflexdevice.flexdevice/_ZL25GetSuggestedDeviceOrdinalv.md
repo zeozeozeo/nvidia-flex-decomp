@@ -50,3 +50,14 @@ G1 only: internal linkage, not `dlsym`-able. The exported wrapper
 ## Unknowns
 
 None.
+
+## Codegen shape (both shipped objects)
+
+Same split as `GetProcAddress`: `GetSuggestedDeviceOrdinalImpl` is the
+`always_inline` body inlined into `NvFlexDeviceGetSuggestedOrdinal` (as the
+release object does), and this symbol is the out-of-line wrapper
+(16 instructions vs the debug baseline 18, ratio 0.89, calls
+`physxDevGetCudaOrdinalWrapper` 1/1). It carries
+`__attribute__((noipa))` so GCC does not fold it into
+`NvFlexDeviceGetSuggestedOrdinal` (the two bodies are identical after
+inlining, so the symbol would otherwise become a 5-instruction tail jump).

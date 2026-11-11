@@ -51,6 +51,8 @@ PHYSX_DEV_STATUS physxDevGetCudaOrdinalWrapper(int* cudaDevOrdinal)
 	return PHYSX_DEV_OK;
 }
 
+// 3 instructions in the shipped release object (constant 0 return).
+__attribute__((optimize("O3")))
 // flexdecomp: PhysXDevice.cpp:47 _ZN5physx32physxDevUsingDedicatedGPUWrapperEv
 PHYSX_DEV_STATUS physxDevUsingDedicatedGPUWrapper()
 {

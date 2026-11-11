@@ -163,6 +163,10 @@ static FLEX_FORCEINLINE int GetSuggestedDeviceOrdinalImpl()
 }
 
 // flexdecomp: flexDevice.cpp:92 _ZL25GetSuggestedDeviceOrdinalv
+// noipa keeps this symbol's own body: without it GCC folds the function into
+// NvFlexDeviceGetSuggestedOrdinal(), which has the identical inlined body,
+// and the debug object's stand-alone 18-instruction body would vanish.
+__attribute__((noipa))
 static int GetSuggestedDeviceOrdinal()
 {
 	return GetSuggestedDeviceOrdinalImpl();

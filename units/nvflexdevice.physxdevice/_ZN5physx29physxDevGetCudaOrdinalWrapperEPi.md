@@ -41,13 +41,17 @@ The recovered `recon/src/device/PhysXDevice.h` carries only the
 * `return PHYSX_DEV_OK` (0) is the constant 0 stored in `%eax`; the DWARF
   enumerator is `PHYSX_DEV_OK = 0`.
 
-## Inference
+## `atoi` vs `strtol`
 
-* `<stdlib.h>` is not included: glibc's `__USE_EXTERN_INLINES` (enabled for any
-  `-O` build) rewrites `atoi` into an inline `__isoc23_strtol` call, which the
-  shipped object does not contain. The two libc entry points are declared
-  `extern "C"` directly so both `getenv@plt` and `atoi@plt` are reproduced
-  (static gate: `calls 2/2 matched`).
+The shipped source calls `atoi()`, but the two shipped objects resolve it
+differently: the debug object calls `atoi@plt` (0x36), the release object calls
+`strtol@plt` with base 10 / NULL endptr (rel `PhysXDevice.cpp.o` @0x1f), i.e.
+glibc's inline `atoi` was active in the `-O3` build. Since `(int)strtol(nptr,
+NULL, 10)` *is* `atoi`, the reconstruction writes that call explicitly and
+declares `strtol`/`getenv` `extern "C"` (including `<stdlib.h>` would map
+`strtol` to `__isoc23_strtol` on this glibc, which neither shipped object
+calls). Static gate: `calls 2/2 matched` against the release baseline,
+25 instructions vs 20 (ratio 1.25).
 
 ## Parity
 

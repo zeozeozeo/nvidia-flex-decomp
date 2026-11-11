@@ -43,28 +43,48 @@ def _exports() -> dict:
                 archive = FLEX / "lib" / "linux64" / fname
                 if not archive.exists():
                     continue
-                names = set()
+                strong, weak = set(), set()
                 for line in run(["nm", "--defined-only", archive]).splitlines():
                     parts = line.split()
-                    if len(parts) >= 3 and parts[-2] in ("T", "D", "B", "R", "W", "V"):
-                        names.add(parts[-1])
-                out.setdefault(lib, {})["orig"] = sorted(names)
+                    if len(parts) < 3:
+                        continue
+                    kind, name = parts[-2], parts[-1]
+                    if name.startswith((".LC", ".L")):
+                        continue
+                    if kind in ("T", "D", "B", "R"):
+                        strong.add(name)
+                    elif kind in ("W", "V"):
+                        weak.add(name)
+                out.setdefault(lib, {})["orig"] = sorted(strong)
+                out.setdefault(lib, {})["orig_weak"] = sorted(weak)
         else:
             for lib in ("nvflex", "nvflexext", "nvflexdevice"):
                 so = RECON / "build" / f"lib{lib}.so"
                 if not so.exists():
                     continue
-                names = set()
+                strong, weak = set(), set()
                 for line in run(["nm", "-D", "--defined-only", str(so)]).splitlines():
                     parts = line.split()
-                    if len(parts) >= 3:
-                        names.add(parts[-1])
-                out.setdefault(lib, {})["recon"] = sorted(names)
+                    if len(parts) < 3:
+                        continue
+                    kind, name = parts[-2], parts[-1]
+                    if name.startswith((".LC", ".L")):
+                        continue
+                    if kind in ("T", "D", "B", "R"):
+                        strong.add(name)
+                    elif kind in ("W", "V"):
+                        weak.add(name)
+                out.setdefault(lib, {})["recon"] = sorted(strong)
+                out.setdefault(lib, {})["recon_weak"] = sorted(weak)
     for lib, rec in out.items():
         o = set(rec.get("orig", []))
         r = set(rec.get("recon", []))
+        ow = set(rec.pop("orig_weak", []))
+        rw = set(rec.pop("recon_weak", []))
         rec["counts"] = {"orig": len(o), "recon": len(r),
-                         "missing": len(o - r), "extra": len(r - o)}
+                         "missing": len(o - r), "extra": len(r - o),
+                         "orig_weak": len(ow), "recon_weak": len(rw),
+                         "missing_weak": len(ow - rw)}
         rec["missing_sample"] = sorted(o - r)[:20]
     return out
 

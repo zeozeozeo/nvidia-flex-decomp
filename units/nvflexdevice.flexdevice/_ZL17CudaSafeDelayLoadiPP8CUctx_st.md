@@ -70,3 +70,15 @@ table). G1 only on this host, and the symbol is internal anyway.
 ## Unknowns
 
 None.
+
+## Codegen shape (both shipped objects)
+
+The release object has no `CudaSafeDelayLoad` symbol at all: the whole body is
+inlined into `NvFlexDeviceCreateCudaContext` (79 instructions, calls
+`{dlopen, dlsym, physxDevGetCudaOrdinalWrapper}`). The debug object keeps it
+out of line (93 instructions, calls `{dlopen, GetProcAddress,
+GetSuggestedDeviceOrdinal}`). `CudaSafeDelayLoadImpl` is the `always_inline`
+body used by `NvFlexDeviceCreateCudaContext`; this symbol is the out-of-line
+wrapper (142 instructions vs the debug baseline 93, ratio 1.53; the
+`GetProcAddress`/`GetSuggestedDeviceOrdinal` call edges are folded away, which
+the gate accepts as same-module inlining).

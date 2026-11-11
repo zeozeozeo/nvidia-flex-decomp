@@ -25,3 +25,10 @@ int NvFlexDeviceGetSuggestedOrdinal()
 ## Unknowns
 
 None.
+
+## Codegen shape
+
+Baseline is the release object: 10 instructions calling
+`physxDevGetCudaOrdinalWrapper` directly (`GetSuggestedDeviceOrdinal` is
+inlined there). The reconstruction inlines the same body (16 instructions,
+ratio 1.6, calls 1/1).

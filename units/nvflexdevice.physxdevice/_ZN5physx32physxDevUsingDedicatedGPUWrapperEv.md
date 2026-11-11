@@ -31,6 +31,11 @@ The recovered `recon/src/device/PhysXDevice.h` carries only the
 * disasm 0x48..0x52: 11 bytes, no calls, returns 0.
 * DWARF return type is typedef `PHYSX_DEV_STATUS` = `int` (header :47).
 
+## Codegen shape
+
+Release baseline 3 instructions, debug 5. `__attribute__((optimize("O3")))`
+reproduces the release shape (4 instructions, ratio 1.33).
+
 ## Parity
 
 `pure-cpu` — G2 `64/64 identical` on the return value. G1 green.

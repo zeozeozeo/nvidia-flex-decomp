@@ -33,6 +33,12 @@ The recovered `recon/src/device/PhysXDevice.h` carries only the
 * `.debug_line`: 55 @0x53, 56 @0x5b, 57 @0x60.
 * DWARF return type is `bool` (1-byte base type, encoding boolean).
 
+## Codegen shape
+
+The release object is 2 instructions (`xor %eax,%eax; ret`), the debug object
+6. The function carries `__attribute__((optimize("O3")))` so it reproduces the
+release shape (2 instructions, ratio 1.0) despite the module's `-O0` pragma.
+
 ## Parity
 
 `pure-cpu` — G2 `64/64 identical` on `bool` plus the caller-visible buffer.

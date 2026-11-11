@@ -8,16 +8,16 @@ Units: **3189**
 | decompiled | 0 |
 | claimed | 0 |
 | open | 72 |
-| blocked | 6 |
-| waived | 2925 |
+| blocked | 2 |
+| waived | 2929 |
 
 ## By module
 
 | module | verified | decompiled | claimed | open | blocked | waived |
 |---|---|---|---|---|---|---|
-| nvflex.bvh | 28 | 0 | 0 | 0 | 2 | 8 |
+| nvflex.bvh | 28 | 0 | 0 | 0 | 0 | 10 |
 | nvflex.flex | 64 | 0 | 0 | 72 | 2 | 44 |
-| nvflex.sort | 3 | 0 | 0 | 0 | 2 | 8 |
+| nvflex.sort | 3 | 0 | 0 | 0 | 0 | 10 |
 | nvflex.util | 22 | 0 | 0 | 0 | 0 | 2 |
 | nvflexdevice.flexdevice | 6 | 0 | 0 | 0 | 0 | 0 |
 | nvflexdevice.physxdevice | 3 | 0 | 0 | 0 | 0 | 0 |
@@ -34,13 +34,15 @@ Units: **3189**
 
 ## Gates
 
-- static pass rate: 0.217
+- static pass rate: 0.2222
 - diff pass rate: 1.0
 - gpu: skipped:no-gpu (FLEX_GPU!=1)
 
 ## Waived units
 
 - `nvflex.bvh#_GLOBAL__sub_I_tmpxft_00000d5b_00000000_5_bvh.cudafe1.cpp` (stub): compiler-generated CUDA registration
+- `nvflex.bvh#_ZL24__sti____cudaRegisterAllv` (host): nvcc-generated CUDA registration hook; CUDA 13.4 under -rdc emits __cudaRegisterLinkedBinary_* and no unregister hook, so the 9.2 body is not producible from source (plan 2.2)
+- `nvflex.bvh#_ZL26__cudaUnregisterBinaryUtilv` (stub): nvcc-generated CUDA registration hook; CUDA 13.4 under -rdc emits __cudaRegisterLinkedBinary_* and no unregister hook, so the 9.2 body is not producible from source (plan 2.2)
 - `nvflex.bvh#_ZNSt6vectorIN19LinearBVHBuilderCPU12KeyIndexPairESaIS1_EE13_M_insert_auxEN9__gnu_cxx17__normal_iteratorIPS1_S3_EERKS1_` (inline): third-party header template instantiation (libstdc++/CUB); covered by the enclosing unit
 - `nvflex.bvh#_ZSt13__adjust_heapIN9__gnu_cxx17__normal_iteratorIPN19LinearBVHBuilderCPU12KeyIndexPairESt6vectorIS3_SaIS3_EEEElS3_EvT_T0_SA_T1_` (inline): third-party header template instantiation (libstdc++/CUB); covered by the enclosing unit
 - `nvflex.bvh#_ZSt13__adjust_heapIPili24PartitionPredicateMedianEvT_T0_S3_T1_T2_` (inline): third-party header template instantiation (libstdc++/CUB); covered by the enclosing unit
@@ -78,26 +80,20 @@ Units: **3189**
 - `nvflex.flex#_Z91__device_stub__Z16CollideTriangles22FlexCollisionShapeData8Vec3IterPKiiPiP8XVector4IfES6_ffR22FlexCollisionShapeDataRK8Vec3IterPKiiPiP8XVector4IfES9_ff` (stub): compiler-generated CUDA registration / compiler clone
 - `nvflex.flex#_Z91__device_stub__Z18CalculateVorticityi8Vec3IterPK8XVector3IfES_PiPKiS6_PK8XVector4IfES6_PS8_iR8Vec3IterPK8XVector3IfERKS_PiPKiS9_PK8XVector4IfES9_PSB_` (stub): compiler-generated CUDA registration / compiler clone
 - `nvflex.flex#_ZL109__device_stub__Z15SolveVelocitiesILb0EEvi8Vec3IterPK8XVector3IfES0_PK8XVector4IfEPKiSA_SA_S8_SA_SA_fPS6_PfSC_iR8Vec3IterPK8XVector3IfERKS_PK8XVector4IfEPKiSC_SC_SA_SC_SC_fPS8_PfSE_` (stub): compiler-generated CUDA registration / compiler clone
-- `nvflex.flex#_ZL109__device_stub__Z15SolveVelocitiesILb1EEvi8Vec3IterPK8XVector3IfES0_PK8XVector4IfEPKiSA_SA_S8_SA_SA_fPS6_PfSC_iR8Vec3IterPK8XVector3IfERKS_PK8XVector4IfEPKiSC_SC_SA_SC_SC_fPS8_PfSE_` (host): compiler-generated code (CUDA launch stub / registration trampoline / IPA clone); no out-of-line body is producible from source under the pinned CUDA 13.4 toolchain
-- `nvflex.flex#_ZL24__sti____cudaRegisterAllv` (host): compiler-generated code (CUDA launch stub / registration trampoline / IPA clone); no out-of-line body is producible from source under the pinned CUDA 13.4 toolchain
-- … 2885 more (see coverage.json)
+- … 2889 more (see coverage.json)
 
 ## Blocked units
 
-- `nvflex.bvh#_ZL24__sti____cudaRegisterAllv`: nvcc CUDA registration hook (plan 2.2 classifies it stub/waived, ledger kind=host): the shipped object registers the 8 kernels of its own fatbin (__cudaRegisterFatBinary, 8x __cudaRegisterFunction, __cudaRegisterVar, atexit); with -rdc=true CUDA 13.4 emits __cudaRegisterLinkedBinary_* per TU instead, giving instruction ratio 0.101 vs band >=0.2 and 4 unexplained missing callees. Not producible from source; needs integrator waiver.
-- `nvflex.bvh#_ZL26__cudaUnregisterBinaryUtilv`: nvcc CUDA unregistration hook (plan 2.2: stub/waived, ledger kind=host): CUDA 13.4 in RDC mode does not emit __cudaUnregisterBinaryUtil at all (that is the non-RDC fatbin teardown path), so the symbol is absent from the reconstructed object; its body references nvcc-internal __cudaFatCubinHandle, which no longer exists. Needs integrator waiver.
 - `nvflex.flex#_Z11SolveShapesILb0EEvPKiS1_PKfS3_S3_S1_P8XVector3IfEP8XVector4IfE8Vec3IterSA_P5XQuatIfES6_S9_SA_if`: same as the ILb1EE instantiation: PTX 15753-19600 shares the structure, the quaternion update and the unrolled transform/atomic loops are not transcribed; decoded regions and the exact undecoded line ranges are in units/nvflex.flex/_Z11SolveShapesILb0EEvPKiS1_PKfS3_S3_S1_P8XVector3IfEP8XVector4IfE8Vec3IterSA_P5XQuatIfES6_S9_SA_if.md
 - `nvflex.flex#_Z11SolveShapesILb1EEvPKiS1_PKfS3_S3_S1_P8XVector3IfEP8XVector4IfE8Vec3IterSA_P5XQuatIfES6_S9_SA_if`: not reconstructed in this slice: PTX 1800-3740 (quaternion SOR update + 8x unrolled transform/atomic particle loop) and the tail at 3741-4078 are decoded only structurally; the decoded regions (init, COM reduction, covariance, plastic test) are recorded in units/nvflex.flex/_Z11SolveShapesILb1EEvPKiS1_PKfS3_S3_S1_P8XVector3IfEP8XVector4IfE8Vec3IterSA_P5XQuatIfES6_S9_SA_if.md and a completion would otherwise guess
-- `nvflex.sort#_ZL24__sti____cudaRegisterAllv`: compiler-generated CUDA registration: CUDA 13.4 -rdc=true emits a 33-byte __sti____cudaRegisterAll using __cudaRegisterLinkedBinary_* where the shipped CUDA 9.2 object has 521 bytes of __cudaRegisterFatBinary/__cudaRegisterFunction/__cudaRegisterVar calls (gate: ratio 0.057, call set differs). No source-level definition exists; waive as compiler-generated CUDA registration.
-- `nvflex.sort#_ZL26__cudaUnregisterBinaryUtilv`: compiler-generated CUDA registration helper from include/crt/host_runtime.h:265: under CUDA 13.4 with -rdc=true (the project build mode) nvcc does not emit __cudaUnregisterBinaryUtil at all, so the symbol cannot be produced from source. Waive as compiler-generated CUDA registration.
 
 ## Exports
 
 | library | shipped | reconstructed | missing |
 |---|---|---|---|
-| nvflex | 241 | 183 | 125 |
+| nvflex | 198 | 138 | 105 |
 | nvflexdevice | 7 | 7 | 0 |
-| nvflexext | 106 | 79 | 43 |
+| nvflexext | 60 | 60 | 2 |
 
 ## Acceptance
 

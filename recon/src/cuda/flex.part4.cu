@@ -43,7 +43,7 @@ void FlexLogFunc(NvFlexErrorCallback callback, NvFlexErrorSeverity type,
                  const char* msg, const char* file, int line, ...);
 
 // nvflex.bvh (bvh.cu)
-void FreeBVH(const BVH& bvh);
+void FreeBVH(BVH& bvh);
 
 // linear BVH builder member (bvh.cu); declared as a free function because the
 // recovered type carries data members only.
@@ -87,6 +87,16 @@ static const char* const kUtilSourceFile = "../../../src/cuda/util.h";
 
 // NvFlexLibrary::mErrorFunc is recorded as an opaque 8-byte member by the
 // DWARF recovery (it is an NvFlexErrorCallback); read it through memcpy.
+// XVector3<float> is a plain aggregate in the recovered layout
+static Vec3 makeVec3(const float* v)
+{
+    Vec3 r;
+    r.x = v[0];
+    r.y = v[1];
+    r.z = v[2];
+    return r;
+}
+
 static NvFlexErrorCallback libErrorFunc(NvFlexLibrary* lib)
 {
     void* fn = 0;
@@ -118,11 +128,6 @@ inline CudaRangeTimerVector& timerPoolElems(CudaRangeTimerPool* pool)
 inline CudaTimerNameMap& timerNameMap(CudaTimers* timers)
 {
     return *reinterpret_cast<CudaTimerNameMap*>(timers->mNameToTimerMap);
-}
-
-inline const CudaTimerNameMap& timerNameMap(const CudaTimers* timers)
-{
-    return *reinterpret_cast<const CudaTimerNameMap*>(timers->mNameToTimerMap);
 }
 
 // DeviceBuffer<XVector4<float> >: recovered as an opaque 24-byte member of
@@ -258,7 +263,8 @@ void NvFlexSetParams(NvFlexSolver* s, const NvFlexParams* params)
             const float kPi = 3.1415927410125732f;          // rodata .LC6
             const float kPoly6 = 15.0f;                     // rodata .LC7
 
-            Vec3* samples = new Vec3[kMaxSamples];
+            Vec3* samples =
+                reinterpret_cast<Vec3*>(operator new(size_t(kMaxSamples) * sizeof(Vec3)));
             for (int i = 0; i < kMaxSamples; ++i)
             {
                 samples[i].x = 0.0f;
@@ -359,7 +365,7 @@ void NvFlexSetParams(NvFlexSolver* s, const NvFlexParams* params)
 
             s->mFluidSurfaceConstraintScale = surfaceDensity / surfaceVolume;
 
-            delete[] samples;
+            operator delete(samples);
         }
     }
     else
@@ -867,8 +873,8 @@ void NvFlexUpdateConvexMesh(NvFlexLibrary* lib, NvFlexConvexMeshId convexIndex,
 
         convex.mPlaneCount = numPlanes;
         convex.mPlaneOffset = lib->mConvexMeshData.mMaxPlanesPerConvex * int(convexIndex - 1);
-        convex.mLower = Vec3(lower[0], lower[1], lower[2]);
-        convex.mUpper = Vec3(upper[0], upper[1], upper[2]);
+        convex.mLower = makeVec3(lower);
+        convex.mUpper = makeVec3(upper);
 
         cudaMemcpyAsync(lib->mConvexMeshData.mPlanes + convex.mPlaneOffset, planes->ptr,
                         size_t(numPlanes) << 4, cudaMemcpyHostToDevice, 0);
@@ -1087,8 +1093,8 @@ void NvFlexUpdateTriangleMesh(NvFlexLibrary* lib, NvFlexTriangleMeshId meshIndex
         mesh->mIndices.mPtr, 0, indices, 0, numTris * 12);
 
     Bounds totalBounds;
-    totalBounds.lower = Vec3(lower[0], lower[1], lower[2]);
-    totalBounds.upper = Vec3(upper[0], upper[1], upper[2]);
+    totalBounds.lower = makeVec3(lower);
+    totalBounds.upper = makeVec3(upper);
 
     const int numBounds = numTris << 4;
 
@@ -1229,18 +1235,18 @@ float NvFlexGetDeviceLatency(NvFlexSolver* solver, unsigned long long* begin,
 }
 
 // flexdecomp: flex.cu:6414 _Z8getTimerR10CudaTimersPKc
-float getTimer(const CudaTimers& timers, const char* name)
+float getTimer(CudaTimers& timers, const char* name)
 {
-    const CudaTimerNameMap& map = timerNameMap(&timers);
+    CudaTimerNameMap& map = timerNameMap(&timers);
 
-    const std::pair<CudaTimerNameMap::const_iterator, CudaTimerNameMap::const_iterator> range =
+    const std::pair<CudaTimerNameMap::iterator, CudaTimerNameMap::iterator> range =
         map.equal_range(name);
 
     CudaRangeTimerVector& elems = timerPoolElems(timers.mTimerPool);
 
     float retval = 0.0f;
 
-    for (CudaTimerNameMap::const_iterator it = range.first; it != range.second; ++it)
+    for (CudaTimerNameMap::iterator it = range.first; it != range.second; ++it)
     {
         retval += elems[it->second].mTime;
     }
@@ -1283,7 +1289,7 @@ void NvFlexGetTimers(NvFlexSolver* solver, NvFlexTimers* timers)
             timer->mTime = elapsedTime;
         }
 
-        const CudaTimers& ctimers = lib->mTimers;
+        CudaTimers& ctimers = lib->mTimers;
 
         timers->predict = getTimer(ctimers, "Predict");
         timers->createCellIndices = getTimer(ctimers, "CreateCellIndices");
@@ -1367,7 +1373,7 @@ int NvFlexGetDetailTimers(NvFlexSolver* solver, NvFlexDetailTimer** timers)
             timer->mTime = elapsedTime;
         }
 
-        const CudaTimers& ctimers = lib->mTimers;
+        CudaTimers& ctimers = lib->mTimers;
 
         names.push_back("Predict");
         times.push_back(getTimer(ctimers, "Predict"));
