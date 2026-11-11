@@ -122,6 +122,18 @@ def cmd_pdb(args):
     return 0
 
 
+def cmd_d3dcontext(args):
+    from . import d3dcontext
+    if args.object:
+        print(d3dcontext.list_object(args.object))
+        return 0
+    b = d3dcontext.build(args.query)
+    if b is None:
+        die(f"no function matching {args.query!r}")
+    print(d3dcontext.render(b) if not args.json else jprint(b))
+    return 0
+
+
 def cmd_d3dinv(args):
     from . import pdbd3d
     r = pdbd3d.parse()
@@ -303,6 +315,14 @@ def cmd_gate(args):
         else:
             print(gate_dll.render(r))
         return 0 if r.get("ok") else 1
+    if gate == "wine":
+        from . import gate_wine
+        r = gate_wine.run(seconds=args.iterations or 45)
+        if args.json:
+            jprint(r)
+        else:
+            print(gate_wine.render(r))
+        return 0 if r.get("ok") in (True, None) else 1
     if gate == "dxbc":
         from . import gate_dxbc
         r = gate_dxbc.run(args.dll, args.index)
@@ -385,6 +405,12 @@ def build_parser() -> argparse.ArgumentParser:
     s.add_argument("--json", action="store_true")
     s.set_defaults(func=cmd_pdb)
 
+    s = sub.add_parser("d3dcontext", help="evidence bundle for one D3D function")
+    s.add_argument("query", nargs="?", default="")
+    s.add_argument("--object", help="list an object's functions instead")
+    s.add_argument("--json", action="store_true")
+    s.set_defaults(func=cmd_d3dcontext)
+
     s = sub.add_parser("d3dinv", help="per-object D3D function inventory from PDB")
     s.add_argument("--json", action="store_true")
     s.set_defaults(func=cmd_d3dinv)
@@ -450,6 +476,12 @@ def build_parser() -> argparse.ArgumentParser:
     s = sub.add_parser("gate", help="run parity gates")
     s.add_argument("--json", action="store_true")
     gsub = s.add_subparsers(dest="gate_cmd", required=True)
+    g = gsub.add_parser("wine")
+    g.add_argument("--unit")
+    g.add_argument("--module")
+    g.add_argument("--all", action="store_true")
+    g.add_argument("--iterations", type=int, default=0)
+    g.add_argument("--verbose", action="store_true")
     g = gsub.add_parser("dll")
     g.add_argument("--unit")
     g.add_argument("--module")
