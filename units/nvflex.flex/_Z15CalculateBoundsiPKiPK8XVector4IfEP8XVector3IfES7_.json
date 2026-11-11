@@ -1,0 +1,13 @@
+{
+  "demangled": "CalculateBounds(int, int const*, XVector4<float> const*, XVector3<float>*, XVector3<float>*)",
+  "evidence": [
+    "work/binary/gpu/dbg/nvflex.flex/sm_30.ptx",
+    "work/dwarf/nvflex.flex.json",
+    "work/decomp/nvflex.flex/cudaflex.c"
+  ],
+  "parity": "kernel",
+  "signature": "CalculateBounds(int, int const*, XVector4<float> const*, XVector3<float>*, XVector3<float>*)",
+  "source_file": "src/cuda/flex.cu:2508",
+  "symbol": "_Z15CalculateBoundsiPKiPK8XVector4IfEP8XVector3IfES7_",
+  "unit": "nvflex.flex#_Z15CalculateBoundsiPKiPK8XVector4IfEP8XVector3IfES7_"
+}

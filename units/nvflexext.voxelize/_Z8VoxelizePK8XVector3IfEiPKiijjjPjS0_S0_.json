@@ -1,0 +1,11 @@
+{
+  "allow_static_divergence": [
+    "calls",
+    "layout",
+    "strings"
+  ],
+  "divergence_reason": "shipped source compiled verbatim: the divergence is between gcc 4.8.1 and the installed compiler (inlining, literals, instruction selection), not a source difference",
+  "parity": "needs-gpu",
+  "symbol": "_Z8VoxelizePK8XVector3IfEiPKiijjjPjS0_S0_",
+  "unit": "nvflexext.voxelize#_Z8VoxelizePK8XVector3IfEiPKiijjjPjS0_S0_"
+}

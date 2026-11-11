@@ -1,0 +1,13 @@
+{
+  "demangled": "CompactDiffuseParticles(XVector4<float> const*, XVector4<float> const*, XVector4<float>*, XVector4<float>*, int const*, int*)",
+  "evidence": [
+    "work/binary/gpu/dbg/nvflex.flex/sm_30.ptx",
+    "work/dwarf/nvflex.flex.json",
+    "work/decomp/nvflex.flex/cudaflex.c"
+  ],
+  "parity": "kernel",
+  "signature": "CompactDiffuseParticles(XVector4<float> const*, XVector4<float> const*, XVector4<float>*, XVector4<float>*, int const*, int*)",
+  "source_file": "src/cuda/flex.cu:3014",
+  "symbol": "_Z23CompactDiffuseParticlesPK8XVector4IfES2_PS0_S3_PKiPi",
+  "unit": "nvflex.flex#_Z23CompactDiffuseParticlesPK8XVector4IfES2_PS0_S3_PKiPi"
+}

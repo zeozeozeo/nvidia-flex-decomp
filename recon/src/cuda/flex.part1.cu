@@ -162,7 +162,9 @@ void WriteData(void* dstPtr, int dstByteOffset, NvFlexBuffer* srcBuffer,
 
     if (!srcBuffer->mapped)
     {
-        void* srcPtr = srcBuffer->ptr;
+        // the shipped code binds the const overload here (both ByteOffset
+        // overloads appear in the original call set)
+        const void* srcPtr = srcBuffer->ptr;
 
         cudaMemcpyKind kind = srcBuffer->type == eNvFlexBufferHost
                                   ? cudaMemcpyHostToDevice
@@ -304,6 +306,35 @@ void WriteData(NvFlexErrorCallback errorFunc, void* dstPtr, int destLength,
 }
 
 }  // namespace _GLOBAL__N__39_tmpxft_00000d59_00000000_6_flex_cpp1_ii_dbca3207
+
+// ---- release-build spelling of the anonymous namespace ---------------------
+//
+// The shipped debug and release objects embed different CUDA wrapper file names
+// in the anonymous-namespace mangling:
+//   debug   cudaflex.o: _GLOBAL__N__39_tmpxft_00000d59_00000000_6_flex_cpp1_ii_dbca3207
+//   release cudaflex.o: _GLOBAL__N__39_tmpxft_00000f25_00000000_6_flex_cpp1_ii_dbca3207
+// The ledger unit ids come from the debug DWARF, while the release object is the
+// static-gate baseline for every symbol it defines, and the other host parts call
+// these helpers under the release spelling. Both names are therefore emitted:
+// the single body of each helper keeps the d59 name and the f25 name is a
+// `.set` symbol alias to it, which is the one-section/two-symbol shape the
+// shipped objects present.
+__asm__(".globl _ZN63_GLOBAL__N__39_tmpxft_00000f25_00000000_6_flex_cpp1_ii_dbca320715ExecuteCallbackEP12NvFlexSolver25NvFlexSolverCallbackStagef\n"
+        ".set   _ZN63_GLOBAL__N__39_tmpxft_00000f25_00000000_6_flex_cpp1_ii_dbca320715ExecuteCallbackEP12NvFlexSolver25NvFlexSolverCallbackStagef, _ZN63_GLOBAL__N__39_tmpxft_00000d59_00000000_6_flex_cpp1_ii_dbca320715ExecuteCallbackEP12NvFlexSolver25NvFlexSolverCallbackStagef\n");
+__asm__(".globl _ZN63_GLOBAL__N__39_tmpxft_00000f25_00000000_6_flex_cpp1_ii_dbca320710ByteOffsetEPKvi\n"
+        ".set   _ZN63_GLOBAL__N__39_tmpxft_00000f25_00000000_6_flex_cpp1_ii_dbca320710ByteOffsetEPKvi, _ZN63_GLOBAL__N__39_tmpxft_00000d59_00000000_6_flex_cpp1_ii_dbca320710ByteOffsetEPKvi\n");
+__asm__(".globl _ZN63_GLOBAL__N__39_tmpxft_00000f25_00000000_6_flex_cpp1_ii_dbca320710ByteOffsetEPvi\n"
+        ".set   _ZN63_GLOBAL__N__39_tmpxft_00000f25_00000000_6_flex_cpp1_ii_dbca320710ByteOffsetEPvi, _ZN63_GLOBAL__N__39_tmpxft_00000d59_00000000_6_flex_cpp1_ii_dbca320710ByteOffsetEPvi\n");
+__asm__(".globl _ZN63_GLOBAL__N__39_tmpxft_00000f25_00000000_6_flex_cpp1_ii_dbca320711writeData3DEP9cudaArrayP12NvFlexBufferiii\n"
+        ".set   _ZN63_GLOBAL__N__39_tmpxft_00000f25_00000000_6_flex_cpp1_ii_dbca320711writeData3DEP9cudaArrayP12NvFlexBufferiii, _ZN63_GLOBAL__N__39_tmpxft_00000d59_00000000_6_flex_cpp1_ii_dbca320711writeData3DEP9cudaArrayP12NvFlexBufferiii\n");
+__asm__(".globl _ZN63_GLOBAL__N__39_tmpxft_00000f25_00000000_6_flex_cpp1_ii_dbca32078ReadDataEP12NvFlexBufferiPKvii\n"
+        ".set   _ZN63_GLOBAL__N__39_tmpxft_00000f25_00000000_6_flex_cpp1_ii_dbca32078ReadDataEP12NvFlexBufferiPKvii, _ZN63_GLOBAL__N__39_tmpxft_00000d59_00000000_6_flex_cpp1_ii_dbca32078ReadDataEP12NvFlexBufferiPKvii\n");
+__asm__(".globl _ZN63_GLOBAL__N__39_tmpxft_00000f25_00000000_6_flex_cpp1_ii_dbca32078ReadDataEPFv19NvFlexErrorSeverityPKcS2_iEP12NvFlexBufferPKviPK14NvFlexCopyDesci\n"
+        ".set   _ZN63_GLOBAL__N__39_tmpxft_00000f25_00000000_6_flex_cpp1_ii_dbca32078ReadDataEPFv19NvFlexErrorSeverityPKcS2_iEP12NvFlexBufferPKviPK14NvFlexCopyDesci, _ZN63_GLOBAL__N__39_tmpxft_00000d59_00000000_6_flex_cpp1_ii_dbca32078ReadDataEPFv19NvFlexErrorSeverityPKcS2_iEP12NvFlexBufferPKviPK14NvFlexCopyDesci\n");
+__asm__(".globl _ZN63_GLOBAL__N__39_tmpxft_00000f25_00000000_6_flex_cpp1_ii_dbca32079WriteDataEPviP12NvFlexBufferii\n"
+        ".set   _ZN63_GLOBAL__N__39_tmpxft_00000f25_00000000_6_flex_cpp1_ii_dbca32079WriteDataEPviP12NvFlexBufferii, _ZN63_GLOBAL__N__39_tmpxft_00000d59_00000000_6_flex_cpp1_ii_dbca32079WriteDataEPviP12NvFlexBufferii\n");
+__asm__(".globl _ZN63_GLOBAL__N__39_tmpxft_00000f25_00000000_6_flex_cpp1_ii_dbca32079WriteDataEPFv19NvFlexErrorSeverityPKcS2_iEPviP12NvFlexBufferPK14NvFlexCopyDesci\n"
+        ".set   _ZN63_GLOBAL__N__39_tmpxft_00000f25_00000000_6_flex_cpp1_ii_dbca32079WriteDataEPFv19NvFlexErrorSeverityPKcS2_iEPviP12NvFlexBufferPK14NvFlexCopyDesci, _ZN63_GLOBAL__N__39_tmpxft_00000d59_00000000_6_flex_cpp1_ii_dbca32079WriteDataEPFv19NvFlexErrorSeverityPKcS2_iEPviP12NvFlexBufferPK14NvFlexCopyDesci\n");
 
 // ---- util.h inline helpers emitted by cudaflex.o ---------------------------
 //

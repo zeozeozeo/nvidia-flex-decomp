@@ -1,0 +1,13 @@
+{
+  "demangled": "SolveDensitiesSimpleSolids(int, Vec3Iter, Vec3Iter, int const*, float const*, XVector4<float> const*, int const*, int const*, int const*, float, XVector4<float>*)",
+  "evidence": [
+    "work/binary/gpu/dbg/nvflex.flex/sm_30.ptx",
+    "work/dwarf/nvflex.flex.json",
+    "work/decomp/nvflex.flex/cudaflex.c"
+  ],
+  "parity": "kernel",
+  "signature": "SolveDensitiesSimpleSolids(int, Vec3Iter, Vec3Iter, int const*, float const*, XVector4<float> const*, int const*, int const*, int const*, float, XVector4<float>*)",
+  "source_file": "src/cuda/flex.cu:1301",
+  "symbol": "_Z26SolveDensitiesSimpleSolidsi8Vec3IterS_PKiPKfPK8XVector4IfES1_S1_S1_fPS5_",
+  "unit": "nvflex.flex#_Z26SolveDensitiesSimpleSolidsi8Vec3IterS_PKiPKfPK8XVector4IfES1_S1_S1_fPS5_"
+}

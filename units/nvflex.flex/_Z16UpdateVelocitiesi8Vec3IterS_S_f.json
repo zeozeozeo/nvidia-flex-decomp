@@ -1,0 +1,13 @@
+{
+  "demangled": "UpdateVelocities(int, Vec3Iter, Vec3Iter, Vec3Iter, float)",
+  "evidence": [
+    "work/binary/gpu/dbg/nvflex.flex/sm_30.ptx",
+    "work/dwarf/nvflex.flex.json",
+    "work/decomp/nvflex.flex/cudaflex.c"
+  ],
+  "parity": "kernel",
+  "signature": "UpdateVelocities(int, Vec3Iter, Vec3Iter, Vec3Iter, float)",
+  "source_file": "src/cuda/flex.cu:2075",
+  "symbol": "_Z16UpdateVelocitiesi8Vec3IterS_S_f",
+  "unit": "nvflex.flex#_Z16UpdateVelocitiesi8Vec3IterS_S_f"
+}

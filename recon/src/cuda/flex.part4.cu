@@ -16,6 +16,8 @@
 // The anonymous-namespace transfer helpers (ReadData/WriteData/writeData3D) are
 // defined once in flex.part1.cu under the shipped wrapper-namespace name; this
 // file only declares and calls them so both translation units share one copy.
+// The hash below is the *release* object's (`_00000f25_`); the debug object
+// carries a different hash for the same namespace (`_00000d59_`).
 
 #include <cuda_runtime.h>
 
@@ -58,7 +60,7 @@ void NvFlexWaitFence(NvFlexLibrary* lib);
 void InitParams(NvFlexSolver* s);
 void Update(NvFlexSolver* s, float dt, int substep, int substeps);
 
-namespace _GLOBAL__N__39_tmpxft_00000d59_00000000_6_flex_cpp1_ii_dbca3207 {
+namespace _GLOBAL__N__39_tmpxft_00000f25_00000000_6_flex_cpp1_ii_dbca3207 {
 
 void ReadData(NvFlexBuffer* dstBuffer, int dstByteOffset, const void* srcPtr,
               int srcByteOffset, int byteSize);
@@ -66,7 +68,7 @@ void WriteData(void* dstPtr, int dstByteOffset, NvFlexBuffer* srcBuffer,
                int srcByteOffset, int byteSize);
 void writeData3D(cudaArray_t dst, NvFlexBuffer* src, int pitch, int width, int height);
 
-}  // namespace _GLOBAL__N__39_tmpxft_00000d59_00000000_6_flex_cpp1_ii_dbca3207
+}  // namespace _GLOBAL__N__39_tmpxft_00000f25_00000000_6_flex_cpp1_ii_dbca3207
 
 // device kernels of the solver (flex-kernels translation units)
 __global__ void TransformShapeBounds(Vec4* aabbMin, Vec4* aabbMax, const Vec4* positions,
@@ -125,6 +127,14 @@ inline CudaRangeTimerVector& timerPoolElems(CudaRangeTimerPool* pool)
     return *reinterpret_cast<CudaRangeTimerVector*>(pool->mElem);
 }
 
+typedef std::pair<CudaTimerNameMap::iterator, CudaTimerNameMap::iterator> CudaTimerNameRange;
+
+__attribute__((noinline))
+CudaTimerNameRange timerNameRange(CudaTimerNameMap& map, const char* name)
+{
+    return map.equal_range(name);
+}
+
 inline CudaTimerNameMap& timerNameMap(CudaTimers* timers)
 {
     return *reinterpret_cast<CudaTimerNameMap*>(timers->mNameToTimerMap);
@@ -148,6 +158,12 @@ inline DeviceBufferVec4& verticesBuffer(FlexTriangleMeshInternal* mesh)
 inline DeviceBufferVec4& staticTriBuffer(unsigned char* storage)
 {
     return *reinterpret_cast<DeviceBufferVec4*>(storage);
+}
+
+__attribute__((noinline))
+void pushRegisteredId(std::vector<unsigned int>& ids, unsigned int id)
+{
+    ids.push_back(id);
 }
 
 inline std::vector<unsigned int>& idVector(unsigned char* storage)
@@ -180,12 +196,12 @@ void NvFlexSetDynamicTriangles(NvFlexSolver* s, NvFlexBuffer* triangles, NvFlexB
             s->mDynamicMaxTris = numToAlloc;
         }
 
-        _GLOBAL__N__39_tmpxft_00000d59_00000000_6_flex_cpp1_ii_dbca3207::WriteData(
+        _GLOBAL__N__39_tmpxft_00000f25_00000000_6_flex_cpp1_ii_dbca3207::WriteData(
             s->mDynamicTriangles, 0, triangles, 0, numTris * 12);
 
         if (normals)
         {
-            _GLOBAL__N__39_tmpxft_00000d59_00000000_6_flex_cpp1_ii_dbca3207::WriteData(
+            _GLOBAL__N__39_tmpxft_00000f25_00000000_6_flex_cpp1_ii_dbca3207::WriteData(
                 s->mDynamicTriangleNormals, 0, normals, 0, numTris * 12);
         }
 
@@ -204,13 +220,13 @@ void NvFlexGetDynamicTriangles(NvFlexSolver* s, NvFlexBuffer* triangles, NvFlexB
 
     if (triangles)
     {
-        _GLOBAL__N__39_tmpxft_00000d59_00000000_6_flex_cpp1_ii_dbca3207::ReadData(
+        _GLOBAL__N__39_tmpxft_00000f25_00000000_6_flex_cpp1_ii_dbca3207::ReadData(
             triangles, 0, s->mDynamicTriangles, 0, numTris * 12);
     }
 
     if (normals)
     {
-        _GLOBAL__N__39_tmpxft_00000d59_00000000_6_flex_cpp1_ii_dbca3207::ReadData(
+        _GLOBAL__N__39_tmpxft_00000f25_00000000_6_flex_cpp1_ii_dbca3207::ReadData(
             normals, 0, s->mDynamicTriangleNormals, 0, numTris * 12);
     }
 }
@@ -223,13 +239,13 @@ void NvFlexGetRigidTransforms(NvFlexSolver* s, NvFlexBuffer* rotations, NvFlexBu
 {
     if (rotations)
     {
-        _GLOBAL__N__39_tmpxft_00000d59_00000000_6_flex_cpp1_ii_dbca3207::ReadData(
+        _GLOBAL__N__39_tmpxft_00000f25_00000000_6_flex_cpp1_ii_dbca3207::ReadData(
             rotations, 0, s->mRigidRotations, 0, s->mNumRigids << 4);
     }
 
     if (translations)
     {
-        _GLOBAL__N__39_tmpxft_00000d59_00000000_6_flex_cpp1_ii_dbca3207::ReadData(
+        _GLOBAL__N__39_tmpxft_00000f25_00000000_6_flex_cpp1_ii_dbca3207::ReadData(
             translations, 0, s->mRigidTranslations, 0, s->mNumRigids * 12);
     }
 }
@@ -381,7 +397,27 @@ void NvFlexSetParams(NvFlexSolver* s, const NvFlexParams* params)
 // flexdecomp: flex.cu:5854 NvFlexGetParams
 void NvFlexGetParams(NvFlexSolver* s, NvFlexParams* params)
 {
-    std::memcpy(params, s->mParams, sizeof(NvFlexParams));
+    // The shipped copy shape (flex.cu:5856): NvFlexParams is 4-byte aligned and
+    // 308 bytes long, so a leading int is copied when the destination is not
+    // 8-byte aligned and the remainder is copied as 38 eight-byte words.
+    unsigned char* dst = reinterpret_cast<unsigned char*>(params);
+    const unsigned char* src = s->mParams;
+
+    size_t numBytes = sizeof(NvFlexParams);
+
+    if ((reinterpret_cast<uintptr_t>(dst) & 4) != 0)
+    {
+        *reinterpret_cast<int*>(dst) = *reinterpret_cast<const int*>(src);
+        dst += 4;
+        src += 4;
+        numBytes -= 4;
+    }
+
+    for (size_t i = 0; i < numBytes; i += 8)
+    {
+        *reinterpret_cast<unsigned long long*>(dst + i) =
+            *reinterpret_cast<const unsigned long long*>(src + i);
+    }
 }
 
 // flexdecomp: flex.cu:5861 NvFlexCreateDistanceField
@@ -409,7 +445,7 @@ NvFlexDistanceFieldId NvFlexCreateDistanceField(NvFlexLibrary* lib)
         sdf.mFieldArray = 0;
     }
 
-    idVector(lib->mResourceTracker.mSDF).push_back(newIndex);
+    pushRegisteredId(idVector(lib->mResourceTracker.mSDF), newIndex);
 
     return newIndex;
 }
@@ -547,7 +583,7 @@ void NvFlexUpdateDistanceField(NvFlexLibrary* lib, NvFlexDistanceFieldId sdfInde
         sdfHost->mFieldTex = tex;
     }
 
-    _GLOBAL__N__39_tmpxft_00000d59_00000000_6_flex_cpp1_ii_dbca3207::writeData3D(
+    _GLOBAL__N__39_tmpxft_00000f25_00000000_6_flex_cpp1_ii_dbca3207::writeData3D(
         reinterpret_cast<cudaArray_t>(sdfHost->mFieldArray), field, dimx << 2, dimy, dimz);
 
     sdfHost->mDim[0] = dimx;
@@ -598,9 +634,9 @@ void NvFlexUpdateSolver(NvFlexSolver* s, float dt, int substeps, bool enableTime
 // flexdecomp: flex.cu:5984 NvFlexGetBounds
 void NvFlexGetBounds(NvFlexSolver* s, NvFlexBuffer* lower, NvFlexBuffer* upper)
 {
-    _GLOBAL__N__39_tmpxft_00000d59_00000000_6_flex_cpp1_ii_dbca3207::ReadData(
+    _GLOBAL__N__39_tmpxft_00000f25_00000000_6_flex_cpp1_ii_dbca3207::ReadData(
         lower, 0, s->mParticleLower, 0, 12);
-    _GLOBAL__N__39_tmpxft_00000d59_00000000_6_flex_cpp1_ii_dbca3207::ReadData(
+    _GLOBAL__N__39_tmpxft_00000f25_00000000_6_flex_cpp1_ii_dbca3207::ReadData(
         upper, 0, s->mParticleUpper, 0, 12);
 }
 
@@ -696,19 +732,19 @@ void NvFlexSetShapes(NvFlexSolver* s, NvFlexBuffer* geometry, NvFlexBuffer* shap
 
     if (geometry)
     {
-        _GLOBAL__N__39_tmpxft_00000d59_00000000_6_flex_cpp1_ii_dbca3207::WriteData(
+        _GLOBAL__N__39_tmpxft_00000f25_00000000_6_flex_cpp1_ii_dbca3207::WriteData(
             s->mShapes.mGeometry, 0, geometry, 0, numShapes << 4);
     }
 
     if (shapePositions)
     {
-        _GLOBAL__N__39_tmpxft_00000d59_00000000_6_flex_cpp1_ii_dbca3207::WriteData(
+        _GLOBAL__N__39_tmpxft_00000f25_00000000_6_flex_cpp1_ii_dbca3207::WriteData(
             s->mShapes.mPositions, 0, shapePositions, 0, numShapes << 4);
     }
 
     if (shapeRotations)
     {
-        _GLOBAL__N__39_tmpxft_00000d59_00000000_6_flex_cpp1_ii_dbca3207::WriteData(
+        _GLOBAL__N__39_tmpxft_00000f25_00000000_6_flex_cpp1_ii_dbca3207::WriteData(
             s->mShapes.mRotations, 0, shapeRotations, 0, numShapes << 4);
     }
 
@@ -724,19 +760,19 @@ void NvFlexSetShapes(NvFlexSolver* s, NvFlexBuffer* geometry, NvFlexBuffer* shap
 
     if (prevShapePositions)
     {
-        _GLOBAL__N__39_tmpxft_00000d59_00000000_6_flex_cpp1_ii_dbca3207::WriteData(
+        _GLOBAL__N__39_tmpxft_00000f25_00000000_6_flex_cpp1_ii_dbca3207::WriteData(
             s->mShapes.mPrevPositions, 0, prevShapePositions, 0, numShapes << 4);
     }
 
     if (prevShapeRotations)
     {
-        _GLOBAL__N__39_tmpxft_00000d59_00000000_6_flex_cpp1_ii_dbca3207::WriteData(
+        _GLOBAL__N__39_tmpxft_00000f25_00000000_6_flex_cpp1_ii_dbca3207::WriteData(
             s->mShapes.mPrevRotations, 0, prevShapeRotations, 0, numShapes << 4);
     }
 
     if (shapeFlags)
     {
-        _GLOBAL__N__39_tmpxft_00000d59_00000000_6_flex_cpp1_ii_dbca3207::WriteData(
+        _GLOBAL__N__39_tmpxft_00000f25_00000000_6_flex_cpp1_ii_dbca3207::WriteData(
             s->mShapes.mFlags, 0, shapeFlags, 0, numShapes * 4);
     }
 
@@ -769,27 +805,27 @@ void NvFlexGetContacts(NvFlexSolver* s, NvFlexBuffer* planes, NvFlexBuffer* velo
 {
     if (planes)
     {
-        _GLOBAL__N__39_tmpxft_00000d59_00000000_6_flex_cpp1_ii_dbca3207::ReadData(
+        _GLOBAL__N__39_tmpxft_00000f25_00000000_6_flex_cpp1_ii_dbca3207::ReadData(
             planes, 0, s->mStaticContactPlanes, 0,
             s->mMaxParticles * s->mMaxContactsPerParticle * 16);
     }
 
     if (velocities)
     {
-        _GLOBAL__N__39_tmpxft_00000d59_00000000_6_flex_cpp1_ii_dbca3207::ReadData(
+        _GLOBAL__N__39_tmpxft_00000f25_00000000_6_flex_cpp1_ii_dbca3207::ReadData(
             velocities, 0, s->mStaticContactVelocities, 0,
             s->mMaxParticles * s->mMaxContactsPerParticle * 16);
     }
 
     if (indices)
     {
-        _GLOBAL__N__39_tmpxft_00000d59_00000000_6_flex_cpp1_ii_dbca3207::ReadData(
+        _GLOBAL__N__39_tmpxft_00000f25_00000000_6_flex_cpp1_ii_dbca3207::ReadData(
             indices, 0, s->mReverseLookup, 0, s->mMaxParticles << 2);
     }
 
     if (counts)
     {
-        _GLOBAL__N__39_tmpxft_00000d59_00000000_6_flex_cpp1_ii_dbca3207::ReadData(
+        _GLOBAL__N__39_tmpxft_00000f25_00000000_6_flex_cpp1_ii_dbca3207::ReadData(
             counts, 0, s->mStaticContactCounts, 0, s->mMaxParticles << 2);
     }
 }
@@ -808,7 +844,7 @@ NvFlexConvexMeshId NvFlexCreateConvexMesh(NvFlexLibrary* lib)
         newIndex = NvFlexConvexMeshId(lib->mConvexMeshData.mFreeList[index] + 1);
     }
 
-    idVector(lib->mResourceTracker.mConvexMesh).push_back(newIndex);
+    pushRegisteredId(idVector(lib->mResourceTracker.mConvexMesh), newIndex);
 
     return newIndex;
 }
@@ -946,7 +982,7 @@ NvFlexTriangleMeshId NvFlexCreateTriangleMesh(NvFlexLibrary* lib)
         std::memset(mesh, 0, sizeof(FlexTriangleMeshInternal));
     }
 
-    idVector(lib->mResourceTracker.mTriangleMesh).push_back(newIndex);
+    pushRegisteredId(idVector(lib->mResourceTracker.mTriangleMesh), newIndex);
 
     return newIndex;
 }
@@ -1087,9 +1123,9 @@ void NvFlexUpdateTriangleMesh(NvFlexLibrary* lib, NvFlexTriangleMeshId meshIndex
         vertices.mCapacity = capacity;
     }
 
-    _GLOBAL__N__39_tmpxft_00000d59_00000000_6_flex_cpp1_ii_dbca3207::WriteData(
+    _GLOBAL__N__39_tmpxft_00000f25_00000000_6_flex_cpp1_ii_dbca3207::WriteData(
         vertices.mPtr, 0, positions, 0, numPositions << 4);
-    _GLOBAL__N__39_tmpxft_00000d59_00000000_6_flex_cpp1_ii_dbca3207::WriteData(
+    _GLOBAL__N__39_tmpxft_00000f25_00000000_6_flex_cpp1_ii_dbca3207::WriteData(
         mesh->mIndices.mPtr, 0, indices, 0, numTris * 12);
 
     Bounds totalBounds;
@@ -1239,8 +1275,7 @@ float getTimer(CudaTimers& timers, const char* name)
 {
     CudaTimerNameMap& map = timerNameMap(&timers);
 
-    const std::pair<CudaTimerNameMap::iterator, CudaTimerNameMap::iterator> range =
-        map.equal_range(name);
+    const CudaTimerNameRange range = timerNameRange(map, name);
 
     CudaRangeTimerVector& elems = timerPoolElems(timers.mTimerPool);
 

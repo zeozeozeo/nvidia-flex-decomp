@@ -1,0 +1,10 @@
+{
+  "allow_static_divergence": [
+    "layout",
+    "strings"
+  ],
+  "divergence_reason": "shipped source compiled verbatim: the divergence is between gcc 4.8.1 and the installed compiler (inlining, literals, instruction selection), not a source difference",
+  "parity": "needs-gpu",
+  "symbol": "_ZN8AABBTree12PartitionSAHERNS_4NodeEPjj",
+  "unit": "nvflexext.aabbtree#_ZN8AABBTree12PartitionSAHERNS_4NodeEPjj"
+}

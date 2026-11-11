@@ -301,7 +301,10 @@ def generate(force: bool = False) -> dict:
         if ok and t.get("members"):
             TEMPLATE_BASES.add(base)
 
-    flex = {n: t for n, t in types.items() if _is_flex_type(t)}
+    # types fully provided by the hand-maintained overlay
+    OVERLAY_TYPES = {"ltstr"}
+    flex = {n: t for n, t in types.items()
+            if _is_flex_type(t) and n not in OVERLAY_TYPES}
     renamed = {n: sanitize(n) for n in flex}
     structs = {n: t for n, t in flex.items()
                if t.get("kind") in ("structure", "class", "union")}
@@ -555,6 +558,11 @@ def generate(force: bool = False) -> dict:
     if typedefs:
         lines.append("")
 
+    overlay = RECON / "overlays" / "overlays.h"
+    if overlay.exists():
+        lines.append("")
+        lines.append("// ---- hand-maintained overlay (recon/overlays/overlays.h) ----")
+        lines.append(overlay.read_text().rstrip())
     canonical = HEADER_DIR / "recovered.h"
     canonical.write_text("\n".join(lines) + "\n")
 

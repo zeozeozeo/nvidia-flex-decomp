@@ -1,0 +1,13 @@
+{
+  "demangled": "CreateDiffuseParticles(int, Vec3Iter, float const*, XVector4<float>*, XVector4<float>*, int*, int, float const*, float)",
+  "evidence": [
+    "work/binary/gpu/dbg/nvflex.flex/sm_30.ptx",
+    "work/dwarf/nvflex.flex.json",
+    "work/decomp/nvflex.flex/cudaflex.c"
+  ],
+  "parity": "kernel",
+  "signature": "CreateDiffuseParticles(int, Vec3Iter, float const*, XVector4<float>*, XVector4<float>*, int*, int, float const*, float)",
+  "source_file": "src/cuda/flex.cu:2757",
+  "symbol": "_Z22CreateDiffuseParticlesi8Vec3IterPKfP8XVector4IfES4_PiiS1_f",
+  "unit": "nvflex.flex#_Z22CreateDiffuseParticlesi8Vec3IterPKfP8XVector4IfES4_PiiS1_f"
+}

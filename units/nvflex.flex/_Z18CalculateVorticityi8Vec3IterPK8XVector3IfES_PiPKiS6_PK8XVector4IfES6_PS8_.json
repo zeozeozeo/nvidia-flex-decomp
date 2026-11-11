@@ -1,0 +1,13 @@
+{
+  "demangled": "CalculateVorticity(int, Vec3Iter, XVector3<float> const*, Vec3Iter, int*, int const*, int const*, XVector4<float> const*, int const*, XVector4<float>*)",
+  "evidence": [
+    "work/binary/gpu/dbg/nvflex.flex/sm_30.ptx",
+    "work/dwarf/nvflex.flex.json",
+    "work/decomp/nvflex.flex/cudaflex.c"
+  ],
+  "parity": "kernel",
+  "signature": "CalculateVorticity(int, Vec3Iter, XVector3<float> const*, Vec3Iter, int*, int const*, int const*, XVector4<float> const*, int const*, XVector4<float>*)",
+  "source_file": "src/cuda/flex.cu:2206",
+  "symbol": "_Z18CalculateVorticityi8Vec3IterPK8XVector3IfES_PiPKiS6_PK8XVector4IfES6_PS8_",
+  "unit": "nvflex.flex#_Z18CalculateVorticityi8Vec3IterPK8XVector3IfES_PiPKiS6_PK8XVector4IfES6_PS8_"
+}

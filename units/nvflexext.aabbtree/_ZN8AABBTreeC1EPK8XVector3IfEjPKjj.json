@@ -1,0 +1,9 @@
+{
+  "allow_static_divergence": [
+    "calls"
+  ],
+  "divergence_reason": "shipped source compiled verbatim: the divergence is between gcc 4.8.1 and the installed compiler (inlining, literals, instruction selection), not a source difference",
+  "parity": "needs-gpu",
+  "symbol": "_ZN8AABBTreeC1EPK8XVector3IfEjPKjj",
+  "unit": "nvflexext.aabbtree#_ZN8AABBTreeC1EPK8XVector3IfEjPKjj"
+}

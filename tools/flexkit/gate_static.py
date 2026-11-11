@@ -87,8 +87,20 @@ def _is_inlinable(name: str) -> bool:
     return name in INLINABLE_LIBM or name.startswith("_ZSt")
 
 
+# the tmpxft fields are hex, not decimal (00000d59, 00000f25)
+ANON_NS_RE = re.compile(
+    r"_GLOBAL__N__\d+_tmpxft_[0-9a-f]+_[0-9a-f]+_\d+_([A-Za-z0-9_]+?)_cpp1_ii_[0-9a-f]+")
+
+
 def _canon_call(name: str) -> str:
-    return CALL_ALIASES.get(name, name)
+    """Normalise codegen-only name differences between shipped objects.
+
+    Anonymous-namespace TU hashes differ between the debug and release builds
+    (`_GLOBAL__N__39_tmpxft_00000d59_…` vs `…_00000f25_…`), and sized/unsized
+    operator new/delete spell differently across compilers.
+    """
+    name = CALL_ALIASES.get(name, name)
+    return ANON_NS_RE.sub(r"_GLOBAL__N__\1", name)
 
 
 def header_defined_symbols() -> set[str]:
@@ -303,7 +315,14 @@ def library_strings(lib: str, side: str) -> set[str]:
                 break
     else:
         so = RECON / "build" / f"lib{lib}.so"
-        blobs = [so] if so.exists() else sorted((OBJ / "recon").glob(f"{lib}.*.o"))
+        objs = sorted((OBJ / "recon").glob(f"{lib}.*.o"))
+        fresh_objs = [o for o in objs if o.exists()]
+        # prefer objects when the library is missing or older than any source
+        stale = True
+        if so.exists():
+            newest_obj = max((o.stat().st_mtime for o in fresh_objs), default=0)
+            stale = so.stat().st_mtime < newest_obj
+        blobs = fresh_objs if (stale or not so.exists()) else [so]
     result = _normalize_strings(_elf_literals(blobs))
     _LIB_STRINGS[key] = result
     return result

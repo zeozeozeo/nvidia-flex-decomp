@@ -16,7 +16,7 @@
 
 // Constant buffers are defined once in the module's host translation unit.
 extern __constant__ KernelParams gParams;
-extern __constant__ Bounds gBounds;
+extern __constant__ KernelBounds gBounds;
 
 // ---------------------------------------------------------------------------
 // device helpers
@@ -136,7 +136,7 @@ static __device__ __forceinline__ void atomicMinFloat(float* address, float val)
 // flexdecomp: src/cuda/flex.cu:1234 _Z26SolveDensitiesSimpleFluidsi8Vec3IterS_PKiPKfPK8XVector4IfES1_S1_S1_fPS5_
 // Simple-fluid density solve: cohesion-like repulsion between fluid
 // neighbours, accumulated into mDeltas (PTX 1076-1531).
-__global__ void SolveDensitiesSimpleFluids(int numParticles, Vec3Iter p1, Vec3Iter p2,
+__global__ void FLEX_KERNEL_API SolveDensitiesSimpleFluids(int numParticles, Vec3Iter p1, Vec3Iter p2,
                                            const int* sortedPhases, const float* densities,
                                            const XVector4<float>* normals, const int* neighbors,
                                            const int* neighborCounts, const int* indices,
@@ -193,7 +193,7 @@ __global__ void SolveDensitiesSimpleFluids(int numParticles, Vec3Iter p1, Vec3It
 // flexdecomp: src/cuda/flex.cu:1301 _Z26SolveDensitiesSimpleSolidsi8Vec3IterS_PKiPKfPK8XVector4IfES1_S1_S1_fPS5_
 // Simple-solid density solve; with dynamic friction enabled it also applies a
 // tangential correction built from the previous positions (PTX 1532-2619).
-__global__ void SolveDensitiesSimpleSolids(int numParticles, Vec3Iter p1, Vec3Iter p2,
+__global__ void FLEX_KERNEL_API SolveDensitiesSimpleSolids(int numParticles, Vec3Iter p1, Vec3Iter p2,
                                            const int* sortedPhases, const float* densities,
                                            const XVector4<float>* normals, const int* neighbors,
                                            const int* neighborCounts, const int* indices,
@@ -271,7 +271,7 @@ __global__ void SolveDensitiesSimpleSolids(int numParticles, Vec3Iter p1, Vec3It
 // flexdecomp: src/cuda/flex.cu:1731 _Z21SolveInflatableVolumePK14FlexInflatable8Vec3IterPKiS4_PKfS2_f
 // One block per inflatable: accumulates the volume-preserving pressure force
 // of every triangle onto its three vertices (PTX 2620-2772).
-__global__ void SolveInflatableVolume(const FlexInflatable* inflatables, Vec3Iter positions,
+__global__ void FLEX_KERNEL_API SolveInflatableVolume(const FlexInflatable* inflatables, Vec3Iter positions,
                                       const int* indices, const int* triIndices,
                                       const float* pressures, Vec3Iter velocities, float scale)
 {
@@ -327,7 +327,7 @@ __global__ void SolveInflatableVolume(const FlexInflatable* inflatables, Vec3Ite
 // flexdecomp: src/cuda/flex.cu:1984 _Z12SolveSpringsPiPfS0_PKii8Vec3Iter
 // Spring impulse solve.  Velocities are Vec4-sized here (16-byte stride,
 // PTX 2839) and their w component counts the impulses applied.
-__global__ void SolveSprings(int* springIndices, float* springLengths, float* springStiffness,
+__global__ void FLEX_KERNEL_API SolveSprings(int* springIndices, float* springLengths, float* springStiffness,
                              const int* reverseLookup, int numSprings, Vec3Iter velocities)
 {
     int i = flexIndex();
@@ -381,7 +381,7 @@ __global__ void SolveSprings(int* springIndices, float* springLengths, float* sp
 
 // flexdecomp: src/cuda/flex.cu:2075 _Z16UpdateVelocitiesi8Vec3IterS_S_f
 // p3[i] = (p2[i] - p1[i]) * s (PTX 2900-2949).
-__global__ void UpdateVelocities(int numParticles, Vec3Iter p1, Vec3Iter p2, Vec3Iter p3, float s)
+__global__ void FLEX_KERNEL_API UpdateVelocities(int numParticles, Vec3Iter p1, Vec3Iter p2, Vec3Iter p3, float s)
 {
     int i = flexIndex();
     if (i >= numParticles)
@@ -399,7 +399,7 @@ __global__ void UpdateVelocities(int numParticles, Vec3Iter p1, Vec3Iter p2, Vec
 
 // flexdecomp: src/cuda/flex.cu:2094 _Z15UpdateTrianglesi8Vec3IterS_PKiS1_P8XVector3IfES3_S_f
 // Triangle normal update plus wind drag/lift impulses (PTX 2950-3203).
-__global__ void UpdateTriangles(int numTris, Vec3Iter p1, Vec3Iter positions, const int* reverseLookup,
+__global__ void FLEX_KERNEL_API UpdateTriangles(int numTris, Vec3Iter p1, Vec3Iter positions, const int* reverseLookup,
                                 const int* triangles, XVector3<float>* normals,
                                 XVector3<float> wind, Vec3Iter velocities, float dt)
 {
@@ -489,7 +489,7 @@ __global__ void UpdateTriangles(int numTris, Vec3Iter p1, Vec3Iter positions, co
 
 // flexdecomp: src/cuda/flex.cu:2163 _Z19UpdateVertexNormalsiPKiS0_PK8XVector3IfE8Vec3Iter
 // Scatters the per-triangle normal onto its three vertices (PTX 3204-3269).
-__global__ void UpdateVertexNormals(int numTris, const int* p1, const int* triangles,
+__global__ void FLEX_KERNEL_API UpdateVertexNormals(int numTris, const int* p1, const int* triangles,
                                     const XVector3<float>* triangleNormals, Vec3Iter vertexNormals)
 {
     (void)p1;
@@ -517,7 +517,7 @@ __global__ void UpdateVertexNormals(int numTris, const int* p1, const int* trian
 
 // flexdecomp: src/cuda/flex.cu:2187 _Z22NormalizeVertexNormalsiPKiPK8XVector4IfEPS2_
 // Normalizes the accumulated vertex normals and flips them (PTX 3270-3330).
-__global__ void NormalizeVertexNormals(int numParticles, const int* indices,
+__global__ void FLEX_KERNEL_API NormalizeVertexNormals(int numParticles, const int* indices,
                                        const XVector4<float>* inNormals, XVector4<float>* outNormals)
 {
     int i = flexIndex();
@@ -545,7 +545,7 @@ __global__ void NormalizeVertexNormals(int numParticles, const int* indices,
 // flexdecomp: src/cuda/flex.cu:2206 _Z18CalculateVorticityi8Vec3IterPK8XVector3IfES_PiPKiS6_PK8XVector4IfES6_PS8_
 // Curl of the velocity field over the fluid neighbour stencil, plus the
 // weighted neighbour count in w (PTX 3331-3843).
-__global__ void CalculateVorticity(int numParticles, Vec3Iter p1, const XVector3<float>* p2,
+__global__ void FLEX_KERNEL_API CalculateVorticity(int numParticles, Vec3Iter p1, const XVector3<float>* p2,
                                    Vec3Iter p3, int* sortedPhases, const int* neighbors,
                                    const int* neighborCounts, const XVector4<float>* p7,
                                    const int* p8, XVector4<float>* curl)
@@ -602,7 +602,7 @@ __global__ void CalculateVorticity(int numParticles, Vec3Iter p1, const XVector3
 
 // flexdecomp: src/cuda/flex.cu:2458 _Z8FinalizeiPK8XVector4IfES2_PKfS2_PKiPS0_P8XVector3IfEPfff
 // Writes the final particle state back into the solver buffers (PTX 3844-3954).
-__global__ void Finalize(int numParticles, const XVector4<float>* sortedPositions,
+__global__ void FLEX_KERNEL_API Finalize(int numParticles, const XVector4<float>* sortedPositions,
                          const XVector4<float>* sortedVelocities, const float* sortedDensities,
                          const XVector4<float>* deltas, const int* indices, XVector4<float>* positions,
                          XVector3<float>* velocities, float* densities, float maxSpeed,
@@ -651,7 +651,7 @@ __global__ void Finalize(int numParticles, const XVector4<float>* sortedPosition
 // Block reductions of the active-particle extents.  Both the maximum and the
 // minimum are reduced (warp shuffles + 8 shared warp aggregates), then thread 0
 // updates the single global bound pair with a kRadius margin (PTX 3955-5095).
-__global__ void CalculateBounds(int numParticles, const int* activeIndices,
+__global__ void FLEX_KERNEL_API CalculateBounds(int numParticles, const int* activeIndices,
                                 const XVector4<float>* newPositions, XVector3<float>* lower,
                                 XVector3<float>* upper)
 {
@@ -723,7 +723,7 @@ __global__ void CalculateBounds(int numParticles, const int* activeIndices,
 
 // flexdecomp: src/cuda/flex.cu:2546 _Z15SmoothPositionsiPK8XVector4IfEPKiS4_S4_S4_PS0_S5_
 // Fluid-only position smoothing over the neighbour stencil (PTX 5096-5469).
-__global__ void SmoothPositions(int numParticles, const XVector4<float>* p1, const int* p2,
+__global__ void FLEX_KERNEL_API SmoothPositions(int numParticles, const XVector4<float>* p1, const int* p2,
                                 const int* neighbors, const int* neighborCounts, const int* indices,
                                 XVector4<float>* sortedPositions, XVector4<float>* deltas)
 {
@@ -784,7 +784,7 @@ __global__ void SmoothPositions(int numParticles, const XVector4<float>* p1, con
 // three eigenvectors with four Jacobi sweeps; each axis is stored in
 // anisotropyN[i] with sqrt(eigenvalue)*kAnisotropy clamped to
 // [kAnisotropyMin, kAnisotropyMax] in w (PTX 5470-6268).
-__global__ void CalculateAnisotropy(int numParticles, const int* p1, const int* neighborCounts,
+__global__ void FLEX_KERNEL_API CalculateAnisotropy(int numParticles, const int* p1, const int* neighborCounts,
                                     const int* indices, const int* sortedPhases,
                                     const XVector4<float>* p5, XVector4<float>* anisotropy1,
                                     XVector4<float>* anisotropy2, XVector4<float>* anisotropy3)
@@ -963,7 +963,7 @@ __global__ void CalculateAnisotropy(int numParticles, const int* p1, const int* 
 // flexdecomp: src/cuda/flex.cu:2757 _Z22CreateDiffuseParticlesi8Vec3IterPKfP8XVector4IfES4_PiiS1_f
 // Spawns ballistic diffuse particles for fluid particles above the diffuse
 // threshold (PTX 6269-6386).
-__global__ void CreateDiffuseParticles(int numParticles, Vec3Iter p1, const float* potentials,
+__global__ void FLEX_KERNEL_API CreateDiffuseParticles(int numParticles, Vec3Iter p1, const float* potentials,
                                        XVector4<float>* diffusePositions,
                                        XVector4<float>* diffuseVelocities, int* numDiffuse,
                                        int maxDiffuse, const float* random, float scale)
@@ -1010,7 +1010,7 @@ __global__ void CreateDiffuseParticles(int numParticles, Vec3Iter p1, const floa
 // Integrates the ballistic/diffuse particle population: neighbour-averaged
 // velocity, gravity/buoyancy, speed clamp, collision planes and lifetime
 // countdown (PTX 6387-7113).
-__global__ void UpdateDiffuseParticles(XVector4<float>* positions, XVector4<float>* velocities,
+__global__ void FLEX_KERNEL_API UpdateDiffuseParticles(XVector4<float>* positions, XVector4<float>* velocities,
                                        const int* sortedPhases, const int* numDiffuse,
                                        const int* cellStarts, const int* cellEnds, const int* indices,
                                        const int* neighborCounts, Vec3Iter p8, float radiusSq,
@@ -1035,9 +1035,9 @@ __global__ void UpdateDiffuseParticles(XVector4<float>* positions, XVector4<floa
     const float3 vel = make_float3(vel4.x, vel4.y, vel4.z);
 
     // grid cell of this diffuse particle
-    const int cx = int((pos.x - gBounds.lower.x) * invCellSize) & 127;  // gBounds+0
-    const int cy = int((pos.y - gBounds.lower.y) * invCellSize) & 127;  // gBounds+4
-    const int cz = int((pos.z - gBounds.lower.z) * invCellSize) & 127;  // gBounds+8
+    const int cx = int((pos.x - gBounds.kLower[0]) * invCellSize) & 127;  // gBounds+0
+    const int cy = int((pos.y - gBounds.kLower[1]) * invCellSize) & 127;  // gBounds+4
+    const int cz = int((pos.z - gBounds.kLower[2]) * invCellSize) & 127;  // gBounds+8
     const int cellId = cx + (cy << 7) + (cz << 14);
 
     const int start = tex1Dfetch<int4>(gParams.kTextures.cellStartsTex, cellId).x;  // gParams+376
@@ -1113,7 +1113,7 @@ __global__ void UpdateDiffuseParticles(XVector4<float>* positions, XVector4<floa
 }
 
 // flexdecomp: src/cuda/flex.cu:3008 _Z25ClampDiffuseParticleCountPiS_i
-__global__ void ClampDiffuseParticleCount(int* count, int* overflow, int limit)
+__global__ void FLEX_KERNEL_API ClampDiffuseParticleCount(int* count, int* overflow, int limit)
 {
     *count = min(*count, limit);
     *overflow = 0;
@@ -1121,7 +1121,7 @@ __global__ void ClampDiffuseParticleCount(int* count, int* overflow, int limit)
 
 // flexdecomp: src/cuda/flex.cu:3014 _Z23CompactDiffuseParticlesPK8XVector4IfES2_PS0_S3_PKiPi
 // Stable-ish compaction of the live diffuse particles (PTX 7138-7206).
-__global__ void CompactDiffuseParticles(const XVector4<float>* inPositions,
+__global__ void FLEX_KERNEL_API CompactDiffuseParticles(const XVector4<float>* inPositions,
                                         const XVector4<float>* inVelocities,
                                         XVector4<float>* outPositions, XVector4<float>* outVelocities,
                                         const int* numParticles, int* outCount)
@@ -3206,7 +3206,7 @@ return;
 // flexdecomp: src/cuda/flex.cu:6009 _Z20TransformShapeBoundsP8XVector4IfES1_PKS0_PK5XQuatIfES3_S7_PK23NvFlexCollisionGeometryPKiiPK22FlexConvexMeshInternalPK24FlexTriangleMeshInternal
 // Conservative AABB of every collision shape for the previous and current
 // transforms (PTX 22242-22658).
-__global__ void TransformShapeBounds(XVector4<float>* lowerOut, XVector4<float>* upperOut,
+__global__ void FLEX_KERNEL_API TransformShapeBounds(XVector4<float>* lowerOut, XVector4<float>* upperOut,
                                      const XVector4<float>* positions,
                                      const XQuat<float>* rotations,
                                      const XVector4<float>* prevPositions,
@@ -3330,7 +3330,7 @@ __global__ void TransformShapeBounds(XVector4<float>* lowerOut, XVector4<float>*
 
 // flexdecomp: src/cuda/flex.cu:6187 _Z21ComputeTriangleBoundsPK8XVector4IfEPKiiPS0_S5_
 // Per-triangle AABB (PTX 22659-22745).
-__global__ void ComputeTriangleBounds(const XVector4<float>* positions, const int* indices,
+__global__ void FLEX_KERNEL_API ComputeTriangleBounds(const XVector4<float>* positions, const int* indices,
                                       int numTris, XVector4<float>* lowers, XVector4<float>* uppers)
 {
     int i = flexIndex();

@@ -1,0 +1,10 @@
+{
+  "allow_static_divergence": [
+    "layout",
+    "strings"
+  ],
+  "divergence_reason": "shipped source compiled verbatim: the divergence is between gcc 4.8.1 and the installed compiler (inlining, literals, instruction selection), not a source difference",
+  "parity": "needs-gpu",
+  "symbol": "_ZN9ClothMesh11SplitVertexEPK8XVector4IfEi8XVector3IfERSt6vectorIiSaIiEES9_RS6_INS_14TriangleUpdateESaISA_EERS6_INS_10VertexCopyESaISE_EEi",
+  "unit": "nvflexext.cloth#_ZN9ClothMesh11SplitVertexEPK8XVector4IfEi8XVector3IfERSt6vectorIiSaIiEES9_RS6_INS_14TriangleUpdateESaISA_EERS6_INS_10VertexCopyESaISE_EEi"
+}

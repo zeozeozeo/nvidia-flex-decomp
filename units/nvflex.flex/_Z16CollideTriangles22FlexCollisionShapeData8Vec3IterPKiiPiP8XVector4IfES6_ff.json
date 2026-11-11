@@ -1,0 +1,13 @@
+{
+  "demangled": "CollideTriangles(FlexCollisionShapeData, Vec3Iter, int const*, int, int*, XVector4<float>*, XVector4<float>*, float, float)",
+  "evidence": [
+    "work/binary/gpu/dbg/nvflex.flex/sm_30.ptx",
+    "work/dwarf/nvflex.flex.json",
+    "work/decomp/nvflex.flex/cudaflex.c"
+  ],
+  "parity": "kernel",
+  "signature": "CollideTriangles(FlexCollisionShapeData, Vec3Iter, int const*, int, int*, XVector4<float>*, XVector4<float>*, float, float)",
+  "source_file": "src/cuda/flex.cu:3718",
+  "symbol": "_Z16CollideTriangles22FlexCollisionShapeData8Vec3IterPKiiPiP8XVector4IfES6_ff",
+  "unit": "nvflex.flex#_Z16CollideTriangles22FlexCollisionShapeData8Vec3IterPKiiPiP8XVector4IfES6_ff"
+}

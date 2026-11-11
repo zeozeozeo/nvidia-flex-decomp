@@ -1,0 +1,13 @@
+{
+  "demangled": "SmoothPositions(int, XVector4<float> const*, int const*, int const*, int const*, int const*, XVector4<float>*, XVector4<float>*)",
+  "evidence": [
+    "work/binary/gpu/dbg/nvflex.flex/sm_30.ptx",
+    "work/dwarf/nvflex.flex.json",
+    "work/decomp/nvflex.flex/cudaflex.c"
+  ],
+  "parity": "kernel",
+  "signature": "SmoothPositions(int, XVector4<float> const*, int const*, int const*, int const*, int const*, XVector4<float>*, XVector4<float>*)",
+  "source_file": "src/cuda/flex.cu:2546",
+  "symbol": "_Z15SmoothPositionsiPK8XVector4IfEPKiS4_S4_S4_PS0_S5_",
+  "unit": "nvflex.flex#_Z15SmoothPositionsiPK8XVector4IfEPKiS4_S4_S4_PS0_S5_"
+}

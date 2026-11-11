@@ -1,0 +1,9 @@
+{
+  "allow_static_divergence": [
+    "layout"
+  ],
+  "divergence_reason": "shipped source compiled verbatim: the divergence is between gcc 4.8.1 and the installed compiler (inlining, literals, instruction selection), not a source difference",
+  "parity": "needs-gpu",
+  "symbol": "NvFlexExtTickContainer",
+  "unit": "nvflexext.container#NvFlexExtTickContainer"
+}

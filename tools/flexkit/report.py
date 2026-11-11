@@ -31,6 +31,30 @@ def _gates() -> dict:
     return {"by_gate": out, "latest": {f"{k[0]}|{k[1]}": bool(v) for k, v in latest.items()}}
 
 
+def _limitations(blocked: list[dict], exports: dict, dxbc: dict, gpu: dict) -> list[str]:
+    out = []
+    if gpu.get("detail", "").startswith("skipped"):
+        out.append("GPU parity (G3) not executed: no NVIDIA device on this host; "
+                   "`flexkit gate gpu --all` reports `skipped:no-gpu`.")
+    if dxbc.get("not_reconstructed"):
+        out.append(f"{dxbc['not_reconstructed']} of {dxbc.get('shaders')} D3D solver shaders are not "
+                   "reconstructed: HLSL must be authored from D3D assembly, and the original "
+                   "bytecode was produced by Microsoft fxc/dxc while the only offline compiler here "
+                   "is vkd3d-shader, so opcode-level equality is unattainable on this host.")
+    for lib, rec in sorted(exports.items()):
+        missing = rec["counts"]["missing"]
+        if missing and lib == "nvflexext":
+            out.append(f"{lib}: {missing} strong symbol(s) absent; the Ext device kernel launch "
+                       "wrappers are `GLOBAL HIDDEN` under nvcc 13 for the verbatim shipped "
+                       "source, while CUDA 9.2 exported them `GLOBAL DEFAULT`.")
+    if blocked:
+        out.append(f"{len(blocked)} unit(s) blocked with recorded evidence (see below).")
+    out.append("REA's Ghidra provider requires an MCP client restart to pick up the pinned "
+               "12.1.4 install; pseudocode in this tree was produced offline with the same "
+               "Ghidra via `flexkit decomp`.")
+    return out
+
+
 def _exports() -> dict:
     """Defined symbol sets: shipped archive vs reconstructed library."""
     out = {}
@@ -172,6 +196,7 @@ def build() -> dict:
         "exports": exports,
         "headers": headers,
         "vendored_tree_clean": vendored_clean,
+        "limitations": _limitations(blocked, exports, dxbc, gpu),
         "acceptance": {
             "open_zero": not open_units,
             "claimed_zero": not claimed,
@@ -238,6 +263,12 @@ def render(r: dict) -> str:
         c = rec["counts"]
         L.append(f"| {lib} | {c['orig']} | {c['recon']} | {c['missing']} |")
     L.append("")
+    if r.get("limitations"):
+        L.append("## Known limitations")
+        L.append("")
+        for item in r["limitations"]:
+            L.append(f"- {item}")
+        L.append("")
     L.append("## Acceptance")
     L.append("")
     for k, v in r["acceptance"].items():
