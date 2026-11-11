@@ -177,8 +177,6 @@ struct MappedData
 // GPU resource wrappers (implemented by the ContextD3D11/D3D12 slices)
 // ---------------------------------------------------------------------------
 
-class Resource;
-class ResourceRW;
 class Texture3D;   // 3D texture handle; declared in utils.h, used by ContextEx
 
 // Reference counted handle.  `release()` returns the remaining count and
@@ -189,6 +187,17 @@ public:
     virtual ~RefCounted() {}
     virtual unsigned addRef() = 0;
     virtual unsigned release() = 0;
+};
+
+// Shader-resource / unordered-access views handed to the GPU.  Abstract: the
+// Context slices implement them over their native handles.  PDB: both are
+// 8-byte refcounted objects with no additional virtuals.
+class Resource : public RefCounted
+{
+};
+
+class ResourceRW : public RefCounted
+{
 };
 
 class Buffer : public RefCounted

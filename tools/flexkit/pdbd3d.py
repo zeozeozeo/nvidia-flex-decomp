@@ -21,9 +21,13 @@ PROC_RE = re.compile(r"^\s*\d+ \| S_[GL]PROC32 \[size = (\d+)\] `(.*)`")
 ADDR_RE = re.compile(r"addr = ([0-9A-Fa-f]{4}):([0-9A-Fa-f]+)(?:, code size = (\d+))?")
 
 # objects that belong to the shipped SDK, not the static CRT
+# Frame.obj is NOT FleX code: its PDB module path is
+# ...\crt\prebuild\build\amd64\mt_obj\eh\nativecpp\frame.obj — the MSVC
+# vcruntime C++ exception-frame handler, statically linked into the DLL.
 SDK_HINTS = ("flex.obj", "bvh.obj", "utils.obj", "radixsort.obj", "Format.obj",
              "Device.obj", "Context.obj", "ContextD3D11.obj", "ContextD3D12.obj",
-             "DeviceD3D11.obj", "DeviceD3D12.obj", "frame.obj")
+             "DeviceD3D11.obj", "DeviceD3D12.obj")
+CRT_OBJECTS = {"frame.obj"}
 
 
 def parse(dll_stem: str = "NvFlexReleaseD3D_x64") -> dict:
