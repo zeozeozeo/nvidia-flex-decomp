@@ -37,11 +37,11 @@
 
 ## Progress
 
-`bin/flexkit gate dxbc --dll NvFlexReleaseD3D_x64.dll` reports **31/84**
+`bin/flexkit gate dxbc --dll NvFlexReleaseD3D_x64.dll` reports **33/84**
 structurally matched (it reported 0/84 at the start of this phase; the Ext DLL
-stays at 1/1). 13 of those are the indices in the 001-020 slice documented
-below; the rest are shaders from the other slices that landed while this one was
-in flight.
+stays at 1/1). 14 of those are the indices in the 000-020 slice documented
+below; 17 more are shaders this slice wrote before the per-range split
+(021-074) and the rest come from the other slices.
 
 ### Interface recovery
 The `RDEF` chunk, not the assembly, is the authoritative interface: it carries
@@ -54,12 +54,14 @@ shader was generated from those tables, so `cb0[N]`, the strides in
 structs match the original byte-for-byte. `work/dxbc/<dll>/<n>.asm` supplied the
 kernel name (RDEF resource prefix) and the arithmetic.
 
-### Reconstructed (indices 001-020)
+### Reconstructed (indices 000-020)
+000 `BuildLeaves` (DLL-qualified as `NvFlexReleaseD3D_x64.000_cs_5_0__BuildLeaves.hlsl`
+so the Ext DLL keeps its shipped `000_cs_5_0__execute.hlsl`; both DLL gates report 1/1),
 002 `CalculateMortonCodes`, 003/004/007/010/011 `ComputeTotalBounds`,
 012 `ComputeTotalInvEdges`, 013 `CalculateKeyDeltas`,
 014 `ReorderParticles`, 015 `CompactDiffuseParticles`,
 017 `ClampDiffuseParticleCount`, 019 `ClearCellBuckets`,
-020 `SmoothPositions` — 13 of the 20 indices in this slice.
+020 `SmoothPositions` — 14 of the 21 indices in this slice.
 
 ### Not reconstructed in 001-020, with reasons
 | idx | kernel | reason |
@@ -67,7 +69,6 @@ kernel name (RDEF resource prefix) and the arithmetic.
 | 001, 009, 016 | `BuildHierarchy`, `CalculateBounds` | `dcl_uav_structured_opc u7, 256` — NVAPI extension (opcode/counter) UAV; no HLSL spelling and the front end rejects `AppendStructuredBuffer` (`E5030`) |
 | 005 | `BuildHierarchy` | `dcl_uav_structured_glc` — globally-coherent UAV flag cannot be emitted from source |
 | 006, 008, 018 | `ComputeTotalBounds`, `CalculateBounds` | `dcl_uav_raw u7` = `AmdDxExtShaderIntrinsicsUAV`, used with `imm_atomic_cmp_exch` min/max sequences; `RWByteAddressBuffer` exposes only `Store`/`Store2` in this front end |
-| 000 | `BuildLeaves` | filename collision: index 000 is also the Ext DLL's only shader, whose shipped source `flexExt.hlsl` owns `000_cs_5_0__execute.hlsl` and already passes the Ext gate |
 
 ### Known front-end limits hit while doing this
 * `RWByteAddressBuffer` has no `Load`/`Load4`/`Interlocked*` — raw UAV reads and
