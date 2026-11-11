@@ -67,15 +67,28 @@ def _counts_ok(a: Counter, b: Counter) -> tuple[bool, list[dict]]:
     return (not diffs), diffs
 
 
-def reconstructed(idx: int) -> Path | None:
-    """The single reconstructed HLSL for this index (first in sorted order)."""
-    cands = sorted(SHADER_DIR.glob(f"{idx:03d}_*.hlsl"))
+def _candidates(idx: int, dll: str | None = None) -> list[Path]:
+    """HLSL files for one index.
+
+    Different DLLs may ship different shaders at the same index, so a file may
+    be prefixed with the DLL stem (`NvFlexReleaseD3D_x64.000_cs_5_0__X.hlsl`);
+    a DLL-qualified file wins over a bare one for its own DLL.
+    """
+    if dll:
+        stem = Path(dll).stem
+        pref = sorted(SHADER_DIR.glob(f"{stem}.{idx:03d}_*.hlsl"))
+        if pref:
+            return pref
+    return sorted(SHADER_DIR.glob(f"{idx:03d}_*.hlsl"))
+
+
+def reconstructed(idx: int, dll: str | None = None) -> Path | None:
+    cands = _candidates(idx, dll)
     return cands[0] if cands else None
 
 
-def duplicates(idx: int) -> list[str]:
-    """More than one HLSL for an index means two authors collided."""
-    cands = sorted(SHADER_DIR.glob(f"{idx:03d}_*.hlsl"))
+def duplicates(idx: int, dll: str | None = None) -> list[str]:
+    cands = _candidates(idx, dll)
     return [p.name for p in cands[1:]]
 
 
@@ -99,12 +112,12 @@ def compile_shader(hlsl: Path, out: Path) -> bool:
     return proc.returncode == 0 and out.exists()
 
 
-def gate_one(original_asm: Path, idx: int) -> dict:
+def gate_one(original_asm: Path, idx: int, dll: str | None = None) -> dict:
     res = {"shader": original_asm.name, "index": idx, "ok": False}
-    dups = duplicates(idx)
+    dups = duplicates(idx, dll)
     if dups:
         res["duplicates"] = dups
-    hlsl = reconstructed(idx)
+    hlsl = reconstructed(idx, dll)
     if hlsl is None:
         res["detail"] = "not_reconstructed"
         return res
@@ -152,7 +165,7 @@ def run(dll: str = "NvFlexReleaseD3D_x64.dll", index: int | None = None) -> dict
             continue
         if index is not None and int(m.group(1)) != index:
             continue
-        res = gate_one(p, int(m.group(1)))
+        res = gate_one(p, int(m.group(1)), dll)
         ledger.record_gate(f"dxbc:{Path(dll).stem}#{p.stem}", "dxbc",
                            bool(res["ok"]), json.dumps(res.get("checks", {}), default=str))
         results.append(res)
