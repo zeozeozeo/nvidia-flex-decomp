@@ -70,11 +70,44 @@ so the Ext DLL keeps its shipped `000_cs_5_0__execute.hlsl`; both DLL gates repo
 | 005 | `BuildHierarchy` | `dcl_uav_structured_glc` — globally-coherent UAV flag cannot be emitted from source |
 | 006, 008, 018 | `ComputeTotalBounds`, `CalculateBounds` | `dcl_uav_raw u7` = `AmdDxExtShaderIntrinsicsUAV`, used with `imm_atomic_cmp_exch` min/max sequences; `RWByteAddressBuffer` exposes only `Store`/`Store2` in this front end |
 
-### Known front-end limits hit while doing this
-* `RWByteAddressBuffer` has no `Load`/`Load4`/`Interlocked*` — raw UAV reads and
-  atomics cannot be expressed (blocks 032 and 075, both `SolveSprings`).
-* `AppendStructuredBuffer`/`ConsumeStructuredBuffer` are unsupported, so
-  `_opc` UAVs are unreachable.
+### Front-end limits (refined)
+
+| limit | status |
+|---|---|
+| `dcl_uav_structured_opc` (NVAPI counter/append UAV, `u7, 256`) | **unreachable** — `AppendStructuredBuffer`/`ConsumeStructuredBuffer` are rejected (`E5030`/`E5005`) |
+| `dcl_uav_structured_glc` (globally coherent flag) | **unreachable** — no source spelling |
+| `dcl_uav_raw` **reads** (`ld_raw`) | **unreachable** — `RWByteAddressBuffer` has only `Store`/`Store2` |
+| `dcl_uav_raw` **atomics** | **reachable** — verified on index 022 |
+
+The raw-UAV atomic case is worth recording: the member form
+(`accum.InterlockedCompareExchange(...)`) fails with `E5005`, but a free
+function over an **indexed raw lvalue** compiles to the shipped opcode:
+
+```hlsl
+RWByteAddressBuffer accum : register(u0);
+
+void AtomicMinFloat(uint addr, float v)          // imm_atomic_cmp_exch loop
+{
+    uint expected = 0u;
+    for (;;)
+    {
+        uint old;
+        InterlockedCompareExchange(accum[addr], expected,
+                                   asuint(min(asfloat(expected), v)), old);
+        if (old == expected) return;
+        expected = old;
+    }
+}
+```
+
+emits `imm_atomic_cmp_exch r, u0, addr, cmp, src` with `dcl_uav_raw u0` — the
+same sequence the shipped `InterlockedFloat::accum` shaders contain. So indices
+blocked only by *atomics* (006, 008, 018, 042, 052) are writable; indices blocked
+by *reads* (032, 075 `SolveSprings`) are not.
+
+Constant-buffer element structs taken from `RDEF` need `float4`-aligned padding
+(`float4`/`float3`/`float2`/`float` runs, never `float pad[N]`), otherwise
+`cb0[N]` grows and the bindings check fails silently.
 * Constant-buffer array elements are 16-byte aligned: padding members must be
   emitted as `float4`/`float3`/`float2`/`float` runs, never as `float pad[N]`.
 * vkd3d-shader emits more instructions than fxc for the same source; the opcode
