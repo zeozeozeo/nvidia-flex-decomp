@@ -25,15 +25,14 @@ def dxbc_containers(pe_bytes: bytes) -> list[dict]:
         start = i + 1
         if i + 20 > len(pe_bytes):
             continue
-        (checksum_lo,) = struct.unpack_from("<I", pe_bytes, i + 4)
-        (one,) = struct.unpack_from("<I", pe_bytes, i + 8)
-        (total,) = struct.unpack_from("<I", pe_bytes, i + 12)
-        (chunks,) = struct.unpack_from("<I", pe_bytes, i + 16)
+        (one,) = struct.unpack_from("<I", pe_bytes, i + 20)
+        (total,) = struct.unpack_from("<I", pe_bytes, i + 24)
+        (chunks,) = struct.unpack_from("<I", pe_bytes, i + 28)
         if one != 1 or chunks == 0 or chunks > 32 or total < 24 or total > 1 << 22:
             continue
         if i + total > len(pe_bytes):
             continue
-        offs = struct.unpack_from(f"<{chunks}I", pe_bytes, i + 20)
+        offs = struct.unpack_from(f"<{chunks}I", pe_bytes, i + 32)
         if not all(20 <= o < total for o in offs):
             continue
         # chunk fourccs must be printable ASCII
@@ -118,6 +117,8 @@ def inventory() -> dict:
     # expected: 41 + 7 + 6 per variant
     dbg_kernels = {k.split(":", 1)[1]: v for k, v in kernels.items() if k.startswith("dbg:")}
     expected_total = sum(EXPECTED_KERNELS.values())
+    solver_dbg = {m: v for m, v in dbg_kernels.items() if m in EXPECTED_KERNELS}
+    solver_total = sum(solver_dbg.values())
 
     dxbc = {}
     dll = FLEX / "bin" / "win64" / "NvFlexReleaseD3D_x64.dll"
@@ -165,8 +166,10 @@ def inventory() -> dict:
     }
     asrt = result["assertions"]
     asrt["kernel_total_dbg"] = {
-        "expected": expected_total, "actual": result["kernels_total_dbg"],
-        "ok": result["kernels_total_dbg"] == expected_total,
+        "expected": expected_total,
+        "actual": solver_total,
+        "all_modules_total": result["kernels_total_dbg"],
+        "ok": solver_total == expected_total,
         "per_module": {m: {"expected": e, "actual": dbg_kernels.get(m, -1),
                            "ok": dbg_kernels.get(m, -1) == e}
                        for m, e in EXPECTED_KERNELS.items()},

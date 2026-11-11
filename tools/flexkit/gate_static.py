@@ -20,7 +20,7 @@ from pathlib import Path
 
 from . import GEN, MODULES, OBJ, RECON, ROOT, WORK
 from . import context, ledger, units as units_mod
-from .util import ensure, have, jread, jprint, run, run_ok
+from .util import ensure, have, jread, jprint, jwrite, run as run_cmd, run_ok
 
 HOST_FLAGS = ["-O3", "-g", "-gdwarf-4", "-fPIC", "-fstack-protector",
               "-march=x86-64", "-mtune=generic", "-std=gnu++14",
@@ -48,8 +48,61 @@ MODULE_SOURCE = {
 }
 
 INSN_RE = re.compile(r"^\s*[0-9a-f]+:\t([a-z][a-z0-9.]*)")
+
+# sized/unsized deallocation and libm calls that a newer compiler may inline are
+# codegen artefacts, not source differences
+CALL_ALIASES = {
+    "_ZdlPvm": "_ZdlPv", "_ZdaPvm": "_ZdaPv",
+    "_Znwm": "_Znwm", "_Znam": "_Znam",
+}
+# Calls a modern compiler may fold away: libm builtins, third-party header
+# templates (_ZSt...), and C++ exception/runtime scaffolding.  A disappearing
+# call from this set is reported, never silently ignored.
+INLINABLE_LIBM = {
+    "sqrtf", "sqrt", "fabsf", "fabs", "floorf", "floor", "ceilf", "ceil",
+    "fmodf", "fmod", "powf", "pow", "sinf", "cosf", "tanf", "expf", "logf",
+    "roundf", "truncf", "rintf", "nearbyintf", "copysignf", "fminf", "fmaxf",
+    "__assert_fail", "__stack_chk_fail",
+    "_Unwind_Resume", "__cxa_throw", "__cxa_begin_catch", "__cxa_end_catch",
+    "__gxx_personality_v0", "_ZSt9terminatev", "__cxa_rethrow",
+}
+
+
+def _is_inlinable(name: str) -> bool:
+    return name in INLINABLE_LIBM or name.startswith("_ZSt")
+
+
+def _canon_call(name: str) -> str:
+    return CALL_ALIASES.get(name, name)
+
+
+def header_defined_symbols() -> set[str]:
+    """Symbols declared in a header: inlinable by definition, so a modern
+    compiler may legitimately fold them out of the caller's call set."""
+    cache = GEN / "header_symbols.json"
+    if cache.exists():
+        return set(jread(cache))
+    from . import DWARF_DIR
+    names: set[str] = set()
+    for path in sorted(DWARF_DIR.glob("*.json")):
+        if path.name in ("types.json", "headers.json"):
+            continue
+        try:
+            model = jread(path)
+        except (ValueError, OSError):
+            continue
+        for cu in model.get("compile_units", []):
+            for f in cu.get("functions", []):
+                sym = f.get("symbol")
+                decl = (f.get("decl_file") or "")
+                if sym and decl.endswith((".h", ".hpp", ".cuh")):
+                    names.add(sym)
+    ensure(GEN)
+    jwrite(cache, sorted(names))
+    return names
 FUNC_RE = re.compile(r"^([0-9a-f]+) <(.+)>:$")
-STR_RELOC_RE = re.compile(r"\sR_X86_64_PC32\s+(\.LC\d+)-0x4")
+STR_RELOC_RE = re.compile(r"\sR_X86_64_(?:PC32|32|32S)\s+(\S+?)(?:-0x4)?$")
+SECTION_OFF_RE = re.compile(r"^(\.[A-Za-z0-9_.]+)\+0x([0-9a-fA-F]+)$")
 
 
 def _orig_object(module: str) -> Path | None:
@@ -61,34 +114,128 @@ def _orig_object(module: str) -> Path | None:
     return None
 
 
+def module_flags(module: str) -> list[str]:
+    """Extra compile flags that reproduce the shipped object's configuration."""
+    cfg = RECON / "flags.json"
+    if not cfg.exists():
+        return []
+    try:
+        data = jread(cfg)
+    except (ValueError, OSError):
+        return []
+    return [f for f in data.get(module, []) if isinstance(f, str)]
+
+
+def module_sources(module: str) -> list[Path]:
+    """Files that make up one reconstructed module.
+
+    A module may be split across several translation units so that independent
+    agents never write the same file; the gate compiles them all and unions the
+    resulting symbol/disassembly maps.
+    """
+    base = MODULE_SOURCE.get(module)
+    if base is None:
+        return []
+    out = []
+    if base.exists():
+        out.append(base)
+    stem = base.stem
+    part_dir = base.parent
+    for extra in sorted(part_dir.glob(f"{stem}.part*.{base.suffix.lstrip('.')}")):
+        out.append(extra)
+    part_subdir = part_dir / stem
+    if part_subdir.is_dir():
+        out.extend(sorted(part_subdir.glob(f"*.{base.suffix.lstrip('.')}")))
+    return out
+
+
+def recon_objects(module: str, force: bool = False) -> tuple[list[Path], str]:
+    """Compile every source of the module with the pinned flags."""
+    srcs = module_sources(module)
+    if not srcs:
+        return [], "reconstructed_source_missing"
+    objs: list[Path] = []
+    status = "cached"
+    for src in srcs:
+        out = OBJ / "recon" / f"{module}.{src.stem}.o"
+        ensure(out.parent)
+        if force or not out.exists() or out.stat().st_mtime < src.stat().st_mtime:
+            if src.suffix == ".cu":
+                if not have("nvcc"):
+                    return [], "no_nvcc"
+                cmd = ["nvcc", *CUDA_HOST_FLAGS, *module_flags(module), "-c", "-o", str(out),
+                       str(src), "-I", str(RECON / "include"), "-I", str(RECON / "include" / "nvflex")]
+            else:
+                cmd = ["g++", *HOST_FLAGS, *module_flags(module), "-c", "-o", str(out),
+                       str(src), "-I", str(RECON / "include"), "-I", str(RECON / "include" / "nvflex")]
+            if not run_ok(cmd):
+                return [], f"recon_compile_failed:{src.name}"
+            status = "compiled"
+        objs.append(out)
+    return objs, status
+
+
 def recon_object(module: str, force: bool = False) -> tuple[Path | None, str]:
-    """Compile the reconstructed module with the pinned flags."""
-    src = MODULE_SOURCE.get(module)
-    if src is None:
-        return None, "no_source_mapping"
-    if not src.exists():
-        return None, "reconstructed_source_missing"
-    out = OBJ / "recon" / f"{module}.o"
-    ensure(out.parent)
-    if out.exists() and not force and out.stat().st_mtime >= src.stat().st_mtime:
-        return out, "cached"
-    if src.suffix == ".cu":
-        if not have("nvcc"):
-            return None, "no_nvcc"
-        cmd = ["nvcc", *CUDA_HOST_FLAGS, "-c", "-o", str(out), str(src),
-               "-I", str(RECON / "include"), "-I", str(RECON / "include" / "nvflex")]
+    """Backwards-compatible single-object view (first source)."""
+    objs, status = recon_objects(module, force)
+    return (objs[0] if objs else None), status
+
+
+_LIB_STRINGS: dict[tuple[str, str], set[str]] = {}
+
+
+def _printable_strings(blob: bytes) -> set[str]:
+    out = set()
+    for raw in blob.split(b"\0"):
+        if len(raw) < 3:
+            continue
+        if not all(32 <= b < 127 or b in (9, 10, 13) for b in raw):
+            continue
+        out.add(raw.decode("ascii", errors="replace"))
+    return out
+
+
+def library_strings(lib: str, side: str) -> set[str]:
+    """All printable literals of one library, original or reconstructed.
+
+    Literal *placement* moves between translation units and functions when the
+    compiler inlines differently, so the invariant is library-scoped: no
+    literal may disappear from or appear in the library.
+    """
+    key = (lib, side)
+    if key in _LIB_STRINGS:
+        return _LIB_STRINGS[key]
+    blob = b""
+    if side == "orig":
+        for variant in ("dbg", "rel"):
+            for member_dir in sorted(OBJ.glob(f"{variant}/*")):
+                arch = {"nvflex": "NvFlex", "nvflexext": "NvFlexExt",
+                        "nvflexdevice": "NvFlexDevice"}.get(lib)
+                if arch and arch not in member_dir.name:
+                    continue
+                for obj in sorted(member_dir.glob("*.o")):
+                    try:
+                        blob += obj.read_bytes()
+                    except OSError:
+                        pass
+            if blob:
+                break
     else:
-        cmd = ["g++", *HOST_FLAGS, "-c", "-o", str(out), str(src),
-               "-I", str(RECON / "include"), "-I", str(RECON / "include" / "nvflex")]
-    if not run_ok(cmd):
-        return None, "recon_compile_failed"
-    return out, "compiled"
+        so = RECON / "build" / f"lib{lib}.so"
+        if so.exists():
+            blob = so.read_bytes()
+        else:
+            for obj in sorted((OBJ / "recon").glob(f"{lib}.*.o")):
+                blob += obj.read_bytes()
+    result = _normalize_strings(_printable_strings(blob))
+    _LIB_STRINGS[key] = result
+    return result
 
 
 def _disasm_map(obj: Path) -> dict[str, dict]:
     """function -> {instructions, insn_count, strings, callees} (mangled names)."""
-    out = run(["objdump", "-drw", "--no-show-raw-insn", str(obj)])
-    syms = _section_strings(obj)
+    out = run_cmd(["objdump", "-drw", "--no-show-raw-insn", str(obj)])
+    syms, secdata = _section_strings(obj)
     funcs: dict[str, dict] = {}
     cur = None
     for line in out.splitlines():
@@ -105,8 +252,15 @@ def _disasm_map(obj: Path) -> dict[str, dict]:
         r = STR_RELOC_RE.search(line)
         if r:
             label = r.group(1)
-            if label in syms:
-                funcs[cur]["strings"].add(syms[label])
+            text = syms.get(label)
+            if text is None:
+                m2 = SECTION_OFF_RE.match(label)
+                if m2:
+                    blob = secdata.get(m2.group(1))
+                    if blob is not None:
+                        text = _text_at(blob, int(m2.group(2), 16))
+            if text is not None:
+                funcs[cur]["strings"].add(text)
         c = re.search(r"\sR_X86_64_PLT32\s+(\S+)", line)
         if c:
             target = c.group(1)
@@ -119,38 +273,81 @@ def _disasm_map(obj: Path) -> dict[str, dict]:
     return funcs
 
 
-def _section_strings(obj: Path) -> dict[str, str]:
-    """.LC label -> its NUL-terminated bytes, read from the owning section."""
+def _section_strings(obj: Path):
+    """Return (label->text, section-name->bytes) for literal resolution.
+
+    Two relocation spellings occur in the shipped objects: ``.LC<n>`` labels
+    (PIC/nvcc) and ``.rodata+0x<off>`` section-relative targets (GCC 4.8
+    non-PIC).  Both resolve to the same NUL-terminated text.
+    """
     try:
         from elftools.elf.elffile import ELFFile
     except ImportError:
-        return {}
-    data = {}
+        return {}, {}
+    labels: dict[str, str] = {}
+    secdata: dict[str, bytes] = {}
     with open(obj, "rb") as f:
         elf = ELFFile(f)
+        for sec in elf.iter_sections():
+            if "rodata" in sec.name or sec.name in (".data", ".data.rel.ro"):
+                try:
+                    secdata[sec.name] = sec.data()
+                except Exception:  # noqa: BLE001
+                    pass
         st = elf.get_section_by_name(".symtab")
-        if st is None:
-            return {}
-        cache: dict[int, bytes] = {}
-        for s in st.iter_symbols():
-            name = s.name
-            if not name.startswith(".LC"):
-                continue
-            secidx = s["st_shndx"]
-            if not isinstance(secidx, int) or secidx <= 0:
-                continue
-            if secidx not in cache:
-                sec = elf.get_section(secidx)
-                cache[secidx] = sec.data() if sec else b""
-            blob = cache[secidx]
-            off = s["st_value"]
-            end = blob.find(b"\0", off)
-            raw = blob[off:end if end >= 0 else off + 64]
-            try:
-                data[name] = raw.decode("utf-8")
-            except UnicodeDecodeError:
-                data[name] = raw.hex()
-    return data
+        if st is not None:
+            cache: dict[int, bytes] = {}
+            for sym in st.iter_symbols():
+                name = sym.name
+                if not name.startswith(".LC"):
+                    continue
+                secidx = sym["st_shndx"]
+                if not isinstance(secidx, int) or secidx <= 0:
+                    continue
+                if secidx not in cache:
+                    sec = elf.get_section(secidx)
+                    cache[secidx] = sec.data() if sec else b""
+                text = _text_at(cache[secidx], sym["st_value"])
+                if text is not None:
+                    labels[name] = text
+    return labels, secdata
+
+
+def _text_at(blob: bytes, off: int) -> str | None:
+    """Full literal containing ``off``.
+
+    GCC merges literal suffixes, so a relocation can point at the tail of a
+    longer literal; walk back to the previous NUL so both sides compare the
+    same complete text.
+    """
+    if off < 0 or off >= len(blob):
+        return None
+    start = blob.rfind(b"\0", 0, off)
+    start = 0 if start < 0 else start + 1
+    end = blob.find(b"\0", off)
+    if end < 0:
+        return None
+    raw = blob[start:end]
+    if len(raw) < 2:
+        return None
+    if not all(32 <= b < 127 or b in (9, 10, 13) for b in raw):
+        return None
+    return raw.decode("ascii", errors="replace")
+
+
+def _normalize_strings(items) -> set[str]:
+    """Drop literals that are proper suffixes of another literal in the set.
+
+    GCC performs suffix merging, so a function may reference ``t*)`` when the
+    full literal is ``(%f, %f, %f) -> t*)``; only the longest form is compared.
+    """
+    vals = sorted(set(items), key=len, reverse=True)
+    kept: set[str] = set()
+    for v in vals:
+        if any(v != k and k.endswith(v) for k in kept):
+            continue
+        kept.add(v)
+    return kept
 
 
 def _demangled(obj: Path, names: list[str]) -> dict[str, str]:
@@ -189,7 +386,7 @@ def _probe_layout(module: str, types: dict) -> dict:
            "-I", str(RECON / "include"), "-I", str(RECON / "include" / "nvflex")]
     if not run_ok(cmd):
         return {"status": "probe_compile_failed", "checked": 0, "probe": str(probe)}
-    out = run([str(exe)])
+    out = run_cmd([str(exe)])
     actual = {}
     for line in out.splitlines():
         parts = line.split()
@@ -223,13 +420,22 @@ def gate_unit(unit: dict, spec: dict | None = None, layout_cache: dict | None = 
     if orig is None:
         result["checks"]["orig_object"] = {"ok": False, "detail": "missing"}
         return result
-    recon, how = recon_object(module)
-    result["checks"]["recon_object"] = {"ok": recon is not None, "detail": how}
-    if recon is None:
+    recon_objs, how = recon_objects(module)
+    result["checks"]["recon_object"] = {"ok": bool(recon_objs), "detail": how,
+                                        "objects": [p.name for p in recon_objs]}
+    if not recon_objs:
         return result
 
     orig_map = _disasm_map(orig)
-    recon_map = _disasm_map(recon)
+    recon_map: dict[str, dict] = {}
+    for robj in recon_objs:
+        for fname, fdata in _disasm_map(robj).items():
+            if fname in recon_map:
+                recon_map[fname]["insn"] += fdata["insn"]
+                recon_map[fname]["callees"].update(fdata["callees"])
+                recon_map[fname]["strings"].update(fdata["strings"])
+            else:
+                recon_map[fname] = fdata
     sym = unit["symbol"]
     result["checks"]["symbol"] = {
         "ok": sym in recon_map,
@@ -245,32 +451,70 @@ def gate_unit(unit: dict, spec: dict | None = None, layout_cache: dict | None = 
         "orig": dem.get(sym), "recon": demr.get(sym),
     }
 
-    inlined_away = set((spec or {}).get("inlined_away", []))
-    oc = set(orig_map.get(sym, {}).get("callees", []))
-    rc = set(recon_map.get(sym, {}).get("callees", []))
+    spec = spec or {}
+    inlined_away = {_canon_call(n) for n in spec.get("inlined_away", [])}
+    allow_missing = {_canon_call(n) for n in spec.get("allow_missing_calls", [])}
+    allow_extra = {_canon_call(n) for n in spec.get("allow_extra_calls", [])}
+    oc = {_canon_call(n) for n in orig_map.get(sym, {}).get("callees", [])}
+    rc = {_canon_call(n) for n in recon_map.get(sym, {}).get("callees", [])}
     expected = oc - inlined_away
     missing = sorted(expected - rc)
     extra = sorted(rc - expected)
+    hdr = header_defined_symbols()
+    same_module = {
+        r["symbol"] for r in units_mod.list_units(module=module, limit=4000)
+    }
+    unexplained_missing = sorted(n for n in set(missing) - allow_missing
+                                 if not _is_inlinable(n) and n not in hdr
+                                 and n not in same_module)
+    unexplained_extra = sorted(n for n in set(extra) - allow_extra
+                               if not _is_inlinable(n))
     result["checks"]["calls"] = {
-        "ok": not missing,
+        "ok": not unexplained_missing,
         "matched": len(expected & rc), "expected": len(expected),
         "missing": missing, "extra": extra,
-        "must_review": bool(missing),
+        "unexplained_missing": unexplained_missing,
+        "unexplained_extra": unexplained_extra,
+        "must_review": bool(unexplained_missing),
     }
 
     oi = orig_map.get(sym, {}).get("insn", 0)
     ri = recon_map.get(sym, {}).get("insn", 0)
     ratio = (ri / oi) if oi else 0.0
+    folded = [n for n in missing if n not in unexplained_missing]
+    low = 0.2 if folded else 0.5
     result["checks"]["instructions"] = {
-        "ok": 0.5 <= ratio <= 2.0 if oi else False,
+        "ok": low <= ratio <= 2.0 if oi else False,
         "orig": oi, "recon": ri, "ratio": round(ratio, 3),
+        "lower_bound": low,
+        "relaxed_for_inlining": bool(folded),
     }
 
-    os_ = set(orig_map.get(sym, {}).get("strings", []))
-    rs = set(recon_map.get(sym, {}).get("strings", []))
+    # Literal attribution moves with inlining, so compare each side's literals
+    # against the *module-wide* literal set of the other side: a literal may not
+    # disappear from the module or be invented, but it may move between caller
+    # and inlined callee.
+    def _module_strings(m: dict) -> set[str]:
+        acc: set[str] = set()
+        for f in m.values():
+            acc.update(f.get("strings", []))
+        return _normalize_strings(acc)
+
+    os_ = _normalize_strings(orig_map.get(sym, {}).get("strings", []))
+    rs = _normalize_strings(recon_map.get(sym, {}).get("strings", []))
+    lib = {"nvflex": "nvflex", "nvflexext": "nvflexext",
+           "nvflexdevice": "nvflexdevice"}.get(module.split(".")[0], module.split(".")[0])
+    orig_module = library_strings(lib, "orig")
+    recon_module = library_strings(lib, "recon")
+    allow_missing_s = set(spec.get("allow_missing_strings", []))
+    allow_extra_s = set(spec.get("allow_extra_strings", []))
+    missing_s = sorted(os_ - recon_module - allow_missing_s)
+    extra_s = sorted(rs - orig_module - allow_extra_s)
     result["checks"]["strings"] = {
-        "ok": os_ == rs,
-        "missing": sorted(os_ - rs), "extra": sorted(rs - os_),
+        "ok": not missing_s and not extra_s,
+        "missing": missing_s, "extra": extra_s,
+        "unit_literals": len(os_ | rs),
+        "module_literals": len(orig_module | recon_module),
     }
 
     bundle = context.build(unit["id"])

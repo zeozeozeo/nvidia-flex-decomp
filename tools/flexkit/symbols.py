@@ -112,10 +112,14 @@ def archive_members(archive: Path) -> list[str]:
     return [ln.strip() for ln in out.splitlines() if ln.strip()]
 
 
-def demangle(names: list[str]) -> dict[str, str]:
+def demangle(names: list[str], tool: str = "c++filt") -> dict[str, str]:
+    """Demangle Itanium (default) or MSVC names (tool="llvm-cxxfilt")."""
     if not names:
         return {}
-    p = subprocess.run(["c++filt"], input="\n".join(names) + "\n",
-                       capture_output=True, text=True)
+    try:
+        p = subprocess.run([tool], input="\n".join(names) + "\n",
+                           capture_output=True, text=True)
+    except FileNotFoundError:
+        return {n: n for n in names}
     out = p.stdout.splitlines()
     return {n: (out[i] if i < len(out) else n) for i, n in enumerate(names)}

@@ -15,6 +15,7 @@
 //
 // Output framing: for each output, [uint64 length][bytes].
 
+#include <cstdint>
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>

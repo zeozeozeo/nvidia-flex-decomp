@@ -85,6 +85,20 @@ def cmd_dwarf(args):
     return 0
 
 
+def cmd_decomp(args):
+    from . import decomp
+    mods = args.module.split(",") if args.module else None
+    r = decomp.run(mods, force=args.force)
+    if args.json:
+        jprint(r)
+    else:
+        for m, v in sorted(r.get("modules", {}).items()):
+            print(f"{m}: ok={v['ok']} lines={v.get('lines')} {v.get('detail')}")
+        if not r.get("ok"):
+            print(f"decomp: FAILED ({r.get('error', '')})")
+    return 0 if r.get("ok") else 1
+
+
 def cmd_headers(args):
     from . import headers
     r = headers.generate()
@@ -110,7 +124,7 @@ def cmd_pdb(args):
 
 def cmd_dxbc(args):
     from . import dxbc
-    r = dxbc.extract_all(disassemble=not args.no_asm)
+    r = dxbc.extract_all(disassemble_shaders=not args.no_asm)
     if args.json:
         jprint(r)
     else:
@@ -288,6 +302,12 @@ def build_parser() -> argparse.ArgumentParser:
     s.add_argument("--module")
     s.add_argument("--json", action="store_true")
     s.set_defaults(func=cmd_dwarf)
+
+    s = sub.add_parser("decomp", help="decompile modules with headless Ghidra")
+    s.add_argument("--module")
+    s.add_argument("--force", action="store_true")
+    s.add_argument("--json", action="store_true")
+    s.set_defaults(func=cmd_decomp)
 
     s = sub.add_parser("headers", help="generate recovered internal headers from DWARF")
     s.add_argument("--json", action="store_true")

@@ -10,6 +10,11 @@ endif()
 set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
+# asserts stay enabled: the shipped objects were built without NDEBUG and the
+# static gate compares literal sets, so recon must match that configuration
+set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "-O3 -g")
+set(CMAKE_C_FLAGS_RELWITHDEBINFO "-O3 -g")
+set(CMAKE_CUDA_FLAGS_RELWITHDEBINFO "-O3 -g")
 set(CMAKE_CUDA_FLAGS "${CMAKE_CUDA_FLAGS} -O3 -g -lineinfo -arch=sm_75 -Xcompiler -fPIC,-ffp-contract=off")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3 -g -gdwarf-4 -fPIC -fstack-protector -march=x86-64 -mtune=generic -std=gnu++14 -ffp-contract=off -fvisibility=default")
 # Build-level compatibility for shipped FleX sources compiled by a modern
@@ -34,6 +39,11 @@ foreach(f src/cuda/bvh.cu src/cuda/flex.cu src/cuda/sort.cu src/cuda/util.cpp)
     list(APPEND NVFLEX_SOURCES ${f})
   endif()
 endforeach()
+# parallel reconstruction slices: <stem>.part*.cu and <stem>/*.cu
+file(GLOB NVFLEX_PARTS
+  ${CMAKE_CURRENT_SOURCE_DIR}/src/cuda/*.part*.cu
+  ${CMAKE_CURRENT_SOURCE_DIR}/src/cuda/*.part*.cpp)
+list(APPEND NVFLEX_SOURCES ${NVFLEX_PARTS})
 
 if(NVFLEX_SOURCES)
   add_library(nvflex SHARED ${NVFLEX_SOURCES})
@@ -41,6 +51,17 @@ if(NVFLEX_SOURCES)
   target_link_options(nvflex PRIVATE ${FLEX_LINK_FLAGS})
   add_library(nvflex_static STATIC ${NVFLEX_SOURCES})
   target_include_directories(nvflex_static PRIVATE ${FLEX_INCLUDE_PUBLIC} ${FLEX_INCLUDE_RECOVERED})
+endif()
+
+# Per-module flags reproducing the shipped object configuration (asserts).
+if(EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/flags.json)
+  file(READ ${CMAKE_CURRENT_SOURCE_DIR}/flags.json FLEX_FLAGS_JSON)
+  string(JSON FLEX_VOXELIZE_FLAGS ERROR_VARIABLE _err GET "${FLEX_FLAGS_JSON}" "nvflexext.voxelize")
+  string(REGEX REPLACE "[][\"]" "" FLEX_VOXELIZE_FLAGS "${FLEX_VOXELIZE_FLAGS}")
+  separate_arguments(FLEX_VOXELIZE_FLAGS)
+  if(NOT _err)
+    set_source_files_properties(core/voxelize.cpp PROPERTIES COMPILE_OPTIONS "${FLEX_VOXELIZE_FLAGS}")
+  endif()
 endif()
 
 # ---- nvflexext -----------------------------------------------------------

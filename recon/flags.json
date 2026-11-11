@@ -1,0 +1,4 @@
+{
+  "_comment": "Per-module compile flags that reproduce the shipped object configuration. voxelize.cpp.o in the shipped debug archive has no __assert_fail reference (built with NDEBUG) while sdf/maths/aabbtree objects have asserts enabled.",
+  "nvflexext.voxelize": ["-DNDEBUG"]
+}
