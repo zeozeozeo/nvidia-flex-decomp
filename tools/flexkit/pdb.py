@@ -136,7 +136,8 @@ def dump_pdb(pdb: Path) -> dict:
             continue
         a = PUBLIC_ADDR_RE.search(line)
         if a and cur_name:
-            addr = (int(a.group(1), 16) << 32) | int(a.group(2), 16)
+            # segment is hex, the offset after ':' is printed in decimal
+            addr = (int(a.group(1), 16) << 32) | int(a.group(2), 10)
             pub[cur_name] = addr
             funcs[cur_name] = funcs.get(cur_name, 0) + 1
             cur_name = None

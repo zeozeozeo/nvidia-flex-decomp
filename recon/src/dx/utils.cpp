@@ -7,8 +7,7 @@
 //
 // The object's 17 .text functions are the anonymous-namespace copy helpers,
 // the radix-sort size helpers, the two clear-buffer dispatchers and
-// NvFlexBuffer::map/unmap.  Manifest-visible helpers live in utils.h so the
-// other D3D translation units can share them.
+// NvFlexBuffer::map/unmap.  The non-static helpers are declared in utils.h.
 #include "utils.h"
 
 #include <cstdarg>
@@ -25,7 +24,7 @@ namespace {
 // ---------------------------------------------------------------------------
 
 // utils.obj @0x4de60 (16 bytes) — Context::copy (device->device).
-void copy(Context* dstContext, Buffer* dst, unsigned dstOffset, Buffer* src,
+void copy(ContextEx* dstContext, Buffer* dst, unsigned dstOffset, Buffer* src,
           unsigned srcOffset, unsigned size)
 {
     if (size != 0)
@@ -33,7 +32,7 @@ void copy(Context* dstContext, Buffer* dst, unsigned dstOffset, Buffer* src,
 }
 
 // utils.obj @0x4de70 (19 bytes) — Context::copyToNative.
-void copyToNative(Context* context, void* dst, unsigned dstOffset, Buffer* src,
+void copyToNative(ContextEx* context, void* dst, unsigned dstOffset, Buffer* src,
                   unsigned srcOffset, unsigned size)
 {
     if (size != 0)
@@ -41,7 +40,7 @@ void copyToNative(Context* context, void* dst, unsigned dstOffset, Buffer* src,
 }
 
 // utils.obj @0x4de90 (19 bytes) — Context::copyToHost.
-void copyToHost(Context* context, Buffer* dst, unsigned dstOffset, Buffer* src,
+void copyToHost(ContextEx* context, Buffer* dst, unsigned dstOffset, Buffer* src,
                 unsigned srcOffset, unsigned size)
 {
     if (size != 0)
@@ -49,7 +48,7 @@ void copyToHost(Context* context, Buffer* dst, unsigned dstOffset, Buffer* src,
 }
 
 // utils.obj @0x4deb0 (21 bytes) — Context::copyToDevice.
-void copyToDevice(Context* context, Buffer* dst, unsigned dstOffset, Buffer* src,
+void copyToDevice(ContextEx* context, Buffer* dst, unsigned dstOffset, Buffer* src,
                   unsigned srcOffset, unsigned size, BufferResourceTypes dstType)
 {
     if (size != 0)
@@ -58,7 +57,7 @@ void copyToDevice(Context* context, Buffer* dst, unsigned dstOffset, Buffer* src
 
 // utils.obj @0x4ded0 (132 bytes) — staged readback:
 //   download(src, offset, size); map(src, read, wait); memcpy; unmap(src).
-void copyToHostStaged(Context* context, void* dst, Buffer* src, unsigned srcOffset,
+void copyToHostStaged(ContextEx* context, void* dst, Buffer* src, unsigned srcOffset,
                       unsigned size)
 {
     if (size == 0)
@@ -72,7 +71,7 @@ void copyToHostStaged(Context* context, void* dst, Buffer* src, unsigned srcOffs
 
 // utils.obj @0x4df60 (126 bytes) — staged upload:
 //   map(dst, write, wait); memcpy; unmap(dst); upload(dst, offset, size).
-void copyToDeviceStaged(Context* context, Buffer* dst, unsigned dstOffset, const void* src,
+void copyToDeviceStaged(ContextEx* context, Buffer* dst, unsigned dstOffset, const void* src,
                         unsigned size)
 {
     if (size == 0)
@@ -87,20 +86,21 @@ void copyToDeviceStaged(Context* context, Buffer* dst, unsigned dstOffset, const
 // utils.obj @0x4dfe0 (342 bytes) — grow `dst` to the size of `src`, then copy
 // through host mappings.  The replacement buffer uses
 // bufferType = 3 (eBuffer|eUAV_SRV), as the shipped constant does.
-void copy(Context* dstContext, Buffer*& dst, Context* srcContext, Buffer* src)
+void copy(ContextEx* dstContext, Buffer*& dst, ContextEx* srcContext, Buffer* src)
 {
-    const unsigned size = src->m_desc.stride * src->m_desc.dim;
+    const unsigned srcSize = src->desc().stride * src->desc().dim;
 
-    if (dst->m_desc.stride * dst->m_desc.dim < size)
+    if (dst->desc().stride * dst->desc().dim < srcSize)
     {
-        delete dst;
+        delete dst;   // shipped: scalar deleting destructor (Buffer::__vecDelDtor)
 
-        void* data = std::malloc(size);
-        std::memset(data, 0, size);
+        void* data = std::malloc(srcSize);
+        std::memset(data, 0, srcSize);
 
         BufferDesc desc;
-        desc.dim = src->m_desc.dim;
-        desc.stride = src->m_desc.stride;
+        desc.format = NvFlexFormat(0);          // eNvFlexFormat_unknown
+        desc.dim = src->desc().dim;
+        desc.stride = src->desc().stride;
         desc.bufferType = eBuffer | eUAV_SRV;   // 3, from the shipped descriptor
         desc.data = data;
         dst = dstContext->createBuffer(&desc, 0);
@@ -109,13 +109,13 @@ void copy(Context* dstContext, Buffer*& dst, Context* srcContext, Buffer* src)
 
     void* srcPtr = srcContext->map(src, eMapReadWrite, true);
     void* dstPtr = dstContext->map(dst, eMapReadWrite, true);
-    std::memcpy(dstPtr, srcPtr, size);
+    std::memcpy(dstPtr, srcPtr, srcSize);
     dstContext->unmap(dst);
     srcContext->unmap(src);
 }
 
 // utils.obj @0x4e140 (200 bytes) — DxBuffer variant.
-void copy(Context* dstContext, DxBuffer* dst, Context* srcContext, DxBuffer* src)
+void copy(ContextEx* dstContext, DxBuffer* dst, ContextEx* srcContext, DxBuffer* src)
 {
     if (dst->mBufferDesc.dim * dst->mBufferDesc.stride <
         src->mBufferDesc.stride * src->mBufferDesc.dim)
@@ -130,15 +130,15 @@ void copy(Context* dstContext, DxBuffer* dst, Context* srcContext, DxBuffer* src
     srcContext->unmap(src->mBuffer);
 }
 
-// utils.obj @0x4e210 (177 bytes) — constant-buffer variant (map/unmap take the
+// utils.obj @0x4e210 (177 bytes) — constant-buffer variant (map/unmap use the
 // ConstantBuffer* overloads).
-void copy(Context* dstContext, DxConstantBuffer* dst, Context* srcContext,
+void copy(ContextEx* dstContext, DxConstantBuffer* dst, ContextEx* srcContext,
           DxConstantBuffer* src)
 {
     if (dst->mBufferDesc.dim * dst->mBufferDesc.stride <
         src->mBufferDesc.dim * src->mBufferDesc.stride)
     {
-        dst->Create(dstContext, src->mBufferDesc.dim, dst->mBufferDesc.stride);
+        dst->Create(dstContext, src->mBufferDesc.dim, src->mBufferDesc.stride);
     }
 
     void* srcPtr = srcContext->map(src->mBuffer);
@@ -149,7 +149,7 @@ void copy(Context* dstContext, DxConstantBuffer* dst, Context* srcContext,
 }
 
 // utils.obj @0x4e2d0 (46 bytes) — aggregate the shader description.
-ComputeShader* createComputeShader(Context* context, const void* bytecode,
+ComputeShader* createComputeShader(ContextEx* context, const void* bytecode,
                                    unsigned long long bytecodeLength, const wchar_t* label,
                                    unsigned slot)
 {
@@ -182,16 +182,8 @@ struct ClearParamsFloat4
 } // namespace
 
 // ---------------------------------------------------------------------------
-// Radix-sort size helpers (originally per-TU anonymous namespace copies)
-// ---------------------------------------------------------------------------
-// The three helpers are provided inline by utils.h (nvdx::) because radixsort,
-// bvh and flex all carry identical copies of them.  Nothing to define here.
-
-// ---------------------------------------------------------------------------
 // ClearBufferInt / ClearBufferFloat4 — utils.obj @0x4e350 / @0x4e440
 // ---------------------------------------------------------------------------
-// Dispatches the clear compute shader over `elementCount` bytes of `buffer`
-// (int or float4 granularity respectively).
 void ClearBufferInt(NvFlexLibrary* lib, NvFlex::Buffer* buffer, int elementCount, int value)
 {
     if (buffer == 0)
@@ -209,11 +201,12 @@ void ClearBufferInt(NvFlexLibrary* lib, NvFlex::Buffer* buffer, int elementCount
     params.gridDim.z = 1;
     params.rootConstantBuffer = NvFlexLibraryClearCBInt(lib);
 
-    Context* context = NvFlexLibraryContext(lib);
+    ContextEx* context = NvFlexLibraryContext(lib);
     ClearParamsInt* cb = static_cast<ClearParamsInt*>(context->map(params.rootConstantBuffer));
     cb->lengthInWords = numElements;
     cb->value = value;
     context->unmap(params.rootConstantBuffer);
+
     context->dispatch(&params);
 }
 
@@ -235,8 +228,9 @@ void ClearBufferFloat4(NvFlexLibrary* lib, NvFlex::Buffer* buffer, int elementCo
     params.gridDim.z = 1;
     params.rootConstantBuffer = NvFlexLibraryClearCBFloat4(lib);
 
-    Context* context = NvFlexLibraryContext(lib);
-    ClearParamsFloat4* cb = static_cast<ClearParamsFloat4*>(context->map(params.rootConstantBuffer));
+    ContextEx* context = NvFlexLibraryContext(lib);
+    ClearParamsFloat4* cb = static_cast<ClearParamsFloat4*>(
+        context->map(params.rootConstantBuffer));
     cb->lengthInWords = numElements;
     cb->value = *value;
     context->unmap(params.rootConstantBuffer);
@@ -267,13 +261,13 @@ void* NvFlexBuffer::map(int flags)
         // eMapReadWrite, wait unless the caller passed eNvFlexMapDoNotWait.
         ptr = mContext->map(mBuffer, eMapReadWrite, (flags & 1) == 0);
     }
-    else if (type == static_cast<NvFlexBufferType>(2))
+    else if (static_cast<int>(type) == 2)
     {
         ptr = mContext->map(mBuffer, eMapWriteDiscard, true);
     }
     else if (type == eNvFlexBufferDevice)
     {
-        ptr = mBuffer->getResource(eDefaultBuffer);
+        ptr = mBuffer->getResource(static_cast<BufferTypes>(kDefaultBuffer));
     }
 
     return ptr;

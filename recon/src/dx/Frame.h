@@ -179,6 +179,7 @@ struct MappedData
 
 class Resource;
 class ResourceRW;
+class Texture3D;   // 3D texture handle; declared in utils.h, used by ContextEx
 
 // Reference counted handle.  `release()` returns the remaining count and
 // destroys the object at zero (PDB `NvFlexObject::addRef/release`).

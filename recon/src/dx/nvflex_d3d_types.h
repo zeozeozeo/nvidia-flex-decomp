@@ -1,5 +1,8 @@
 // recovered from PDB NvFlexReleaseD3D_x64.dll.pdb by flexkit dxheaders
-// Layout-faithful: member offsets and struct sizes match the PDB.
+// Plain (non-polymorphic, pointer-free) structs: layout-faithful.
+// Polymorphic classes and pointer-heavy structs are APPROXIMATE here:
+// use `flexkit d3dcontext --cls <Class>` for the authoritative field
+// list (bases, vtable slots, member offsets).
 #pragma once
 #include <cstddef>
 #include <cstdint>

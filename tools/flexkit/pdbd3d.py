@@ -52,7 +52,7 @@ def parse(dll_stem: str = "NvFlexReleaseD3D_x64") -> dict:
             a = ADDR_RE.search(line)
             if a:
                 seg = int(a.group(1), 16)
-                off = int(a.group(2), 16)
+                off = int(a.group(2), 10)   # offset is decimal in llvm-pdbutil output
                 size = int(a.group(3)) if a.group(3) else pending[1]
                 if seg == 1 and cur_obj:      # .text only
                     objects[cur_obj].append({"name": pending[0], "rva": off,
@@ -69,7 +69,7 @@ def parse(dll_stem: str = "NvFlexReleaseD3D_x64") -> dict:
         demangled = symbols.demangle(all_names, tool="llvm-undname")
     for fns in sdk.values():
         for f in fns:
-            f["demangled"] = demangled.get(f["name"], f["name"])
+            f["demangled"] = demangled.get(f["name"]) or f["name"] or "<unnamed>"
             f.pop("name") if "name" not in f else None
     out = {
         "pdb": pdb.name,
