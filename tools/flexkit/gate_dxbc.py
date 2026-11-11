@@ -96,11 +96,10 @@ def compile_shader(hlsl: Path, out: Path) -> bool:
     if not have("vkd3d-compiler"):
         return False
     ensure(out.parent)
-    # entry point and profile are derived from the file name: <idx>_<profile>__<entry>.hlsl
-    stem = hlsl.stem
-    parts = stem.split("__")
-    profile = parts[0].split("_", 1)[1] if "_" in parts[0] else "cs_5_0"
-    entry = parts[1] if len(parts) > 1 else "main"
+    # file name: [<DllStem>.]<idx>_<profile>__<entry>.hlsl
+    m = re.search(r"(\d+)_(cs_\d_\d)__(\w+)$", hlsl.stem)
+    profile = m.group(2) if m else "cs_5_0"
+    entry = m.group(3) if m else "main"
     # vkd3d resolves #include relative to the working directory, not the source
     # the compiler runs with cwd = the shader directory (for #include), so the
     # output path must be absolute
