@@ -19,6 +19,7 @@
 #endif
 #include "nvflex/all.h"
 #include "NvFlex.h"
+#include "solve_shapes_decl.h"
 
 #include <cuda.h>
 #include <cuda_runtime.h>

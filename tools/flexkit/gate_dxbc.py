@@ -130,7 +130,7 @@ def gate_one(original_asm: Path, idx: int) -> dict:
     return res
 
 
-def run(dll: str = "NvFlexReleaseD3D_x64.dll") -> dict:
+def run(dll: str = "NvFlexReleaseD3D_x64.dll", index: int | None = None) -> dict:
     ledger.init()
     src = DXBC_DIR / Path(dll).stem
     if not src.exists():
@@ -140,6 +140,8 @@ def run(dll: str = "NvFlexReleaseD3D_x64.dll") -> dict:
     for p in originals:
         m = re.match(r"(\d+)_", p.name)
         if not m:
+            continue
+        if index is not None and int(m.group(1)) != index:
             continue
         res = gate_one(p, int(m.group(1)))
         ledger.record_gate(f"dxbc:{Path(dll).stem}#{p.stem}", "dxbc",

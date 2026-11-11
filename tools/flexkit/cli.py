@@ -283,7 +283,7 @@ def cmd_gate(args):
         return 0 if r.get("ok") else 1
     if gate == "dxbc":
         from . import gate_dxbc
-        r = gate_dxbc.run(args.dll)
+        r = gate_dxbc.run(args.dll, args.index)
         if args.json:
             jprint(r)
         else:
@@ -426,6 +426,7 @@ def build_parser() -> argparse.ArgumentParser:
     gsub = s.add_subparsers(dest="gate_cmd", required=True)
     g = gsub.add_parser("dxbc")
     g.add_argument("--dll", default="NvFlexReleaseD3D_x64.dll")
+    g.add_argument("--index", type=int, default=None)
     g.add_argument("--unit")
     g.add_argument("--module")
     g.add_argument("--all", action="store_true")
