@@ -37,11 +37,13 @@
 
 ## Progress
 
-`bin/flexkit gate dxbc --dll NvFlexReleaseD3D_x64.dll` reports **55/84**
+`bin/flexkit gate dxbc --dll NvFlexReleaseD3D_x64.dll` reports **65/84**
 structurally matched (it reported 0/84 at the start of this phase; the Ext DLL
-stays at 1/1). 17 of those are the indices in the 000-020 slice documented
-below; 17 more are shaders this slice wrote before the per-range split
-(021-074) and the rest come from the other slices.
+stays at 1/1). The 19 remaining indices are blocked by four verified front-end
+limits, not by missing work: `dcl_uav_structured_opc` (001, 009, 016, 027, 028,
+031, 045, 046, 048, 049, 050, 051, 054, 068, 078), `dcl_uav_structured_glc`
+(005), `ld_raw` reads of a raw UAV (075), and `dynamicIndexed` constant buffers
+(061, 070). Every index has a note under `units/nvflexd3d/`.
 
 ### Interface recovery
 The `RDEF` chunk, not the assembly, is the authoritative interface: it carries
