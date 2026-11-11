@@ -78,7 +78,8 @@ opcode groups) — 17 of the 21 indices in this slice.
 |---|---|
 | `dcl_uav_structured_opc` (NVAPI counter/append UAV, `u7, 256`) | **unreachable** — `AppendStructuredBuffer`/`ConsumeStructuredBuffer` are rejected (`E5030`/`E5005`) |
 | `dcl_uav_structured_glc` (globally coherent flag) | **unreachable** — no source spelling |
-| `dcl_uav_raw` **reads** (`ld_raw`) | **unreachable** — `RWByteAddressBuffer` has only `Store`/`Store2` |
+| `dcl_uav_raw` **reads** (`ld_raw`) | **unreachable** — `RWByteAddressBuffer` has only `Store`/`Store2` (a read can be approximated with `InterlockedAdd(addr, 0u, out)` where the slot is single-writer; that deviation is recorded per shader) |
+| `dcl_constantBuffer cb[N], dynamicIndexed` | **unreachable** — vkd3d always emits `immediateIndexed`, even when the HLSL indexes with a resource-loaded value (blocks index 061) |
 | `dcl_uav_raw` **atomics** | **reachable** — verified on index 022 |
 
 #### Correction: raw-UAV atomics are writable
