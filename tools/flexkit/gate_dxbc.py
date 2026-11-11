@@ -83,8 +83,10 @@ def compile_shader(hlsl: Path, out: Path) -> bool:
     profile = parts[0].split("_", 1)[1] if "_" in parts[0] else "cs_5_0"
     entry = parts[1] if len(parts) > 1 else "main"
     # vkd3d resolves #include relative to the working directory, not the source
+    # the compiler runs with cwd = the shader directory (for #include), so the
+    # output path must be absolute
     cmd = ["vkd3d-compiler", "-x", "hlsl", "-b", "dxbc-tpf", "-p", profile,
-           "-e", entry, "-o", str(out), str(hlsl.name)]
+           "-e", entry, "-o", str(out.resolve()), str(hlsl.name)]
     proc = __import__("subprocess").run(cmd, cwd=str(hlsl.parent),
                                         capture_output=True, text=True, errors="replace")
     (out.parent / "compile.log").write_text(proc.stdout + proc.stderr)
