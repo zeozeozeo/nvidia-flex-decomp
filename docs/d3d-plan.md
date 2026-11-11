@@ -142,6 +142,25 @@ Constant-buffer element structs taken from `RDEF` need `float4`-aligned padding
 * vkd3d-shader emits more instructions than fxc for the same source; the opcode
   multiset stays advisory in the gate and is not a fidelity claim.
 
+## Acceptance gates
+
+| gate | command | proves |
+|---|---|---|
+| cross-build | `ninja -C recon/build-dx` | the DLL compiles with mingw-w64 and links |
+| export surface | `bin/flexkit gate dll` | every `NvFlex*` the shipped DLL exports is exported by the reconstruction (5/83 today) |
+| behaviour | `bin/flexkit gate wine` | the headless scenario produces the **same trace** against both DLLs |
+
+`tools/parity/d3d/scenario.cpp` is a mingw-built executable that loads a DLL by
+path, creates a library and a solver, uploads 256 particles, steps 5 frames,
+reads them back and prints `version / library / solver / particles_hash /
+active / errors`. It is deterministic: the shipped DLL currently yields
+
+```
+version=120  library=ok  solver=ok  particles_hash=b43a063055adc383  active=0  errors=2
+```
+
+and `gate wine` requires the reconstruction to reproduce that exactly.
+
 ## Test harness: Wine (verified on this host)
 
 The D3D backend **is testable here**, despite no NVIDIA GPU: Wine 11.21 runs the

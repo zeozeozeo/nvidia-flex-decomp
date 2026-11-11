@@ -1,121 +1,119 @@
-"""D3D behavioural gate: run the shipped demo under Wine with each DLL.
+"""D3D behavioural gate: the public API exercised under Wine.
 
-Both libraries are exercised by the same executable in isolated directories:
+A headless scenario executable (`tools/parity/d3d/scenario.cpp`, mingw-built)
+loads a DLL by path, creates a library and a solver, uploads 256 particles,
+steps 5 frames, reads them back and prints stable facts:
 
-* **shipped** — `FleX/bin/win64/NvFlexReleaseD3D_x64.dll`
-* **recon**   — `recon/build-dx/NvFlexReleaseD3D_x64.dll`
+    version / library / solver / particles_hash / active / errors
 
-The demo is a GUI application that runs until killed, so the gate runs it for a
-bounded wall time and compares normalised console output: numbers are collapsed
-(timings vary run to run) and only structural markers are compared — device
-initialisation, solver warnings, scene transitions, error text.
-
-A crash of the reconstruction is a failure; a crash of the shipped build is a
-harness problem (`skipped:harness-no-display` when Wine cannot start at all).
+The gate runs it against the shipped `NvFlexReleaseD3D_x64.dll` and against the
+reconstruction, in isolated directories holding the same sibling DLLs, and
+requires the outputs to match exactly.  No GUI, no timings — deterministic.
 """
 
 from __future__ import annotations
 
 import os
-import re
 import shutil
 import subprocess
 import tempfile
 from pathlib import Path
 
-from . import FLEX, RECON, WORK
-from .util import jwrite
+from . import FLEX, GEN, RECON, WORK
+from .util import ensure, jwrite, run_ok
 
 BUILD_DLL = RECON / "build-dx" / "NvFlexReleaseD3D_x64.dll"
-SHIPPED_DLL = FLEX / "bin" / "win64" / "NvFlexReleaseD3D_x64.dll"
-DEMO = "NvFlexDemoReleaseD3D_x64.exe"
+SHIPPED_DIR = FLEX / "bin" / "win64"
+SHIPPED_DLL = SHIPPED_DIR / "NvFlexReleaseD3D_x64.dll"
+SCENARIO_SRC = Path(__file__).resolve().parents[1] / "parity" / "d3d" / "scenario.cpp"
+SCENARIO_EXE = GEN / "d3d_scenario.exe"
 WINEPREFIX = Path.home() / ".wine-flexdecomp"
-
-NUM_RE = re.compile(r"\d+(?:\.\d+)?")
-MARKERS = ("Compute Device:", "Flex:", "error", "Error", "failed", "Reshaping")
+MINGW = "x86_64-w64-mingw32-g++"
 
 
 def wine_available() -> tuple[bool, str]:
     if shutil.which("wine") is None:
         return False, "skipped:wine-missing"
-    if not os.environ.get("DISPLAY") and not os.environ.get("WAYLAND_DISPLAY"):
-        return False, "skipped:harness-no-display"
     return True, "available"
 
 
-def _scratch(dll: Path, root: Path) -> Path:
-    """A FleX-shaped tree: the demo resolves its scene assets as ../../data."""
-    tree = root / ("recon" if dll != SHIPPED_DLL else "shipped")
-    out = tree / "bin" / "win64"
+def build_scenario() -> tuple[Path | None, str]:
+    ensure(GEN)
+    if SCENARIO_EXE.exists() and SCENARIO_EXE.stat().st_mtime >= SCENARIO_SRC.stat().st_mtime:
+        return SCENARIO_EXE, "cached"
+    ok = run_ok([MINGW, "-O2", "-std=c++17", "-o", str(SCENARIO_EXE), str(SCENARIO_SRC),
+                 "-I", str(RECON / "include"), "-static"])
+    return (SCENARIO_EXE if ok else None), ("built" if ok else "build_failed")
+
+
+def _scratch(dll: Path, root: Path, exe: Path) -> Path:
+    out = root / ("recon" if dll != SHIPPED_DLL else "shipped")
     out.mkdir(parents=True, exist_ok=True)
-    for f in (FLEX / "bin" / "win64").glob("*.dll"):
+    for f in SHIPPED_DIR.glob("*.dll"):
+        if f.name == SHIPPED_DLL.name and dll != SHIPPED_DLL:
+            continue
         shutil.copy2(f, out / f.name)
-    shutil.copy2(FLEX / "bin" / "win64" / DEMO, out / DEMO)
     shutil.copy2(dll, out / SHIPPED_DLL.name)
-    data = tree / "data"
-    if not data.exists():
-        try:
-            data.symlink_to(FLEX / "data", target_is_directory=True)
-        except OSError:
-            shutil.copytree(FLEX / "data", data)
+    shutil.copy2(exe, out / "d3d_scenario.exe")
     return out
 
 
-def _run(dir_: Path, seconds: int) -> dict:
+def _run(dir_: Path, timeout: int = 120) -> dict:
     env = dict(os.environ)
-    env["WINEPREFIX"] = str(WINEPREFIX)
+    env.setdefault("WINEPREFIX", str(WINEPREFIX))
     env["WINEDEBUG"] = "-all"
-    try:
-        p = subprocess.run(["timeout", str(seconds), "wine", DEMO], cwd=dir_,
-                           capture_output=True, text=True, errors="replace", env=env)
-    except OSError as e:  # noqa: BLE001
-        return {"error": str(e)}
+    p = subprocess.run(["timeout", str(timeout), "wine", "d3d_scenario.exe",
+                        SHIPPED_DLL.name],
+                       cwd=dir_, capture_output=True, text=True, errors="replace", env=env)
     text = (p.stdout or "") + (p.stderr or "")
-    lines = [ln.strip() for ln in text.splitlines() if ln.strip()]
+    values = {}
+    for line in text.splitlines():
+        if "=" in line and " " not in line.strip():
+            k, _, v = line.strip().partition("=")
+            values[k] = v
     return {
         "exit": p.returncode,
-        "timeout_killed": p.returncode == 124,
-        "lines": len(lines),
-        "markers": {m: sum(1 for ln in lines if m in ln) for m in MARKERS},
-        "normalised": sorted({NUM_RE.sub("#", ln) for ln in lines})[:200],
+        "values": values,
         "crashed": "page fault" in text.lower() or "unhandled exception" in text.lower(),
+        "tail": [ln for ln in text.splitlines() if "=" in ln][-12:],
     }
 
 
-def run(seconds: int = 150) -> dict:
+def run(seconds: int = 120) -> dict:
     ok, why = wine_available()
     if not ok:
         return {"ok": None, "detail": why}
-    res: dict = {"seconds": seconds}
+    exe, how = build_scenario()
+    if exe is None:
+        return {"ok": None, "detail": f"scenario_{how}"}
+    if not BUILD_DLL.exists():
+        return {"ok": None, "detail": "recon_dll_missing"}
     with tempfile.TemporaryDirectory(prefix="flexwine-") as tmp:
         root = Path(tmp)
-        shipped = _run(_scratch(SHIPPED_DLL, root), seconds)
-        res["shipped"] = shipped
-        if shipped.get("error") or shipped.get("crashed") or shipped.get("timeout_killed"):
-            return {"ok": None, "detail": "skipped:harness-shipped-failed", **res}
-        if BUILD_DLL.exists():
-            recon = _run(_scratch(BUILD_DLL, root), seconds)
-            res["recon"] = recon
-            same_markers = recon.get("markers") == shipped.get("markers")
-            shared = len(set(shipped.get("normalised", [])) &
-                         set(recon.get("normalised", [])))
-            total = max(1, len(set(shipped.get("normalised", []))))
-            res["overlap"] = round(shared / total, 3)
-            res["markers_match"] = same_markers
-            res["ok"] = bool(same_markers and not recon.get("crashed")
-                             and recon.get("lines", 0) > 0)
-            jwrite(WORK / "wine.json", res)
-            return res
-        return {"ok": None, "detail": "recon_dll_missing", **res}
+        shipped = _run(_scratch(SHIPPED_DLL, root, exe), seconds)
+        recon = _run(_scratch(BUILD_DLL, root, exe), seconds)
+    res = {"scenario": how, "shipped": shipped, "recon": recon}
+    if shipped.get("crashed") or not shipped.get("values"):
+        return {"ok": None, "detail": "skipped:harness-shipped-failed", **res}
+    keys = sorted(shipped["values"])
+    diffs = {k: (shipped["values"].get(k), recon["values"].get(k))
+             for k in keys if shipped["values"].get(k) != recon["values"].get(k)}
+    res["diffs"] = diffs
+    res["ok"] = not diffs and not recon.get("crashed") and bool(recon.get("values"))
+    jwrite(WORK / "wine.json", res)
+    return res
 
 
 def render(r: dict) -> str:
     if r.get("ok") is None:
         return f"wine gate: {r.get('detail')}"
     s, c = r.get("shipped", {}), r.get("recon", {})
-    L = [f"wine gate: {'PASS' if r.get('ok') else 'FAIL'} "
-         f"(markers match={r.get('markers_match')}, overlap={r.get('overlap')})"]
-    L.append(f"  shipped: exit={s.get('exit')} lines={s.get('lines')} markers={s.get('markers')}")
-    L.append(f"  recon:   exit={c.get('exit')} lines={c.get('lines')} "
-             f"markers={c.get('markers')} crashed={c.get('crashed')}")
+    L = [f"wine gate: {'PASS' if r.get('ok') else 'FAIL'}"]
+    L.append(f"  shipped: {s.get('values')}")
+    L.append(f"  recon:   {c.get('values')}")
+    if r.get("diffs"):
+        for k, (a, b) in r["diffs"].items():
+            L.append(f"  DIFF {k}: shipped={a} recon={b}")
+    if c.get("crashed"):
+        L.append("  recon crashed")
     return "\n".join(L)
