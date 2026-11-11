@@ -27,6 +27,37 @@ def _ident(name: str) -> str:
     return out if re.match(r"^[A-Za-z_]", out) else f"_t_{out}"
 
 
+def generate_symbols(pdb_name: str = "NvFlexReleaseD3D_x64") -> dict:
+    """Name -> section-relative address map for the D3D backend.
+
+    PDB publics are `S_PUB32` records with `addr = seg:offset`; segment 2 is
+    `.text` in these images.  The map is what a future slice needs to decompile
+    `NvFlex::ContextD3D11::*` and friends without guessing addresses.
+    """
+    path = PDB_DIR / f"{pdb_name}.dll.json"
+    if not path.exists():
+        return {"error": "run flexkit pdb first"}
+    data = jread(path)
+    publics = data.get("publics", {})
+    demangled = data.get("demangled", {})
+    rows = []
+    for name, addr in sorted(publics.items()):
+        seg = (addr >> 32) & 0xFFFF
+        off = addr & 0xFFFFFFFF
+        if seg != 2:            # only .text has code
+            continue
+        rows.append({"rva": off, "symbol": name, "demangled": demangled.get(name, name)})
+    rows.sort(key=lambda r: r["rva"])
+    OUT_DIR.mkdir(parents=True, exist_ok=True)
+    lines = [f"// {len(rows)} .text public symbols from {pdb_name}.dll.pdb",
+             "// rva = address relative to the .text section start", ""]
+    for r in rows:
+        d = r["demangled"].replace("*/", "* /")
+        lines.append(f"// 0x{r['rva']:08x}  {d[:150]}")
+    (OUT_DIR / "nvflex_d3d_symbols.txt").write_text("\n".join(lines) + "\n")
+    return {"text_symbols": len(rows), "path": str(OUT_DIR / "nvflex_d3d_symbols.txt")}
+
+
 def generate(pdb_name: str = "NvFlexReleaseD3D_x64") -> dict:
     path = PDB_DIR / f"{pdb_name}.dll.json"
     if not path.exists():

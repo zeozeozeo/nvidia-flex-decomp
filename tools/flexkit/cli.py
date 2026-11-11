@@ -130,6 +130,8 @@ def cmd_dxheaders(args):
     else:
         print(f"d3d types: structs={r.get('structs')} names={r.get('names')} "
               f"enums={r.get('enum_count')} -> {r.get('header')}")
+        sym = dxheaders.generate_symbols()
+        print(f"d3d symbols: text={sym.get('text_symbols')} -> {sym.get('path')}")
     return 0 if r.get("structs") else 1
 
 
