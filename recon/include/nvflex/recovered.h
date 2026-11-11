@@ -1,33 +1,67 @@
 // recovered from DWARF by flexkit headers (canonical definitions).
 // Layouts are preserved exactly: opaque members keep their offsets.
 #pragma once
+#if defined(__CUDACC__)
+#include <cuda_runtime.h>  // dim3/uint3/cuda* types are CUDA-provided
+#endif
 #include <cstddef>
 #include <cstdint>
 
-#ifndef FLEXDECOMP_DEF_CUcontext
+#if !defined(__CUDACC__) && !defined(FLEXDECOMP_DEF_CUcontext)
 #define FLEXDECOMP_DEF_CUcontext
 typedef void* CUcontext;
 #endif
-#ifndef FLEXDECOMP_DEF_cudaArray_t
+#if !defined(__CUDACC__) && !defined(FLEXDECOMP_DEF_cudaArray_t)
 #define FLEXDECOMP_DEF_cudaArray_t
 typedef void* cudaArray_t;
 #endif
-#ifndef FLEXDECOMP_DEF_cudaEvent_t
+#if !defined(__CUDACC__) && !defined(FLEXDECOMP_DEF_cudaEvent_t)
 #define FLEXDECOMP_DEF_cudaEvent_t
 typedef void* cudaEvent_t;
 #endif
-#ifndef FLEXDECOMP_DEF_cudaGraphicsResource_t
+#if !defined(__CUDACC__) && !defined(FLEXDECOMP_DEF_cudaGraphicsResource_t)
 #define FLEXDECOMP_DEF_cudaGraphicsResource_t
 typedef void* cudaGraphicsResource_t;
 #endif
-#ifndef FLEXDECOMP_DEF_cudaTextureObject_t
+#if !defined(__CUDACC__) && !defined(FLEXDECOMP_DEF_cudaTextureObject_t)
 #define FLEXDECOMP_DEF_cudaTextureObject_t
 typedef unsigned long long cudaTextureObject_t;
 #endif
-#ifndef FLEXDECOMP_DEF_uint32_t
-#define FLEXDECOMP_DEF_uint32_t
-typedef unsigned int uint32_t;
-#endif
+
+// XMatrix44<float> (recovered as a template)
+template <typename T> struct alignas(16) XMatrix44 {
+    T columns[4][4];
+    static XMatrix44 kIdentity;
+};
+
+// XQuat<float> (recovered as a template)
+template <typename T> struct XQuat {
+    T x;
+    T y;
+    T z;
+    T w;
+};
+
+// XVector2<float> (recovered as a template)
+template <typename T> struct XVector2 {
+    T x;
+    T y;
+};
+
+// XVector3<float> (recovered as a template)
+template <typename T> struct XVector3 {
+    T x;
+    T y;
+    T z;
+};
+
+// XVector4<float> (recovered as a template)
+template <typename T> struct XVector4 {
+    T x;
+    T y;
+    T z;
+    T w;
+};
 
 struct BVH;
 struct Bounds;
@@ -63,22 +97,15 @@ struct PartitionPredictateMidPoint;
 struct Plane;
 struct Point3;
 struct Vec3Iter;
-struct XMatrix44_float;
-struct XQuat_float;
-struct XVector2_float;
-struct XVector3_float;
-struct XVector4_float;
-struct dim3;
 struct ltstr;
-struct uint3;
 
 typedef CudaTimer CudaDetailTimer;
-typedef XMatrix44_float Mat44;
-typedef XMatrix44_float Matrix44;
-typedef XQuat_float Quat;
-typedef XVector3_float Vec3;
-typedef XVector4_float Vec4;
-typedef XVector3_float Vector3;
+typedef XMatrix44<float> Mat44;
+typedef XMatrix44<float> Matrix44;
+typedef XQuat<float> Quat;
+typedef XVector3<float> Vec3;
+typedef XVector4<float> Vec4;
+typedef XVector3<float> Vector3;
 
 // BVH
 struct BVH {
@@ -90,13 +117,6 @@ struct BVH {
     int mNumNodes;
     int mMaxNodes;
     int mMaxDepth;
-};
-
-// XVector3<float>
-struct XVector3_float {
-    float x;
-    float y;
-    float z;
 };
 
 // Bounds
@@ -114,14 +134,14 @@ struct Colour {
 };
 
 // CudaRangeTimer
-struct CudaRangeTimer {
+struct alignas(8) CudaRangeTimer {
     void* mBegin;
     void* mEnd;
     float mTime;
 };
 
 // CudaRangeTimerPool
-struct CudaRangeTimerPool {
+struct alignas(8) CudaRangeTimerPool {
     unsigned char mElem[24];  // DWARF: vector_CudaRangeTimer_ std__allocator_CudaRangeTimer_ _ (opaque)
     int mUsedElemCount;
     // static member mInitCapacity (const int)
@@ -130,22 +150,25 @@ struct CudaRangeTimerPool {
 // CudaTimer
 struct CudaTimer {
     bool mEnabled;
+    unsigned char _pad4[3];
     int mTimerIndex;
     unsigned char mNameToTimerMap[8];  // DWARF: const NameToTimerMap_ (opaque)
     CudaRangeTimerPool* mTimerPool;
 };
 
 // CudaTimers
-struct CudaTimers {
+struct alignas(8) CudaTimers {
     bool mEnabled;
+    unsigned char _pad8[7];
     unsigned char mNameToTimerMap[48];  // DWARF: NameToTimerMap (opaque)
     CudaRangeTimerPool* mTimerPool;
 };
 
 // DeviceBuffer<int>
-struct DeviceBuffer_int {
+struct alignas(8) DeviceBuffer_int {
     int* mPtr;
     int mCapacity;
+    unsigned char _pad16[4];
     unsigned long long mTexture;
 };
 
@@ -172,6 +195,7 @@ struct FlexConvexMeshData {
     int mNumConvexes;
     int mMaxConvexes;
     int mMaxPlanesPerConvex;
+    unsigned char _pad40[4];
     int* mFreeList;
 };
 
@@ -209,7 +233,7 @@ struct FlexSDFInternal {
 };
 
 // FlexTextures
-struct FlexTextures {
+struct alignas(8) FlexTextures {
     unsigned long long sortedPositionsTex;
     unsigned long long sortedNewPositionsTex;
     unsigned long long sortedNewVelocitiesTex;
@@ -308,6 +332,7 @@ struct KernelParams {
     float kShockPropagation;
     float kRestitution;
     float kSOR;
+    unsigned char _pad344[4];
     FlexTextures kTextures;
     FlexConvexMeshData kConvexMeshData;
     FlexTriangleMeshData kTriangleMeshData;
@@ -316,7 +341,7 @@ struct KernelParams {
 
 // KeyIndexPair
 struct KeyIndexPair {
-    unsigned int key;
+    unsigned char key[4];  // DWARF: uint32_t (opaque)
     int index;
 };
 
@@ -325,7 +350,7 @@ struct LinearBVHBuilderCPU {
 };
 
 // LinearBVHBuilderGPU
-struct LinearBVHBuilderGPU {
+struct alignas(8) LinearBVHBuilderGPU {
     int* mIndices;
     int* mKeys;
     int* mDeltas;
@@ -340,7 +365,7 @@ struct LinearBVHBuilderGPU {
 
 // Matrix33
 struct Matrix33 {
-    XVector3_float cols[3];
+    XVector3<float> cols[3];
 };
 
 // MedianBVHBuilder
@@ -350,6 +375,7 @@ struct MedianBVHBuilder {
 // NvFlexBuffer
 struct NvFlexBuffer {
     bool mapped;
+    unsigned char _pad4[3];
     int type;
     void* graphicsResource;
     NvFlexLibrary* lib;
@@ -359,7 +385,7 @@ struct NvFlexBuffer {
 };
 
 // NvResourceTracker
-struct NvResourceTracker {
+struct alignas(8) NvResourceTracker {
     unsigned char mSolver[24];  // DWARF: vector_NvFlexSolver__ std__allocator_NvFlexSolver__ _ (opaque)
     unsigned char mTriangleMesh[24];  // DWARF: vector_unsigned int_ std__allocator_unsigned int_ _ (opaque)
     unsigned char mSDF[24];  // DWARF: vector_unsigned int_ std__allocator_unsigned int_ _ (opaque)
@@ -367,7 +393,7 @@ struct NvResourceTracker {
 };
 
 // NvFlexLibrary
-struct NvFlexLibrary {
+struct alignas(8) NvFlexLibrary {
     unsigned char mErrorFunc[8];  // DWARF: NvFlexErrorCallback (opaque)
     int* mCellStarts;
     int* mCellEnds;
@@ -381,9 +407,11 @@ struct NvFlexLibrary {
     void* mMemoryFence;
     void* mCudaContext;
     bool mCudaOwner;
+    unsigned char _pad472[7];
     CudaTimers mTimers;
     void* mSortTemp;
     int mSortMaxTempSize;
+    unsigned char _pad552[4];
     NvResourceTracker mResourceTracker;
 };
 
@@ -409,6 +437,7 @@ struct NvFlexSolver {
     int* mSortedPhases;
     float* mSortedDensities;
     int mMaxContactsPerParticle;
+    unsigned char _pad160[4];
     Vec4* mStaticContactPlanes;
     Vec4* mStaticContactVelocities;
     int* mStaticContactCounts;
@@ -436,12 +465,14 @@ struct NvFlexSolver {
     int mNumRigidIndices;
     int mMaxRigidIndices;
     int mMaxPlasticEntries;
+    unsigned char _pad360[4];
     int* mDynamicTriangles;
     Vec3* mDynamicTriangleNormals;
     int mDynamicNumTris;
     int mDynamicMaxTris;
     int* mDynamicTriangleEdges;
     int mDynamicNumTriEdges;
+    unsigned char _pad400[4];
     float* mPressures;
     FlexInflatable* mInflatables;
     int mNumInflatables;
@@ -453,6 +484,7 @@ struct NvFlexSolver {
     int* mNumDiffuseParticles;
     int* mNumDiffuseParticlesNew;
     int mMaxDiffuseParticles;
+    unsigned char _pad480[4];
     int* mNumActiveDiffuseParticlesHost;
     float mDiffuseRate;
     float mDiffuseTimer;
@@ -472,14 +504,18 @@ struct NvFlexSolver {
     void* mLatencyTimerEnd;
     bool mLatencyTimerBeginRecorded;
     bool mLatencyTimerEndRecorded;
+    unsigned char _pad912[6];
     FlexCollisionShapeData mShapes;
     bool mDebug;
+    unsigned char _pad1048[7];
     float* mRandom;
     float mFluidRestDensity;
     float mFluidDensityConstraintScale;
     float mFluidSurfaceConstraintScale;
+    unsigned char _pad1072[4];
     FlexTextures mTextures;
     int mStepCounter;
+    unsigned char _pad1192[4];
     unsigned char mCallbacks[80];  // DWARF: NvFlexSolverCallback_5_ (opaque)
     NvFlexLibrary* mLib;
 };
@@ -494,7 +530,7 @@ struct PackedNodeHalf {
 };
 
 // PartitionPredicateMedian
-struct PartitionPredicateMedian {
+struct alignas(8) PartitionPredicateMedian {
     Bounds* bounds;
     int axis;
 };
@@ -507,7 +543,7 @@ struct PartitionPredictateMidPoint {
 };
 
 // Plane
-struct Plane {
+struct alignas(16) Plane {
 };
 
 // Point3
@@ -518,54 +554,12 @@ struct Point3 {
 };
 
 // Vec3Iter
-struct Vec3Iter {
+struct alignas(8) Vec3Iter {
     float* x;
-};
-
-// XMatrix44<float>
-struct XMatrix44_float {
-    float columns[4][4];
-    // static member kIdentity (XMatrix44<float>)
-};
-
-// XQuat<float>
-struct XQuat_float {
-    float x;
-    float y;
-    float z;
-    float w;
-};
-
-// XVector2<float>
-struct XVector2_float {
-    float x;
-    float y;
-};
-
-// XVector4<float>
-struct XVector4_float {
-    float x;
-    float y;
-    float z;
-    float w;
-};
-
-// dim3
-struct dim3 {
-    unsigned int x;
-    unsigned int y;
-    unsigned int z;
 };
 
 // ltstr
 struct ltstr {
-};
-
-// uint3
-struct uint3 {
-    unsigned int x;
-    unsigned int y;
-    unsigned int z;
 };
 
 enum Preset {

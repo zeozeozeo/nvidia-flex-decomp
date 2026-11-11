@@ -1,0 +1,21 @@
+{
+  "unit": "nvflex.bvh#_Z18CalculateKeyDeltasPKiPii",
+  "symbol": "_Z18CalculateKeyDeltasPKiPii",
+  "signature": "CalculateKeyDeltas(int const*, int*, int)",
+  "parity": "kernel",
+  "kind": "kernel",
+  "source": "src/cuda/bvh.cu:445",
+  "ptx_entry": "work/binary/gpu/dbg/nvflex.bvh/sm_30.ptx:165-199",
+  "launch": {
+    "grid": [1, 1, 1],
+    "block": [256, 1, 1],
+    "note": "blockDim 256 from the host launch; count is numItems-1 (host passes numItems-1)"
+  },
+  "compare": {
+    "outputs": ["buffers:deltas"],
+    "mode": "bitwise"
+  },
+  "iterations": 64,
+  "seed": 1234,
+  "notes": "pure XOR of adjacent keys"
+}

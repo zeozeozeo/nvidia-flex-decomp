@@ -1,0 +1,13 @@
+{
+  "unit": "nvflexdevice.flexdevice#_ZL14GetProcAddressPvPKc",
+  "symbol": "_ZL14GetProcAddressPvPKc",
+  "signature": "void* GetProcAddress(void*, const char*)",
+  "parity": "needs-gpu",
+  "iterations": 0,
+  "reason": "G1 only: internal linkage (local 't' symbol, not in .dynsym), so the differential driver cannot bind it with dlsym. Not GPU-related.",
+  "params": [
+    "void*",
+    "const char*"
+  ],
+  "inlined_away": []
+}

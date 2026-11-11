@@ -1,0 +1,17 @@
+{
+  "unit": "nvflexdevice.physxdevice#_ZN5physx32physxDevUsingDedicatedGPUWrapperEv",
+  "symbol": "_ZN5physx32physxDevUsingDedicatedGPUWrapperEv",
+  "signature": "physx::PHYSX_DEV_STATUS physx::physxDevUsingDedicatedGPUWrapper()",
+  "parity": "pure-cpu",
+  "iterations": 64,
+  "seed": 1234,
+  "params": [],
+  "ret": "int",
+  "scalars": {},
+  "buffers": [],
+  "outputs": [
+    "ret"
+  ],
+  "mode": "bitwise",
+  "self_type": null
+}

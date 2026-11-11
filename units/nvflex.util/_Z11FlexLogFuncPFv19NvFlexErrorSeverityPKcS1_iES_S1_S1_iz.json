@@ -1,0 +1,49 @@
+{
+  "unit": "nvflex.util#_Z11FlexLogFuncPFv19NvFlexErrorSeverityPKcS1_iES_S1_S1_iz",
+  "symbol": "_Z11FlexLogFuncPFv19NvFlexErrorSeverityPKcS1_iES_S1_S1_iz",
+  "signature": "FlexLogFunc(void (*)(NvFlexErrorSeverity, char const*, char const*, int), NvFlexErrorSeverity, char const*, char const*, int, ...)",
+  "parity": "needs-gpu",
+  "iterations": 64,
+  "seed": 1234,
+  "params": [
+    "void*",
+    "int",
+    "const char*",
+    "const char*",
+    "int"
+  ],
+  "params_note": "ABI-level spelling for the generated harness (it can only express C types from nvflex/all.h): arg0 is NvFlexErrorCallback (a function pointer, passed identically as void*; the harness supplies NULL), arg1 is NvFlexErrorSeverity (a 4-byte enum passed as int).",
+  "ret": "void",
+  "scalars": {
+    "1": [
+      0,
+      2
+    ],
+    "4": [
+      0,
+      42
+    ]
+  },
+  "buffers": [
+    {
+      "arg": 2,
+      "type": "const char*",
+      "base": "char",
+      "count": 16,
+      "init": "zero"
+    },
+    {
+      "arg": 3,
+      "type": "const char*",
+      "base": "char",
+      "count": 32,
+      "init": "zero"
+    }
+  ],
+  "outputs": [
+    "buffer:0",
+    "buffer:1"
+  ],
+  "mode": "bitwise",
+  "parity_note": "G1 only: the generated differential harness always passes a valid pointer for a pointer parameter, so the callback argument cannot be NULL; the callee then calls a zero-filled buffer as code and both libraries fault identically (16/16 vectors rejected). No CUDA API is involved."
+}

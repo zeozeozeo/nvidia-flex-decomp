@@ -1,0 +1,7 @@
+{
+  "unit": "nvflex.sort#_ZN3cub24RadixSortDownsweepKernelINS_23DeviceRadixSortDispatchILb0EiiiE18PtxDownsweepPolicyELb0EiiiEEvPT1_S5_PT2_S7_PT3_S8_iibbNS_13GridEvenShareIS8_EE",
+  "symbol": "_ZN3cub24RadixSortDownsweepKernelINS_23DeviceRadixSortDispatchILb0EiiiE18PtxDownsweepPolicyELb0EiiiEEvPT1_S5_PT2_S7_PT3_S8_iibbNS_13GridEvenShareIS8_EE",
+  "parity": "kernel",
+  "iterations": 0,
+  "ptx": "CUB 1.3.2 device code is replaced by an equivalent implementation under the original .entry name; see units/nvflex.sort/nvflex.sort-cub-replacement.md"
+}

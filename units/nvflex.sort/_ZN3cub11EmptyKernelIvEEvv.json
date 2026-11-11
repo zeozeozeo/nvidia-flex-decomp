@@ -1,0 +1,8 @@
+{
+  "unit": "nvflex.sort#_ZN3cub11EmptyKernelIvEEvv",
+  "symbol": "_ZN3cub11EmptyKernelIvEEvv",
+  "signature": "void cub::EmptyKernel<void>()",
+  "parity": "kernel",
+  "iterations": 0,
+  "ptx": "empty device entry on both sides; reimplemented in recon/src/cuda/sort.cu under the original .entry name"
+}

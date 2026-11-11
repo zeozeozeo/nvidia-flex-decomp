@@ -1,0 +1,18 @@
+{
+  "mode": "bitwise",
+  "params": [
+    "LinearBVHBuilderCPU*",
+    "BVH&",
+    "const int*",
+    "const Bounds*",
+    "int",
+    "int",
+    "int"
+  ],
+  "parity": "needs-gpu",
+  "reason": "requires a pre-allocated BVH node arena (see MedianBVHBuilder::BuildRecursive); also the DWARF parameter type LinearBVHBuilderCPU::KeyIndexPair is not declared in the recovered headers, so the spec spells the pointer as const int* (same ABI). Covered by G1.",
+  "ret": "int",
+  "signature": "LinearBVHBuilderCPU::BuildRecursive(BVH&, LinearBVHBuilderCPU::KeyIndexPair const*, Bounds const*, int, int, int)",
+  "symbol": "_ZN19LinearBVHBuilderCPU14BuildRecursiveER3BVHPKNS_12KeyIndexPairEPK6Boundsiii",
+  "unit": "nvflex.bvh#_ZN19LinearBVHBuilderCPU14BuildRecursiveER3BVHPKNS_12KeyIndexPairEPK6Boundsiii"
+}

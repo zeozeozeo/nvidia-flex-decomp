@@ -1,0 +1,29 @@
+{
+  "unit": "nvflexdevice.physxdevice#_ZN5physx25physxDevSLIEnabledWrapperEPv",
+  "symbol": "_ZN5physx25physxDevSLIEnabledWrapperEPv",
+  "signature": "bool physx::physxDevSLIEnabledWrapper(void*)",
+  "parity": "pure-cpu",
+  "iterations": 64,
+  "seed": 1234,
+  "params": [
+    "int*"
+  ],
+  "ret": "bool",
+  "scalars": {},
+  "buffers": [
+    {
+      "arg": 0,
+      "type": "int*",
+      "base": "int",
+      "count": 1,
+      "init": "zero"
+    }
+  ],
+  "outputs": [
+    "ret",
+    "buffer:0"
+  ],
+  "mode": "bitwise",
+  "notes": "harness-only adaptation: the DWARF parameter is void* and the implementation ignores it; the harness calls it as int* (identical pointer ABI) because gate diff cannot size a void-typed buffer",
+  "self_type": null
+}

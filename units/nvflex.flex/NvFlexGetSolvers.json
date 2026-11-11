@@ -1,0 +1,48 @@
+{
+  "address": "0x1070",
+  "buffers": [
+    {
+      "arg": 0,
+      "base": "NvFlexLibrary",
+      "count": 8,
+      "init": "zero",
+      "type": "NvFlexLibrary*"
+    },
+    {
+      "arg": 1,
+      "base": "NvFlexSolver*",
+      "count": 8,
+      "init": "zero",
+      "type": "NvFlexSolver**"
+    }
+  ],
+  "byte_size": 67,
+  "iterations": 64,
+  "mode": "bitwise",
+  "notes": "harness uses void*/NvFlexBuffer* ABI-equivalent spellings because recovered.h does not declare NvFlexSolverDesc / NvFlexCopyDesc (public NvFlex.h is not included by nvflex/all.h)",
+  "outputs": [
+    "buffer:0",
+    "buffer:1"
+  ],
+  "params": [
+    "NvFlexLibrary*",
+    "NvFlexSolver**",
+    "int"
+  ],
+  "parity": "pure-cpu",
+  "ret": "int",
+  "scalars": {
+    "2": [
+      0,
+      1,
+      4,
+      16,
+      64
+    ]
+  },
+  "seed": 1234,
+  "signature": "NvFlexGetSolvers(NvFlexLibrary*, NvFlexSolver**, int)",
+  "source": "src/cuda/flex.cu:5177",
+  "symbol": "NvFlexGetSolvers",
+  "unit": "nvflex.flex#NvFlexGetSolvers"
+}

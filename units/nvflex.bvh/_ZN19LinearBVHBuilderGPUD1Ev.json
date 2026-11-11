@@ -1,0 +1,8 @@
+{
+  "mode": "bitwise",
+  "parity": "needs-gpu",
+  "reason": "complete-object alias of the destructor (same address)",
+  "signature": "LinearBVHBuilderGPU::~LinearBVHBuilderGPU()",
+  "symbol": "_ZN19LinearBVHBuilderGPUD1Ev",
+  "unit": "nvflex.bvh#_ZN19LinearBVHBuilderGPUD1Ev"
+}

@@ -1,0 +1,28 @@
+{
+  "unit": "nvflexdevice.physxdevice#_ZN5physx29physxDevGetCudaOrdinalWrapperEPi",
+  "symbol": "_ZN5physx29physxDevGetCudaOrdinalWrapperEPi",
+  "signature": "physx::PHYSX_DEV_STATUS physx::physxDevGetCudaOrdinalWrapper(int*)",
+  "parity": "pure-cpu",
+  "iterations": 64,
+  "seed": 1234,
+  "params": [
+    "int*"
+  ],
+  "ret": "int",
+  "scalars": {},
+  "buffers": [
+    {
+      "arg": 0,
+      "type": "int*",
+      "base": "int",
+      "count": 1,
+      "init": "zero"
+    }
+  ],
+  "outputs": [
+    "ret",
+    "buffer:0"
+  ],
+  "mode": "bitwise",
+  "self_type": null
+}

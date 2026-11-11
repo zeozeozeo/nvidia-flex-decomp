@@ -1,0 +1,6 @@
+{
+  "unit": "nvflex.util#_Z14CudaGetContextv",
+  "symbol": "_Z14CudaGetContextv",
+  "signature": "CudaGetContext()",
+  "parity": "needs-gpu"
+}

@@ -1,0 +1,25 @@
+{
+  "unit": "nvflex.util#_ZN12NvFlexBuffer3mapEv",
+  "symbol": "_ZN12NvFlexBuffer3mapEv",
+  "signature": "NvFlexBuffer::map()",
+  "parity": "pure-cpu",
+  "iterations": 16,
+  "seed": 1234,
+  "params": [
+    "NvFlexBuffer*"
+  ],
+  "ret": "void*",
+  "buffers": [
+    {
+      "arg": 0,
+      "type": "NvFlexBuffer*",
+      "base": "NvFlexBuffer",
+      "count": 1,
+      "init": "zero"
+    }
+  ],
+  "outputs": [
+    "buffer:0"
+  ],
+  "mode": "bitwise"
+}

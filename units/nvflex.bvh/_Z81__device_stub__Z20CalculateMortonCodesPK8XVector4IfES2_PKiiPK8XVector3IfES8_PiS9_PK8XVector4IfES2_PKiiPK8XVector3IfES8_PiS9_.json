@@ -1,0 +1,11 @@
+{
+  "allow_missing_calls": [
+    "cudaLaunchKernel"
+  ],
+  "mode": "bitwise",
+  "parity": "needs-gpu",
+  "reason": "nvcc-generated kernel launch stub. CUDA 13.4 emits __cudaGetKernel/__cudaLaunchKernel where the 9.2 object calls cudaLaunchKernel; the stub body is toolchain output, not reconstruction source. The extra __cuda* calls are recorded by the gate as 'extra'; the missing cudaLaunchKernel call is allowed with this reason.",
+  "signature": "__device_stub__Z20CalculateMortonCodesPK8XVector4IfES2_PKiiPK8XVector3IfES8_PiS9_(XVector4<float> const*, XVector4<float> const*, int const*, int, XVector3<float> const*, XVector3<float> const*, int*, int*)",
+  "symbol": "_Z81__device_stub__Z20CalculateMortonCodesPK8XVector4IfES2_PKiiPK8XVector3IfES8_PiS9_PK8XVector4IfES2_PKiiPK8XVector3IfES8_PiS9_",
+  "unit": "nvflex.bvh#_Z81__device_stub__Z20CalculateMortonCodesPK8XVector4IfES2_PKiiPK8XVector3IfES8_PiS9_PK8XVector4IfES2_PKiiPK8XVector3IfES8_PiS9_"
+}

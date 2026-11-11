@@ -1,0 +1,7 @@
+{
+  "iterations": 64,
+  "parity": "needs-gpu",
+  "seed": 1234,
+  "symbol": "_ZN9CudaTimerD1Ev",
+  "unit": "nvflex.flex#_ZN9CudaTimerD1Ev"
+}

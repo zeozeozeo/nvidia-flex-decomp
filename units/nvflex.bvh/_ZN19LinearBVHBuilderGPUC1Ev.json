@@ -1,0 +1,8 @@
+{
+  "mode": "bitwise",
+  "parity": "needs-gpu",
+  "reason": "complete-object alias of the constructor (same address)",
+  "signature": "LinearBVHBuilderGPU::LinearBVHBuilderGPU()",
+  "symbol": "_ZN19LinearBVHBuilderGPUC1Ev",
+  "unit": "nvflex.bvh#_ZN19LinearBVHBuilderGPUC1Ev"
+}

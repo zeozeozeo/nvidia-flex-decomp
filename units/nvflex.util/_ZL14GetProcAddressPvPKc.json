@@ -1,0 +1,34 @@
+{
+  "unit": "nvflex.util#_ZL14GetProcAddressPvPKc",
+  "symbol": "_ZL14GetProcAddressPvPKc",
+  "signature": "GetProcAddress(void*, char const*)",
+  "parity": "pure-cpu",
+  "iterations": 8,
+  "seed": 1234,
+  "params": [
+    "void*",
+    "const char*"
+  ],
+  "ret": "void*",
+  "buffers": [
+    {
+      "arg": 0,
+      "type": "void*",
+      "base": "void",
+      "count": 1,
+      "init": "zero"
+    },
+    {
+      "arg": 1,
+      "type": "const char*",
+      "base": "char",
+      "count": 8,
+      "init": "zero"
+    }
+  ],
+  "outputs": [
+    "buffer:0",
+    "buffer:1"
+  ],
+  "mode": "bitwise"
+}

@@ -1,0 +1,7 @@
+{
+  "unit": "nvflex.sort#_ZN3cub19RadixSortScanKernelINS_23DeviceRadixSortDispatchILb0EiiiE13PtxScanPolicyEiEEvPT0_i",
+  "symbol": "_ZN3cub19RadixSortScanKernelINS_23DeviceRadixSortDispatchILb0EiiiE13PtxScanPolicyEiEEvPT0_i",
+  "parity": "kernel",
+  "iterations": 0,
+  "ptx": "CUB 1.3.2 device code is replaced by an equivalent implementation under the original .entry name; see units/nvflex.sort/nvflex.sort-cub-replacement.md"
+}

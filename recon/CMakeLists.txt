@@ -9,13 +9,19 @@ endif()
 
 set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
+# CUDA 13's Thrust headers that CUB 1.3.2 pulls in require C++17
+set(CMAKE_CUDA_STANDARD 17)
+set(CMAKE_CUDA_STANDARD_REQUIRED ON)
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 # asserts stay enabled: the shipped objects were built without NDEBUG and the
 # static gate compares literal sets, so recon must match that configuration
 set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "-O3 -g")
 set(CMAKE_C_FLAGS_RELWITHDEBINFO "-O3 -g")
 set(CMAKE_CUDA_FLAGS_RELWITHDEBINFO "-O3 -g")
-set(CMAKE_CUDA_FLAGS "${CMAKE_CUDA_FLAGS} -O3 -g -lineinfo -arch=sm_75 -Xcompiler -fPIC,-ffp-contract=off")
+# relocatable device code: the solver is reconstructed across several .cu files
+# that share __constant__ symbols (gParams/gBounds), which needs separable
+# compilation and a device link step.
+set(CMAKE_CUDA_FLAGS "${CMAKE_CUDA_FLAGS} -O3 -g -lineinfo -arch=sm_75 -rdc=true -Xcompiler -fPIC,-ffp-contract=off")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3 -g -gdwarf-4 -fPIC -fstack-protector -march=x86-64 -mtune=generic -std=gnu++14 -ffp-contract=off -fvisibility=default")
 # Build-level compatibility for shipped FleX sources compiled by a modern
 # toolchain: platform.h relies on a transitive <sstream> include, and maths.cpp
@@ -49,7 +55,10 @@ if(NVFLEX_SOURCES)
   add_library(nvflex SHARED ${NVFLEX_SOURCES})
   target_include_directories(nvflex PRIVATE ${FLEX_INCLUDE_PUBLIC} ${FLEX_INCLUDE_RECOVERED})
   target_link_options(nvflex PRIVATE ${FLEX_LINK_FLAGS})
+  set_target_properties(nvflex PROPERTIES CUDA_SEPARABLE_COMPILATION ON
+                        CUDA_RESOLVE_DEVICE_SYMBOLS ON)
   add_library(nvflex_static STATIC ${NVFLEX_SOURCES})
+  set_target_properties(nvflex_static PROPERTIES CUDA_SEPARABLE_COMPILATION ON)
   target_include_directories(nvflex_static PRIVATE ${FLEX_INCLUDE_PUBLIC} ${FLEX_INCLUDE_RECOVERED})
 endif()
 
@@ -82,6 +91,8 @@ if(NVFLEXEXT_SOURCES)
   target_include_directories(nvflexext PRIVATE ${FLEX_INCLUDE_PUBLIC} ${FLEX_INCLUDE_CORE})
   target_link_options(nvflexext PRIVATE ${FLEX_LINK_FLAGS})
   target_compile_options(nvflexext PRIVATE $<$<COMPILE_LANGUAGE:CXX>:${FLEX_COMPAT_FLAGS}>)
+  set_target_properties(nvflexext PROPERTIES CUDA_SEPARABLE_COMPILATION ON
+                        CUDA_RESOLVE_DEVICE_SYMBOLS ON)
 endif()
 
 # ---- nvflexdevice --------------------------------------------------------

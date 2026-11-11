@@ -1,0 +1,6 @@
+{
+  "unit": "nvflex.util#_ZN12NvFlexBufferD2Ev",
+  "symbol": "_ZN12NvFlexBufferD2Ev",
+  "signature": "NvFlexBuffer::~NvFlexBuffer()",
+  "parity": "needs-gpu"
+}

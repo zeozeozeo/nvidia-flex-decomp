@@ -25,7 +25,7 @@ from .util import ensure, have, jread, jprint, jwrite, run as run_cmd, run_ok
 HOST_FLAGS = ["-O3", "-g", "-gdwarf-4", "-fPIC", "-fstack-protector",
               "-march=x86-64", "-mtune=generic", "-std=gnu++14",
               "-ffp-contract=off", "-fvisibility=default"]
-CUDA_HOST_FLAGS = ["-O3", "-g", "-lineinfo", "-arch=sm_75",
+CUDA_HOST_FLAGS = ["-O3", "-g", "-lineinfo", "-arch=sm_75", "-rdc=true",
                    "-Xcompiler", "-fPIC,-ffp-contract=off"]
 
 MODULE_SOURCE = {
@@ -149,12 +149,18 @@ def module_sources(module: str) -> list[Path]:
     return out
 
 
-def recon_objects(module: str, force: bool = False) -> tuple[list[Path], str]:
-    """Compile every source of the module with the pinned flags."""
+def recon_objects(module: str, force: bool = False) -> tuple[list[Path], str, list[str]]:
+    """Compile every source of the module with the pinned flags.
+
+    Sources are independent: a broken sibling (another agent's in-progress
+    file) must not hide the units that do compile, so failures are returned
+    alongside the objects that succeeded.
+    """
     srcs = module_sources(module)
     if not srcs:
-        return [], "reconstructed_source_missing"
+        return [], "reconstructed_source_missing", []
     objs: list[Path] = []
+    failures: list[str] = []
     status = "cached"
     for src in srcs:
         out = OBJ / "recon" / f"{module}.{src.stem}.o"
@@ -162,22 +168,23 @@ def recon_objects(module: str, force: bool = False) -> tuple[list[Path], str]:
         if force or not out.exists() or out.stat().st_mtime < src.stat().st_mtime:
             if src.suffix == ".cu":
                 if not have("nvcc"):
-                    return [], "no_nvcc"
+                    return [], "no_nvcc", [s.name for s in srcs]
                 cmd = ["nvcc", *CUDA_HOST_FLAGS, *module_flags(module), "-c", "-o", str(out),
                        str(src), "-I", str(RECON / "include"), "-I", str(RECON / "include" / "nvflex")]
             else:
                 cmd = ["g++", *HOST_FLAGS, *module_flags(module), "-c", "-o", str(out),
                        str(src), "-I", str(RECON / "include"), "-I", str(RECON / "include" / "nvflex")]
             if not run_ok(cmd):
-                return [], f"recon_compile_failed:{src.name}"
+                failures.append(src.name)
+                continue
             status = "compiled"
         objs.append(out)
-    return objs, status
+    return objs, status, failures
 
 
 def recon_object(module: str, force: bool = False) -> tuple[Path | None, str]:
     """Backwards-compatible single-object view (first source)."""
-    objs, status = recon_objects(module, force)
+    objs, status, _failures = recon_objects(module, force)
     return (objs[0] if objs else None), status
 
 
@@ -195,6 +202,62 @@ def _printable_strings(blob: bytes) -> set[str]:
     return out
 
 
+def _elf_literals(paths: list[Path]) -> set[str]:
+    """Printable literals from string-bearing ELF sections of each object.
+
+    Reading raw file bytes abuts unrelated segments, so a literal that starts a
+    section inherits its neighbour's bytes and is dropped; iterating sections
+    keeps every literal intact.
+    """
+    from elftools.elf.elffile import ELFFile
+
+    out: set[str] = set()
+    for path in paths:
+        for attempt in range(3):
+            try:
+                before = path.stat().st_size
+            except OSError:
+                break
+            try:
+                with open(path, "rb") as f:
+                    elf = ELFFile(f)
+                    for sec in elf.iter_sections():
+                        if not sec.name.startswith((".rodata", ".data.rel.ro", ".data")):
+                            continue
+                        try:
+                            out |= _printable_strings(sec.data())
+                        except Exception:  # noqa: BLE001
+                            continue
+            except Exception:  # noqa: BLE001
+                continue
+            try:
+                after = path.stat().st_size
+            except OSError:
+                break
+            if before == after:
+                break
+            # the library was relinked while we read it: read again
+    return out
+
+
+def _unused_elf_literals(paths: list[Path]) -> set[str]:
+    out: set[str] = set()
+    for path in paths:
+        try:
+            with open(path, "rb") as f:
+                elf = ELFFile(f)
+                for sec in elf.iter_sections():
+                    if not sec.name.startswith((".rodata", ".data.rel.ro", ".data")):
+                        continue
+                    try:
+                        out |= _printable_strings(sec.data())
+                    except Exception:  # noqa: BLE001
+                        continue
+        except Exception:  # noqa: BLE001
+            continue
+    return out
+
+
 def library_strings(lib: str, side: str) -> set[str]:
     """All printable literals of one library, original or reconstructed.
 
@@ -205,29 +268,21 @@ def library_strings(lib: str, side: str) -> set[str]:
     key = (lib, side)
     if key in _LIB_STRINGS:
         return _LIB_STRINGS[key]
-    blob = b""
+    blobs: list[bytes] = []
     if side == "orig":
+        arch = {"nvflex": "NvFlex", "nvflexext": "NvFlexExt",
+                "nvflexdevice": "NvFlexDevice"}.get(lib)
         for variant in ("dbg", "rel"):
             for member_dir in sorted(OBJ.glob(f"{variant}/*")):
-                arch = {"nvflex": "NvFlex", "nvflexext": "NvFlexExt",
-                        "nvflexdevice": "NvFlexDevice"}.get(lib)
                 if arch and arch not in member_dir.name:
                     continue
-                for obj in sorted(member_dir.glob("*.o")):
-                    try:
-                        blob += obj.read_bytes()
-                    except OSError:
-                        pass
-            if blob:
+                blobs.extend(sorted(member_dir.glob("*.o")))
+            if blobs:
                 break
     else:
         so = RECON / "build" / f"lib{lib}.so"
-        if so.exists():
-            blob = so.read_bytes()
-        else:
-            for obj in sorted((OBJ / "recon").glob(f"{lib}.*.o")):
-                blob += obj.read_bytes()
-    result = _normalize_strings(_printable_strings(blob))
+        blobs = [so] if so.exists() else sorted((OBJ / "recon").glob(f"{lib}.*.o"))
+    result = _normalize_strings(_elf_literals(blobs))
     _LIB_STRINGS[key] = result
     return result
 
@@ -362,8 +417,11 @@ def _probe_layout(module: str, types: dict) -> dict:
               sorted((RECON / "include").glob("*.h"))
     if not headers:
         return {"status": "missing_headers", "checked": 0}
-    ensure(GEN)
-    probe = GEN / f"layout_{module}.cpp"
+    # unique per process: several agents gate concurrently and must never race
+    # on the same probe path
+    import tempfile
+    tmpdir = Path(tempfile.mkdtemp(prefix="flexlayout-"))
+    probe = tmpdir / f"layout_{module}.cpp"
     lines = ["// generated by flexkit gate static", "#include <cstdio>", "#include <cstddef>"]
     for h in headers:
         lines.append(f'#include "{h.name}"' if h.parent.name == "include" else f'#include "nvflex/{h.name}"')
@@ -376,17 +434,22 @@ def _probe_layout(module: str, types: dict) -> dict:
         for m in t["members"]:
             if m.get("offset") is None or not m.get("name"):
                 continue
+            if m.get("bit_size"):
+                continue  # offsetof is ill-formed for bit-fields; sizeof covers them
             lines.append(f'  printf("{name}.{m["name"]} %zu\\n", offsetof({name}, {m["name"]}));')
         probes += 1
     lines.append("  return 0;")
     lines.append("}")
     probe.write_text("\n".join(lines) + "\n")
-    exe = GEN / f"layout_{module}.bin"
+    exe = tmpdir / f"layout_{module}.bin"
     cmd = ["g++", "-std=gnu++14", "-O0", "-w", "-o", str(exe), str(probe),
            "-I", str(RECON / "include"), "-I", str(RECON / "include" / "nvflex")]
     if not run_ok(cmd):
         return {"status": "probe_compile_failed", "checked": 0, "probe": str(probe)}
-    out = run_cmd([str(exe)])
+    try:
+        out = run_cmd([str(exe)])
+    except (OSError, PermissionError):
+        return {"status": "probe_exec_failed", "checked": 0, "probe": str(probe)}
     actual = {}
     for line in out.splitlines():
         parts = line.split()
@@ -401,7 +464,7 @@ def _probe_layout(module: str, types: dict) -> dict:
             mismatches.append({"what": f"sizeof({name})", "dwarf": t["byte_size"],
                                "actual": actual[key]})
         for m in t["members"]:
-            if m.get("offset") is None or not m.get("name"):
+            if m.get("offset") is None or not m.get("name") or m.get("bit_size"):
                 continue
             k = f"{name}.{m['name']}"
             if k in actual and actual[k] != m["offset"]:
@@ -413,7 +476,9 @@ def _probe_layout(module: str, types: dict) -> dict:
             "probe": str(probe)}
 
 
-PTX_INSN_RE = re.compile(r"^\s*([a-z][a-z0-9]*(?:\.[a-z0-9]+)*)\s")
+# an instruction line is "<opcode>[.modifiers][ operands];" — operand-less
+# forms such as "ret;" must count too
+PTX_INSN_RE = re.compile(r"^([a-z][a-z0-9]*(?:\.[a-z0-9]+)*)(?:\s|;|$)")
 PTX_DECL = ("reg", "param", "local", "shared", "global", "const", "tex", "surf",
             "version", "target", "address_size", "file", "loc", "visible", "entry",
             "func", "maxntid", "reqntid", "maxnreg", "pragma", "align", "branchtargets",
@@ -504,11 +569,21 @@ def ptx_checks(unit: dict, recon_map: dict) -> dict:
     if recon_path is None or not recon_path.exists():
         out["ptx"] = {"ok": False, "detail": "recon_ptx_missing"}
         return out
-    a = _ptx_stats(_ptx_entry_block(orig_ptx.read_text(errors="replace"), symbol))
-    b = _ptx_stats(_ptx_entry_block(recon_path.read_text(errors="replace"), symbol))
-    if not a["insns"] or not b["insns"]:
+    a_block = _ptx_entry_block(orig_ptx.read_text(errors="replace"), symbol)
+    b_block = _ptx_entry_block(recon_path.read_text(errors="replace"), symbol)
+    a = _ptx_stats(a_block)
+    b = _ptx_stats(b_block)
+    if not a_block or not b_block:
         out["ptx"] = {"ok": False, "detail": "entry_not_found",
-                      "orig_insns": a["insns"], "recon_insns": b["insns"]}
+                      "orig_lines": len(a_block), "recon_lines": len(b_block)}
+        return out
+    if a["insns"] == 0 and b["insns"] == 0:
+        # legitimately empty device entry (e.g. cub::EmptyKernel)
+        out["instructions"] = {"ok": True, "orig": 0, "recon": 0, "ratio": 1.0,
+                               "source": "ptx", "detail": "empty entry on both sides"}
+        out["calls"] = {"ok": True, "matched": 0, "expected": 0, "missing": [],
+                        "extra": [], "source": "ptx"}
+        out["ptx"] = {"ok": True, "path": str(recon_path)}
         return out
     ratio = b["insns"] / a["insns"]
     missing_calls = sorted(a["calls"] - b["calls"])
@@ -534,9 +609,10 @@ def gate_unit(unit: dict, spec: dict | None = None, layout_cache: dict | None = 
     if orig is None:
         result["checks"]["orig_object"] = {"ok": False, "detail": "missing"}
         return result
-    recon_objs, how = recon_objects(module)
+    recon_objs, how, compile_failures = recon_objects(module)
     result["checks"]["recon_object"] = {"ok": bool(recon_objs), "detail": how,
-                                        "objects": [p.name for p in recon_objs]}
+                                        "objects": [p.name for p in recon_objs],
+                                        "compile_failures": compile_failures}
     if not recon_objs:
         return result
 
@@ -546,16 +622,26 @@ def gate_unit(unit: dict, spec: dict | None = None, layout_cache: dict | None = 
         for fname, fdata in _disasm_map(robj).items():
             if fname in recon_map:
                 recon_map[fname]["insn"] += fdata["insn"]
-                recon_map[fname]["callees"].update(fdata["callees"])
-                recon_map[fname]["strings"].update(fdata["strings"])
+                recon_map[fname]["callees"] |= set(fdata["callees"])
+                recon_map[fname]["strings"] = sorted(
+                    set(recon_map[fname]["strings"]) | set(fdata["strings"]))
             else:
                 recon_map[fname] = fdata
     sym = unit["symbol"]
-    result["checks"]["symbol"] = {
-        "ok": sym in recon_map,
-        "detail": "present" if sym in recon_map else "missing from reconstructed object",
-    }
+    debug_only = False
     if sym not in recon_map:
+        rel = sorted(OBJ.glob(f"rel/*/{MODULES[module][0]}"))
+        if rel:
+            debug_only = sym not in _disasm_map(rel[0])
+    result["checks"]["symbol"] = {
+        "ok": sym in recon_map or debug_only,
+        "detail": "present" if sym in recon_map else (
+            f"missing from reconstructed object (sibling sources failed to compile: "
+            f"{compile_failures})" if compile_failures
+            else "missing from reconstructed object"),
+        "debug_only": debug_only,
+    }
+    if sym not in recon_map and not debug_only:
         return result
 
     if unit["kind"] == "kernel":

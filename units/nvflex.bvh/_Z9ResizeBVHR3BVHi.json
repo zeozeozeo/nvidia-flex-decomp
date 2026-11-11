@@ -1,0 +1,8 @@
+{
+  "mode": "bitwise",
+  "parity": "needs-gpu",
+  "reason": "allocates device memory and textures through nvflex.util; no GPU on this host and the differential harness would call into the CUDA runtime",
+  "signature": "ResizeBVH(BVH&, int)",
+  "symbol": "_Z9ResizeBVHR3BVHi",
+  "unit": "nvflex.bvh#_Z9ResizeBVHR3BVHi"
+}

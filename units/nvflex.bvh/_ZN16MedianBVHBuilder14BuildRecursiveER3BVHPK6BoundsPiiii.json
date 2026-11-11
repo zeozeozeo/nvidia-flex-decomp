@@ -1,0 +1,9 @@
+{
+  "mode": "bitwise",
+  "parity": "needs-gpu",
+  "reason": "requires a BVH whose mNodeLowers/mNodeUppers arena is already allocated and whose mMaxNodes covers n*2-1 nodes; the differential harness can only zero-fill buffers, so every vector aborts in the nodeIndex<maxNodes assert on BOTH sides and the gate counts the unit as rejected (identical==0). Covered by G1 plus the G2-verified CalcBounds/PartitionObjectsMedian pairs.",
+  "ret": "int",
+  "signature": "MedianBVHBuilder::BuildRecursive(BVH&, Bounds const*, int*, int, int, int)",
+  "symbol": "_ZN16MedianBVHBuilder14BuildRecursiveER3BVHPK6BoundsPiiii",
+  "unit": "nvflex.bvh#_ZN16MedianBVHBuilder14BuildRecursiveER3BVHPK6BoundsPiiii"
+}

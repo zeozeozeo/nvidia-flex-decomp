@@ -1,0 +1,13 @@
+{
+  "unit": "nvflexdevice.flexdevice#_ZL17CudaSafeDelayLoadiPP8CUctx_st",
+  "symbol": "_ZL17CudaSafeDelayLoadiPP8CUctx_st",
+  "signature": "bool CudaSafeDelayLoad(int, CUcontext*)",
+  "parity": "needs-gpu",
+  "iterations": 0,
+  "reason": "requires an NVIDIA driver: dlopen(\"libcuda.so\") + cuGetExportTable/cuCtxCreateOnNode3DLowLatency context creation; also internal linkage.",
+  "params": [
+    "int",
+    "CUcontext*"
+  ],
+  "inlined_away": []
+}

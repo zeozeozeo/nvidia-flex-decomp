@@ -1,0 +1,47 @@
+{
+  "address": "0x10f0",
+  "buffers": [
+    {
+      "arg": 0,
+      "base": "NvFlexLibrary",
+      "count": 8,
+      "init": "zero",
+      "type": "NvFlexLibrary*"
+    },
+    {
+      "arg": 1,
+      "base": "void*",
+      "count": 8,
+      "init": "zero",
+      "type": "void**"
+    },
+    {
+      "arg": 2,
+      "base": "void*",
+      "count": 8,
+      "init": "zero",
+      "type": "void**"
+    }
+  ],
+  "byte_size": 11,
+  "iterations": 64,
+  "mode": "bitwise",
+  "notes": "harness uses void*/NvFlexBuffer* ABI-equivalent spellings because recovered.h does not declare NvFlexSolverDesc / NvFlexCopyDesc (public NvFlex.h is not included by nvflex/all.h)",
+  "outputs": [
+    "buffer:1",
+    "buffer:2"
+  ],
+  "params": [
+    "NvFlexLibrary*",
+    "void**",
+    "void**"
+  ],
+  "parity": "pure-cpu",
+  "ret": "void",
+  "scalars": {},
+  "seed": 1234,
+  "signature": "NvFlexGetDeviceAndContext(NvFlexLibrary*, void**, void**)",
+  "source": "src/cuda/flex.cu:5192",
+  "symbol": "NvFlexGetDeviceAndContext",
+  "unit": "nvflex.flex#NvFlexGetDeviceAndContext"
+}

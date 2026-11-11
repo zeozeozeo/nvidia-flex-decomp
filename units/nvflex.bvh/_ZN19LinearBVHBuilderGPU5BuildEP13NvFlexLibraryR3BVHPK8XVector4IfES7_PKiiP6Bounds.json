@@ -1,0 +1,8 @@
+{
+  "mode": "bitwise",
+  "parity": "needs-gpu",
+  "reason": "launches the six BVH kernels and calls SortCellIndices; execution requires a GPU",
+  "signature": "LinearBVHBuilderGPU::Build(NvFlexLibrary*, BVH&, XVector4<float> const*, XVector4<float> const*, int const*, int, Bounds*)",
+  "symbol": "_ZN19LinearBVHBuilderGPU5BuildEP13NvFlexLibraryR3BVHPK8XVector4IfES7_PKiiP6Bounds",
+  "unit": "nvflex.bvh#_ZN19LinearBVHBuilderGPU5BuildEP13NvFlexLibraryR3BVHPK8XVector4IfES7_PKiiP6Bounds"
+}

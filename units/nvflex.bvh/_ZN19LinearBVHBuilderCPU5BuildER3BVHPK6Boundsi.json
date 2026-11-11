@@ -1,0 +1,25 @@
+{
+  "allow_missing_strings": [
+    "vector::reserve"
+  ],
+  "buffers": [
+    {
+      "arg": 2,
+      "count": 16,
+      "init": "random"
+    }
+  ],
+  "iterations": 64,
+  "mode": "bitwise",
+  "outputs": [],
+  "parity": "pure-cpu",
+  "reason": "'vector::reserve' is the std::__throw_length_error message of the GCC 4.8 libstdc++ that built the shipped object; the reconstruction's libstdc++ spells that failure differently, so the literal cannot be reproduced. BVH output buffers are device pointers and are excluded from the byte comparison for the same reason as MedianBVHBuilder::Build.",
+  "scalars": {
+    "3": [
+      16
+    ]
+  },
+  "signature": "LinearBVHBuilderCPU::Build(BVH&, Bounds const*, int)",
+  "symbol": "_ZN19LinearBVHBuilderCPU5BuildER3BVHPK6Boundsi",
+  "unit": "nvflex.bvh#_ZN19LinearBVHBuilderCPU5BuildER3BVHPK6Boundsi"
+}

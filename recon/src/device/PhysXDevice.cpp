@@ -10,9 +10,24 @@
 // physxDevGetCudaOrdinalWrapper, which is what
 // NvFlexDeviceGetSuggestedOrdinal() ends up forwarding (see flexDevice.cpp).
 
-#include <stdlib.h>
+#include <stddef.h>
 
 #include "PhysXDevice.h"
+
+// Host libc entry points used below.  <stdlib.h> is not included because
+// glibc's __USE_EXTERN_INLINES turns atoi() into an inline call to
+// __isoc23_strtol under any -O build; the shipped object calls atoi@plt
+// (PLT32 relocations at 0x14 and 0x37), so the libc symbols are declared
+// directly to preserve that call set.
+extern "C" int atoi(const char* nptr);
+extern "C" char* getenv(const char* name);
+
+// The shipped object was compiled with -O0 (DW_AT_producer).  Reproduce that
+// optimization level here so the reconstruction has the same un-inlined call
+// graph; every function in this file is a thin loader shim.
+#if defined(__GNUC__) && !defined(__clang__)
+#pragma GCC optimize ("O0")
+#endif
 
 namespace physx
 {

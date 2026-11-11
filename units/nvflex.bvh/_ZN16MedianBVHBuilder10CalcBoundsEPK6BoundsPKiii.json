@@ -1,0 +1,30 @@
+{
+  "buffers": [
+    {
+      "arg": 1,
+      "count": 8,
+      "init": "random"
+    },
+    {
+      "arg": 2,
+      "count": 8,
+      "init": "zero"
+    }
+  ],
+  "iterations": 64,
+  "mode": "bitwise",
+  "outputs": [],
+  "parity": "pure-cpu",
+  "ret": "Bounds",
+  "scalars": {
+    "3": [
+      0
+    ],
+    "4": [
+      8
+    ]
+  },
+  "signature": "MedianBVHBuilder::CalcBounds(Bounds const*, int const*, int, int)",
+  "symbol": "_ZN16MedianBVHBuilder10CalcBoundsEPK6BoundsPKiii",
+  "unit": "nvflex.bvh#_ZN16MedianBVHBuilder10CalcBoundsEPK6BoundsPKiii"
+}

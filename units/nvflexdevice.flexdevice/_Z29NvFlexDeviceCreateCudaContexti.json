@@ -1,0 +1,12 @@
+{
+  "unit": "nvflexdevice.flexdevice#_Z29NvFlexDeviceCreateCudaContexti",
+  "symbol": "_Z29NvFlexDeviceCreateCudaContexti",
+  "signature": "bool NvFlexDeviceCreateCudaContext(int)",
+  "parity": "needs-gpu",
+  "iterations": 0,
+  "reason": "creates a CUDA driver context through CudaSafeDelayLoad; no NVIDIA driver on this host",
+  "params": [
+    "int"
+  ],
+  "inlined_away": []
+}

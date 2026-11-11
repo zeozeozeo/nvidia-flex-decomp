@@ -1,0 +1,16 @@
+{
+  "unit": "nvflexdevice.flexdevice#_Z31NvFlexDeviceGetSuggestedOrdinalv",
+  "symbol": "_Z31NvFlexDeviceGetSuggestedOrdinalv",
+  "signature": "int NvFlexDeviceGetSuggestedOrdinal()",
+  "parity": "pure-cpu",
+  "iterations": 64,
+  "seed": 1234,
+  "params": [],
+  "ret": "int",
+  "scalars": {},
+  "buffers": [],
+  "outputs": [
+    "ret"
+  ],
+  "mode": "bitwise"
+}

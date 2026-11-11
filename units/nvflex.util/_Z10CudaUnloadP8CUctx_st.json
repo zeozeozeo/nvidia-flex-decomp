@@ -1,0 +1,6 @@
+{
+  "unit": "nvflex.util#_Z10CudaUnloadP8CUctx_st",
+  "symbol": "_Z10CudaUnloadP8CUctx_st",
+  "signature": "CudaUnload(CUctx_st*)",
+  "parity": "needs-gpu"
+}

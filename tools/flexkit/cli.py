@@ -199,6 +199,13 @@ def cmd_units(args):
         else:
             print(f"{args.unit}: {r.get('status', r)}")
         return 0 if r.get("ok") else 1
+    if sub == "waive":
+        r = units.waive(args.unit, args.reason)
+        if args.json:
+            jprint(r)
+        else:
+            print(f"{args.unit}: waived — {args.reason}")
+        return 0 if r.get("ok") else 1
     if sub == "block":
         r = units.block(args.unit, args.reason)
         if args.json:
@@ -265,6 +272,14 @@ def cmd_gate(args):
             jprint(r)
         else:
             print(gate_diff.render(r))
+        return 0 if r.get("ok") else 1
+    if gate == "dxbc":
+        from . import gate_dxbc
+        r = gate_dxbc.run(args.dll)
+        if args.json:
+            jprint(r)
+        else:
+            print(gate_dxbc.render(r))
         return 0 if r.get("ok") else 1
     if gate == "gpu":
         from . import gate_gpu
@@ -379,6 +394,9 @@ def build_parser() -> argparse.ArgumentParser:
     u.add_argument("--agent", required=True)
     u.add_argument("--reject", action="store_true")
     u.add_argument("--detail")
+    u = usub.add_parser("waive")
+    u.add_argument("--unit", required=True)
+    u.add_argument("--reason", required=True)
     u = usub.add_parser("block")
     u.add_argument("--unit", required=True)
     u.add_argument("--reason", required=True)
@@ -398,6 +416,13 @@ def build_parser() -> argparse.ArgumentParser:
     s = sub.add_parser("gate", help="run parity gates")
     s.add_argument("--json", action="store_true")
     gsub = s.add_subparsers(dest="gate_cmd", required=True)
+    g = gsub.add_parser("dxbc")
+    g.add_argument("--dll", default="NvFlexReleaseD3D_x64.dll")
+    g.add_argument("--unit")
+    g.add_argument("--module")
+    g.add_argument("--all", action="store_true")
+    g.add_argument("--iterations", type=int, default=0)
+    g.add_argument("--verbose", action="store_true")
     for name in ("static", "diff", "gpu"):
         g = gsub.add_parser(name)
         g.add_argument("--unit")

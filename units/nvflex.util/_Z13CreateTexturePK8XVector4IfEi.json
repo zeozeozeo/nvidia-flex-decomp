@@ -1,0 +1,10 @@
+{
+  "unit": "nvflex.util#_Z13CreateTexturePK8XVector4IfEi",
+  "symbol": "_Z13CreateTexturePK8XVector4IfEi",
+  "signature": "CreateTexture(XVector4<float> const*, int)",
+  "parity": "needs-gpu",
+  "inlined_away": [
+    "memset"
+  ],
+  "inlined_away_note": "memset(&resDesc/&texDesc, 0, 64) is folded into vector stores at -O3; both descriptors are fully initialised"
+}

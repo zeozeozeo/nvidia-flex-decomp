@@ -1,0 +1,21 @@
+{
+  "unit": "nvflex.bvh#_Z11BuildLeavesPK8XVector4IfES2_iPKiPiS5_P14PackedNodeHalfS7_",
+  "symbol": "_Z11BuildLeavesPK8XVector4IfES2_iPKiPiS5_P14PackedNodeHalfS7_",
+  "signature": "BuildLeaves(XVector4<float> const*, XVector4<float> const*, int, int const*, int*, int*, PackedNodeHalf*, PackedNodeHalf*)",
+  "parity": "kernel",
+  "kind": "kernel",
+  "source": "src/cuda/bvh.cu:460",
+  "ptx_entry": "work/binary/gpu/dbg/nvflex.bvh/sm_30.ptx:201-283",
+  "launch": {
+    "grid": [1, 1, 1],
+    "block": [256, 1, 1],
+    "note": "blockDim 256 from the host launch; gridDim = ceil(numItems/256)"
+  },
+  "compare": {
+    "outputs": ["buffers:rangeLefts,rangeRights,nodeLowers,nodeUppers"],
+    "mode": "bitwise"
+  },
+  "iterations": 64,
+  "seed": 1234,
+  "notes": "writes leaf node halves; PackedNodeHalf bitfields (i:31,b:1) compared as raw u32 words"
+}

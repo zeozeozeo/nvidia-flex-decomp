@@ -1,0 +1,8 @@
+{
+  "mode": "bitwise",
+  "parity": "needs-gpu",
+  "reason": "ResizeBVH + cudaMemcpy/cudaMemset device transfers",
+  "signature": "CloneBVH(BVH const&, BVH&)",
+  "symbol": "_Z8CloneBVHRK3BVHRS_",
+  "unit": "nvflex.bvh#_Z8CloneBVHRK3BVHRS_"
+}

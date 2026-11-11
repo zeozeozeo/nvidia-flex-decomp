@@ -1,0 +1,25 @@
+{
+  "unit": "nvflex.util#_Z10DumpMemoryPKc",
+  "symbol": "_Z10DumpMemoryPKc",
+  "signature": "DumpMemory(char const*)",
+  "parity": "pure-cpu",
+  "iterations": 16,
+  "seed": 1234,
+  "params": [
+    "const char*"
+  ],
+  "ret": "void",
+  "buffers": [
+    {
+      "arg": 0,
+      "type": "const char*",
+      "base": "char",
+      "count": 16,
+      "init": "zero"
+    }
+  ],
+  "outputs": [
+    "buffer:0"
+  ],
+  "mode": "bitwise"
+}

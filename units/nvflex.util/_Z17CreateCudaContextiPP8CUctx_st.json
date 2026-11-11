@@ -1,0 +1,6 @@
+{
+  "unit": "nvflex.util#_Z17CreateCudaContextiPP8CUctx_st",
+  "symbol": "_Z17CreateCudaContextiPP8CUctx_st",
+  "signature": "CreateCudaContext(int, CUctx_st**)",
+  "parity": "needs-gpu"
+}

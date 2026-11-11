@@ -24,6 +24,13 @@
 
 #include "PhysXDevice.h"
 
+// The shipped object was compiled with -O0 (DW_AT_producer).  Reproduce that
+// optimization level here so the reconstruction has the same un-inlined call
+// graph; every function in this file is a thin loader shim.
+#if defined(__GNUC__) && !defined(__clang__)
+#pragma GCC optimize ("O0")
+#endif
+
 // ---- cuda.h subset (external/CUDA/9.2.148-linux/include/cuda.h) ------------
 
 // flexdecomp: cuda.h:249
@@ -73,9 +80,11 @@ typedef enum cudaError_enum CUresult;
 // linkage there (GLOBAL, 16 bytes, .rodata+0).
 //
 // flexdecomp: flexDevice.cpp:51
+// The shipped source relied on -fpermissive to narrow the ints into
+// CUuuid::bytes; the casts reproduce the same 16 bytes without that flag.
 extern const CUuuid CU_ETID_PhysXInterface = { {
-	0x0c, 0xa5, 0x0b, 0x8c, 0x10, 0x04, 0x92, 0x9a,
-	0x89, 0xa7, 0xd0, 0xdf, 0x10, 0xe7, 0x72, 0x86
+	(char)0x0c, (char)0xa5, (char)0x0b, (char)0x8c, (char)0x10, (char)0x04, (char)0x92, (char)0x9a,
+	(char)0x89, (char)0xa7, (char)0xd0, (char)0xdf, (char)0x10, (char)0xe7, (char)0x72, (char)0x86
 } };
 
 // flexdecomp: flexDevice.cpp:53

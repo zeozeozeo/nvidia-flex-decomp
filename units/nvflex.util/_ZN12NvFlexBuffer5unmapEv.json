@@ -1,0 +1,26 @@
+{
+  "unit": "nvflex.util#_ZN12NvFlexBuffer5unmapEv",
+  "symbol": "_ZN12NvFlexBuffer5unmapEv",
+  "signature": "NvFlexBuffer::unmap()",
+  "parity": "needs-gpu",
+  "iterations": 16,
+  "seed": 1234,
+  "params": [
+    "NvFlexBuffer*"
+  ],
+  "ret": "void*",
+  "buffers": [
+    {
+      "arg": 0,
+      "type": "NvFlexBuffer*",
+      "base": "NvFlexBuffer",
+      "count": 1,
+      "init": "zero"
+    }
+  ],
+  "outputs": [
+    "buffer:0"
+  ],
+  "mode": "bitwise",
+  "parity_note": "G1 only: the harness cannot build the NvFlexBuffer::lib back-pointer (it zero-fills the object), so the shipped warning path dereferences NULL and both libraries fault identically (16/16 vectors rejected). No CUDA API is involved."
+}

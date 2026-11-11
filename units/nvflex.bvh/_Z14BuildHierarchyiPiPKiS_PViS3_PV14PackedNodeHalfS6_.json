@@ -1,0 +1,21 @@
+{
+  "unit": "nvflex.bvh#_Z14BuildHierarchyiPiPKiS_PViS3_PV14PackedNodeHalfS6_",
+  "symbol": "_Z14BuildHierarchyiPiPKiS_PViS3_PV14PackedNodeHalfS6_",
+  "signature": "BuildHierarchy(int, int*, int const*, int*, int volatile*, int volatile*, PackedNodeHalf volatile*, PackedNodeHalf volatile*)",
+  "parity": "kernel",
+  "kind": "kernel",
+  "source": "src/cuda/bvh.cu:485",
+  "ptx_entry": "work/binary/gpu/dbg/nvflex.bvh/sm_30.ptx:284-471",
+  "launch": {
+    "grid": [1, 1, 1],
+    "block": [256, 1, 1],
+    "note": "blockDim 256 from the host launch; gridDim = ceil(numItems/256)"
+  },
+  "compare": {
+    "outputs": ["buffers:rootNode,numChildren,rangeLefts,rangeRights,nodeLowers,nodeUppers"],
+    "mode": "bitwise"
+  },
+  "iterations": 64,
+  "seed": 1234,
+  "notes": "atomic scheduling: bitwise comparison only meaningful for the final node arrays and rootNode; numChildren ordering is race-independent because every parent is merged once. GPU gate is skipped on this host"
+}

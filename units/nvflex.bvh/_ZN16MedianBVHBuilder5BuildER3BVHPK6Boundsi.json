@@ -1,0 +1,22 @@
+{
+  "buffers": [
+    {
+      "arg": 2,
+      "count": 16,
+      "init": "random"
+    }
+  ],
+  "iterations": 64,
+  "mode": "bitwise",
+  "outputs": [],
+  "parity": "pure-cpu",
+  "reason": "BVH contains device pointers (mNodeLowers/mNodeUppers/mRootNode) allocated by the callee, so the struct bytes cannot be compared across two address spaces; the vectors prove both sides run the same call path without diverging, and the node *contents* are covered by MedianBVHBuilder::CalcBounds / PartitionObjectsMedian / BuildRecursive.",
+  "scalars": {
+    "3": [
+      16
+    ]
+  },
+  "signature": "MedianBVHBuilder::Build(BVH&, Bounds const*, int)",
+  "symbol": "_ZN16MedianBVHBuilder5BuildER3BVHPK6Boundsi",
+  "unit": "nvflex.bvh#_ZN16MedianBVHBuilder5BuildER3BVHPK6Boundsi"
+}

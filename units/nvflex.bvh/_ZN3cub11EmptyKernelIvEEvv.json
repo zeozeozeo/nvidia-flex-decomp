@@ -1,0 +1,21 @@
+{
+  "unit": "nvflex.bvh#_ZN3cub11EmptyKernelIvEEvv",
+  "symbol": "_ZN3cub11EmptyKernelIvEEvv",
+  "signature": "cub::EmptyKernel<void>()",
+  "parity": "kernel",
+  "kind": "kernel",
+  "source": "external/cub-1.3.2/cub/util_device.cuh:60 (third party)",
+  "ptx_entry": "work/binary/gpu/dbg/nvflex.bvh/sm_30.ptx:1632-1642",
+  "launch": {
+    "grid": [1, 1, 1],
+    "block": [1, 1, 1],
+    "note": "CUB's device-properties probe launches it with one thread"
+  },
+  "compare": {
+    "outputs": [],
+    "mode": "bitwise"
+  },
+  "iterations": 1,
+  "seed": 1234,
+  "notes": "empty kernel body; only symbol identity and PTX entry name matter"
+}

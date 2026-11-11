@@ -1,0 +1,36 @@
+{
+  "buffers": [
+    {
+      "arg": 1,
+      "count": 8,
+      "init": "random"
+    },
+    {
+      "arg": 2,
+      "count": 8,
+      "init": "zero"
+    },
+    {
+      "arg": 5,
+      "init": "zero"
+    }
+  ],
+  "iterations": 64,
+  "mode": "bitwise",
+  "outputs": [
+    "buffer:1"
+  ],
+  "parity": "pure-cpu",
+  "ret": "int",
+  "scalars": {
+    "3": [
+      0
+    ],
+    "4": [
+      8
+    ]
+  },
+  "signature": "MedianBVHBuilder::PartitionObjectsMedian(Bounds const*, int*, int, int, Bounds)",
+  "symbol": "_ZN16MedianBVHBuilder22PartitionObjectsMedianEPK6BoundsPiiiS0_",
+  "unit": "nvflex.bvh#_ZN16MedianBVHBuilder22PartitionObjectsMedianEPK6BoundsPiiiS0_"
+}

@@ -1,0 +1,6 @@
+{
+  "unit": "nvflex.util#_Z24FlexDeviceMallocInternalPPvmPKcS2_i",
+  "symbol": "_Z24FlexDeviceMallocInternalPPvmPKcS2_i",
+  "signature": "FlexDeviceMallocInternal(void**, unsigned long, char const*, char const*, int)",
+  "parity": "needs-gpu"
+}

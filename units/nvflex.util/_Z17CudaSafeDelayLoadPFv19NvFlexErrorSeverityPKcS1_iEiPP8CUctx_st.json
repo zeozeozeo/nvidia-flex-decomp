@@ -1,0 +1,6 @@
+{
+  "unit": "nvflex.util#_Z17CudaSafeDelayLoadPFv19NvFlexErrorSeverityPKcS1_iEiPP8CUctx_st",
+  "symbol": "_Z17CudaSafeDelayLoadPFv19NvFlexErrorSeverityPKcS1_iEiPP8CUctx_st",
+  "signature": "CudaSafeDelayLoad(void (*)(NvFlexErrorSeverity, char const*, char const*, int), int, CUctx_st**)",
+  "parity": "needs-gpu"
+}

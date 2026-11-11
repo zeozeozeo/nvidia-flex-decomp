@@ -1,0 +1,21 @@
+{
+  "unit": "nvflex.bvh#_Z18ComputeTotalBoundsPK8XVector4IfES2_P8XVector3IfES5_i",
+  "symbol": "_Z18ComputeTotalBoundsPK8XVector4IfES2_P8XVector3IfES5_i",
+  "signature": "ComputeTotalBounds(XVector4<float> const*, XVector4<float> const*, XVector3<float>*, XVector3<float>*, int)",
+  "parity": "kernel",
+  "kind": "kernel",
+  "source": "src/cuda/bvh.cu:581",
+  "ptx_entry": "work/binary/gpu/dbg/nvflex.bvh/sm_30.ptx:472-1593",
+  "launch": {
+    "grid": [1, 1, 1],
+    "block": [256, 1, 1],
+    "note": "blockDim 256 (kNumThreadsPerBlock); gridDim = ceil(numItems/256)"
+  },
+  "compare": {
+    "outputs": ["buffers:totalLower,totalUpper"],
+    "mode": "bitwise"
+  },
+  "iterations": 64,
+  "seed": 1234,
+  "notes": "min/max reductions are exact (no FP arithmetic); outputs are bitwise comparable"
+}

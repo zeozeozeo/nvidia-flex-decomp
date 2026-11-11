@@ -1,0 +1,6 @@
+{
+  "unit": "nvflex.util#_Z9FlexAllocP13NvFlexLibraryi",
+  "symbol": "_Z9FlexAllocP13NvFlexLibraryi",
+  "signature": "FlexAlloc(NvFlexLibrary*, int)",
+  "parity": "needs-gpu"
+}

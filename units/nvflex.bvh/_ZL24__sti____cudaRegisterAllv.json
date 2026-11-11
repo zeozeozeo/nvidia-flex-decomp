@@ -1,0 +1,8 @@
+{
+  "mode": "bitwise",
+  "parity": "needs-gpu",
+  "reason": "not specified",
+  "signature": "__sti____cudaRegisterAll()",
+  "symbol": "_ZL24__sti____cudaRegisterAllv",
+  "unit": "nvflex.bvh#_ZL24__sti____cudaRegisterAllv"
+}

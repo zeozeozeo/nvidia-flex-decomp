@@ -1,0 +1,77 @@
+{
+  "address": "0x25e0",
+  "buffers": [
+    {
+      "arg": 0,
+      "base": "NvFlexSolver",
+      "count": 8,
+      "init": "zero",
+      "type": "NvFlexSolver*"
+    },
+    {
+      "arg": 1,
+      "base": "NvFlexBuffer",
+      "count": 8,
+      "init": "zero",
+      "type": "NvFlexBuffer*"
+    },
+    {
+      "arg": 2,
+      "base": "NvFlexBuffer",
+      "count": 8,
+      "init": "zero",
+      "type": "NvFlexBuffer*"
+    },
+    {
+      "arg": 3,
+      "base": "NvFlexBuffer",
+      "count": 8,
+      "init": "zero",
+      "type": "NvFlexBuffer*"
+    },
+    {
+      "arg": 4,
+      "base": "NvFlexBuffer",
+      "count": 8,
+      "init": "zero",
+      "type": "NvFlexBuffer*"
+    },
+    {
+      "arg": 5,
+      "base": "NvFlexBuffer",
+      "count": 8,
+      "init": "zero",
+      "type": "NvFlexBuffer*"
+    }
+  ],
+  "byte_size": 554,
+  "iterations": 64,
+  "mode": "bitwise",
+  "outputs": [],
+  "params": [
+    "NvFlexSolver*",
+    "NvFlexBuffer*",
+    "NvFlexBuffer*",
+    "NvFlexBuffer*",
+    "NvFlexBuffer*",
+    "NvFlexBuffer*",
+    "int"
+  ],
+  "parity": "needs-gpu",
+  "reason": "calls cudaMemcpyAsync/cudaMemset/cudaEvent*/cudaGraphics* or the device kernel stub; needs a CUDA device and context, G1 only",
+  "ret": "void",
+  "scalars": {
+    "6": [
+      0,
+      1,
+      4,
+      16,
+      64
+    ]
+  },
+  "seed": 1234,
+  "signature": "NvFlexSetInflatables(NvFlexSolver*, NvFlexBuffer*, NvFlexBuffer*, NvFlexBuffer*, NvFlexBuffer*, NvFlexBuffer*, int)",
+  "source": "src/cuda/flex.cu:5726",
+  "symbol": "NvFlexSetInflatables",
+  "unit": "nvflex.flex#NvFlexSetInflatables"
+}

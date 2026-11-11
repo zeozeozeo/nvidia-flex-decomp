@@ -1,0 +1,10 @@
+{
+  "unit": "nvflex.sort#_Z9SortResetP13NvFlexLibrary",
+  "symbol": "_Z9SortResetP13NvFlexLibrary",
+  "signature": "SortReset(NvFlexLibrary*)",
+  "source": "src/cuda/sort.cu:42",
+  "parity": "needs-gpu",
+  "iterations": 0,
+  "reason": "frees device storage through cudaFree; no CPU-observable behaviour without a GPU context",
+  "ptx": "n/a (host)"
+}

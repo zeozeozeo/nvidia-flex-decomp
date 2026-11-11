@@ -1,0 +1,8 @@
+{
+  "mode": "bitwise",
+  "parity": "needs-gpu",
+  "reason": "not specified",
+  "signature": "__cudaUnregisterBinaryUtil()",
+  "symbol": "_ZL26__cudaUnregisterBinaryUtilv",
+  "unit": "nvflex.bvh#_ZL26__cudaUnregisterBinaryUtilv"
+}

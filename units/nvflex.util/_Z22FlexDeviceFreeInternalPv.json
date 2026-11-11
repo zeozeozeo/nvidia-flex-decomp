@@ -1,0 +1,6 @@
+{
+  "unit": "nvflex.util#_Z22FlexDeviceFreeInternalPv",
+  "symbol": "_Z22FlexDeviceFreeInternalPv",
+  "signature": "FlexDeviceFreeInternal(void*)",
+  "parity": "needs-gpu"
+}

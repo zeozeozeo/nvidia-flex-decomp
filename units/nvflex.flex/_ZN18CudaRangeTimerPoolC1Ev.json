@@ -1,0 +1,12 @@
+{
+  "allow_missing_calls": [
+    "_ZNSt6vectorI14CudaRangeTimerSaIS0_EE14_M_fill_insertEN9__gnu_cxx17__normal_iteratorIPS0_S2_EEmRKS0_",
+    "_ZdlPv"
+  ],
+  "allow_missing_reason": "modern libstdc++ inlines vector<CudaRangeTimer>::_M_fill_insert into the caller and, for the timer ctor, the pool-growth branch itself is kept out of line (cudaTimerGrowPool), so cudaEventCreate is not a direct callee of that symbol",
+  "iterations": 64,
+  "parity": "needs-gpu",
+  "seed": 1234,
+  "symbol": "_ZN18CudaRangeTimerPoolC1Ev",
+  "unit": "nvflex.flex#_ZN18CudaRangeTimerPoolC1Ev"
+}

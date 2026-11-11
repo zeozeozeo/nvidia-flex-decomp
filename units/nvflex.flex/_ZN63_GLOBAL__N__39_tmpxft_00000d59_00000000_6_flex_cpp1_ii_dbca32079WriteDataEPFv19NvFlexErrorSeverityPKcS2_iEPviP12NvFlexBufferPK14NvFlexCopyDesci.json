@@ -1,0 +1,7 @@
+{
+  "iterations": 64,
+  "parity": "needs-gpu",
+  "seed": 1234,
+  "symbol": "_ZN63_GLOBAL__N__39_tmpxft_00000d59_00000000_6_flex_cpp1_ii_dbca32079WriteDataEPFv19NvFlexErrorSeverityPKcS2_iEPviP12NvFlexBufferPK14NvFlexCopyDesci",
+  "unit": "nvflex.flex#_ZN63_GLOBAL__N__39_tmpxft_00000d59_00000000_6_flex_cpp1_ii_dbca32079WriteDataEPFv19NvFlexErrorSeverityPKcS2_iEPviP12NvFlexBufferPK14NvFlexCopyDesci"
+}

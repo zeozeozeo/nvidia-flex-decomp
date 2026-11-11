@@ -1,0 +1,11 @@
+{
+  "allow_missing_calls": [
+    "cudaLaunchKernel"
+  ],
+  "mode": "bitwise",
+  "parity": "needs-gpu",
+  "reason": "nvcc-generated kernel launch stub. CUDA 13.4 emits __cudaGetKernel/__cudaLaunchKernel where the 9.2 object calls cudaLaunchKernel; the stub body is toolchain output, not reconstruction source. The extra __cuda* calls are recorded by the gate as 'extra'; the missing cudaLaunchKernel call is allowed with this reason.",
+  "signature": "__device_stub__Z18CalculateKeyDeltasPKiPii(int const*, int*, int)",
+  "symbol": "_Z42__device_stub__Z18CalculateKeyDeltasPKiPiiPKiPii",
+  "unit": "nvflex.bvh#_Z42__device_stub__Z18CalculateKeyDeltasPKiPiiPKiPii"
+}

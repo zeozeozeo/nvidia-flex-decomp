@@ -1,0 +1,8 @@
+{
+  "mode": "bitwise",
+  "parity": "needs-gpu",
+  "reason": "device frees of the reduction buffers",
+  "signature": "LinearBVHBuilderGPU::~LinearBVHBuilderGPU()",
+  "symbol": "_ZN19LinearBVHBuilderGPUD2Ev",
+  "unit": "nvflex.bvh#_ZN19LinearBVHBuilderGPUD2Ev"
+}

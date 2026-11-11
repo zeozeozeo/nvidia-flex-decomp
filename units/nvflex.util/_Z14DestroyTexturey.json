@@ -1,0 +1,6 @@
+{
+  "unit": "nvflex.util#_Z14DestroyTexturey",
+  "symbol": "_Z14DestroyTexturey",
+  "signature": "DestroyTexture(unsigned long long)",
+  "parity": "needs-gpu"
+}

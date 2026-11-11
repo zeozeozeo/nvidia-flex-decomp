@@ -350,6 +350,28 @@ def verify(unit: str, agent: str, ok: bool = True, detail: str | None = None) ->
     return {"ok": ok, "unit": unit, "status": status, "detail": detail}
 
 
+def waive(unit: str, reason: str, agent: str = "integrator") -> dict:
+    """Integrator-only: record a unit as intentionally not reconstructed.
+
+    Used for compiler-generated code and for third-party device code that the
+    plan explicitly waives (e.g. CUB 1.3.2 kernels replaced and awaiting GPU
+    differential verification).
+    """
+    ledger.init()
+    conn = ledger.connect()
+    row = conn.execute("SELECT status FROM units WHERE id=?", (unit,)).fetchone()
+    if row is None:
+        conn.close()
+        return {"ok": False, "error": "unknown_unit", "unit": unit}
+    with ledger.transaction(conn):
+        conn.execute("UPDATE units SET status='waived', owner=?, update_ts=?, notes=? WHERE id=?",
+                     (agent, _now(), reason, unit))
+        conn.execute("INSERT INTO unknowns(unit_id, text, status, ts) VALUES(?,?,'waived',?)",
+                     (unit, reason, _now()))
+    conn.close()
+    return {"ok": True, "unit": unit, "status": "waived", "reason": reason}
+
+
 def block(unit: str, reason: str) -> dict:
     ledger.init()
     conn = ledger.connect()

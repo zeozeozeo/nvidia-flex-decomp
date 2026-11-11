@@ -121,6 +121,14 @@ def build() -> dict:
     except Exception as e:  # noqa: BLE001
         gpu = {"available": None, "detail": f"error: {e}"}
 
+    try:
+        from . import gate_dxbc
+        dx = gate_dxbc.run("NvFlexReleaseD3D_x64.dll")
+        dxbc = {"shaders": dx["shaders"], "matched": dx["passed"],
+                "not_reconstructed": dx["not_reconstructed"]}
+    except Exception as e:  # noqa: BLE001
+        dxbc = {"error": str(e)}
+
     total = len(units) or 1
     static_pass = sum(1 for v in gates["latest"].values() if v)
     report = {
@@ -135,6 +143,7 @@ def build() -> dict:
                 sum(1 for k, v in gates["latest"].items() if k.endswith("|diff") and v)
                 / max(1, sum(1 for k in gates["latest"] if k.endswith("|diff"))), 4),
             "gpu": gpu,
+            "dxbc": dxbc,
         },
         "pending": {"open": len(open_units), "claimed": len(claimed),
                     "decompiled": len(decompiled)},
@@ -153,6 +162,7 @@ def build() -> dict:
             "headers_identical": headers["all_identical"],
             "vendored_untouched": vendored_clean,
             "gpu_gate": gpu["detail"],
+            "dxbc": dxbc,
         },
     }
     jwrite(REPORTS / "coverage.json", report)

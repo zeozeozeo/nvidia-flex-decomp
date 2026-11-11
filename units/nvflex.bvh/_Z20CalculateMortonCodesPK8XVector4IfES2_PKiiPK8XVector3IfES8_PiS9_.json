@@ -1,0 +1,21 @@
+{
+  "unit": "nvflex.bvh#_Z20CalculateMortonCodesPK8XVector4IfES2_PKiiPK8XVector3IfES8_PiS9_",
+  "symbol": "_Z20CalculateMortonCodesPK8XVector4IfES2_PKiiPK8XVector3IfES8_PiS9_",
+  "signature": "CalculateMortonCodes(XVector4<float> const*, XVector4<float> const*, int const*, int, XVector3<float> const*, XVector3<float> const*, int*, int*)",
+  "parity": "kernel",
+  "kind": "kernel",
+  "source": "src/cuda/bvh.cu:418",
+  "ptx_entry": "work/binary/gpu/dbg/nvflex.bvh/sm_30.ptx:17-163",
+  "launch": {
+    "grid": [1, 1, 1],
+    "block": [256, 1, 1],
+    "note": "blockDim 256 from the host __cudaPushCallConfiguration (0x100000100); gridDim = ceil(numItems/256)"
+  },
+  "compare": {
+    "outputs": ["buffers:indices,keys"],
+    "mode": "bitwise"
+  },
+  "iterations": 64,
+  "seed": 1234,
+  "notes": "integer/bitwise kernel: outputs are exact"
+}

@@ -1,0 +1,10 @@
+{
+  "unit": "nvflexdevice.flexdevice#_Z30NvFlexDeviceDestroyCudaContextv",
+  "symbol": "_Z30NvFlexDeviceDestroyCudaContextv",
+  "signature": "void NvFlexDeviceDestroyCudaContext()",
+  "parity": "needs-gpu",
+  "iterations": 0,
+  "reason": "calls the driver entry points cuCtxGetCurrent/cuCtxDestroy through the file-scope pointers, which are NULL until CudaSafeDelayLoad succeeds",
+  "params": [],
+  "inlined_away": []
+}

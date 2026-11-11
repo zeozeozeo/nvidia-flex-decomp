@@ -1,0 +1,10 @@
+{
+  "unit": "nvflex.sort#_Z15SortCellIndicesP13NvFlexLibraryPiS1_ii",
+  "symbol": "_Z15SortCellIndicesP13NvFlexLibraryPiS1_ii",
+  "signature": "SortCellIndices(NvFlexLibrary*, int*, int*, int, int)",
+  "source": "src/cuda/sort.cu:50",
+  "parity": "needs-gpu",
+  "iterations": 0,
+  "reason": "sorts device buffers through cudaMalloc/cudaMemcpyAsync and the CUB dispatch; differential parity requires a GPU (G3)",
+  "ptx": "n/a (host)"
+}

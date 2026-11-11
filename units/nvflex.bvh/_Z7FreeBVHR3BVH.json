@@ -1,0 +1,8 @@
+{
+  "mode": "bitwise",
+  "parity": "needs-gpu",
+  "reason": "frees device memory and textures through nvflex.util",
+  "signature": "FreeBVH(BVH&)",
+  "symbol": "_Z7FreeBVHR3BVH",
+  "unit": "nvflex.bvh#_Z7FreeBVHR3BVH"
+}

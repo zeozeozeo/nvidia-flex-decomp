@@ -1,0 +1,28 @@
+{
+  "address": "0x7110",
+  "buffers": [
+    {
+      "arg": 0,
+      "base": "NvFlexSolver",
+      "count": 8,
+      "init": "zero",
+      "type": "NvFlexSolver*"
+    }
+  ],
+  "byte_size": 1897,
+  "iterations": 64,
+  "mode": "bitwise",
+  "outputs": [],
+  "params": [
+    "NvFlexSolver*"
+  ],
+  "parity": "needs-gpu",
+  "reason": "calls cudaMemcpyAsync/cudaMemset/cudaEvent*/cudaGraphics* or the device kernel stub; needs a CUDA device and context, G1 only",
+  "ret": "void",
+  "scalars": {},
+  "seed": 1234,
+  "signature": "NvFlexDestroySolver(NvFlexSolver*)",
+  "source": "src/cuda/flex.cu:5049",
+  "symbol": "NvFlexDestroySolver",
+  "unit": "nvflex.flex#NvFlexDestroySolver"
+}

@@ -1,0 +1,21 @@
+{
+  "unit": "nvflex.bvh#_Z20ComputeTotalInvEdgesPK8XVector3IfES2_PS0_",
+  "symbol": "_Z20ComputeTotalInvEdgesPK8XVector3IfES2_PS0_",
+  "signature": "ComputeTotalInvEdges(XVector3<float> const*, XVector3<float> const*, XVector3<float>*)",
+  "parity": "kernel",
+  "kind": "kernel",
+  "source": "src/cuda/bvh.cu:614",
+  "ptx_entry": "work/binary/gpu/dbg/nvflex.bvh/sm_30.ptx:1594-1631",
+  "launch": {
+    "grid": [1, 1, 1],
+    "block": [1, 1, 1],
+    "note": "host launches a single thread (__cudaPushCallConfiguration(0x100000001,1,0x100000001,1,0,0)); the body does not read threadIdx"
+  },
+  "compare": {
+    "outputs": ["buffers:totalInvEdges"],
+    "mode": "bitwise"
+  },
+  "iterations": 64,
+  "seed": 1234,
+  "notes": "rcp.rn.f32 of (upper-lower)+1e-4f per axis; bitwise reproducible"
+}
