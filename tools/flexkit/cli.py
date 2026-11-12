@@ -176,6 +176,36 @@ def cmd_dxbc(args):
     return 0
 
 
+def cmd_d3dblobs(args):
+    from . import d3dblobs
+    if args.check:
+        ok, problems = d3dblobs.check()
+        if args.json:
+            jprint({"ok": ok, "problems": problems})
+        elif ok:
+            r = d3dblobs.extract()
+            print(f"d3dblobs --check: {r['count']}/66 blobs, "
+                  f"{r['unique']} unique dxbc matches, {r['shared']} shared")
+            print("  generated sources up to date")
+        else:
+            print("d3dblobs --check: FAILED")
+            for p in problems:
+                print(f"  {p}")
+        return 0 if ok else 1
+    r = d3dblobs.extract()
+    if r["errors"]:
+        print(d3dblobs.render_report(r))
+        return 1
+    written = d3dblobs.write(r)
+    if args.json:
+        jprint(r)
+    else:
+        print(d3dblobs.render_report(r))
+        for w in written:
+            print(f"  wrote {w}")
+    return 0
+
+
 def cmd_units(args):
     from . import units
     sub = args.units_cmd
@@ -323,7 +353,12 @@ def cmd_gate(args):
         return 0 if r.get("ok") else 1
     if gate == "wine":
         from . import gate_wine
-        r = gate_wine.run(seconds=args.iterations or 45)
+        if getattr(args, "demo", False):
+            r = gate_wine.run_demo(seconds=args.iterations or 45)
+            print(gate_wine.render_demo(r))
+            sys.exit(0 if r.get("ok") else 1)
+        r = gate_wine.run(seconds=args.iterations or 45,
+                          no_update=getattr(args, "no_update", False))
         if args.json:
             jprint(r)
         else:
@@ -431,6 +466,12 @@ def build_parser() -> argparse.ArgumentParser:
     s.add_argument("--json", action="store_true")
     s.set_defaults(func=cmd_dxbc)
 
+    s = sub.add_parser("d3dblobs", help="extract the flex.obj solver shader table")
+    s.add_argument("--check", action="store_true",
+                   help="re-extract and fail on drift instead of writing")
+    s.add_argument("--json", action="store_true")
+    s.set_defaults(func=cmd_d3dblobs)
+
     s = sub.add_parser("units", help="unit ledger operations")
     s.add_argument("--json", action="store_true")
     usub = s.add_subparsers(dest="units_cmd", required=True)
@@ -484,6 +525,10 @@ def build_parser() -> argparse.ArgumentParser:
     s.add_argument("--json", action="store_true")
     gsub = s.add_subparsers(dest="gate_cmd", required=True)
     g = gsub.add_parser("wine")
+    g.add_argument("--no-update", action="store_true",
+                   help="skip NvFlexUpdateSolver (library/solver/copy path only)")
+    g.add_argument("--demo", action="store_true",
+                   help="run the shipped D3D demo against both DLLs")
     g.add_argument("--unit")
     g.add_argument("--module")
     g.add_argument("--all", action="store_true")

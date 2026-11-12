@@ -95,8 +95,15 @@ enum BufferTypes
     eDynamic    = 128
 };
 
+// PDB BufferResourceTypes: the tag that selects which resource of a buffer a
+// copy reads or writes.  WriteData @0x34850 passes eDownloadBuffer for a host
+// source, eDefaultBuffer for a device source and eNativeBuffer for a raw
+// pointer; ReadData @0x347d0 passes eDefaultBuffer for the device case.
 enum BufferResourceTypes
 {
+    eResource       = 1,
+    eDefaultBuffer  = 2,
+    eUploadBuffer   = 4,
     eDownloadBuffer = 8,
     eNativeBuffer   = 16
 };
@@ -292,6 +299,16 @@ public:
     virtual void resolve() = 0;
     virtual void sync() = 0;
     virtual void clear() = 0;
+
+    // TimerPoolD3D11::get (ContextD3D11.obj @0x53c50): elapsed time in seconds
+    // for one slot, optionally reporting the frequency and both timestamps.
+    virtual float get(int index, unsigned long long* frequency = 0,
+                      unsigned long long* begin = 0,
+                      unsigned long long* end = 0) = 0;
+
+    // TimerPoolD3D11 @0x53dc0: shipped slot +0x38, called by
+    // NvFlexUpdateSolver with the worst-case timer count before a step.
+    virtual void reserveTimers(unsigned count) = 0;
 
     unsigned long long m_timerPoolSize;
     unsigned long long m_usedElemCount;

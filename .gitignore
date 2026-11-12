@@ -4,6 +4,7 @@ state/*.db-*
 state/evidence/
 build/
 recon/build/
+recon/build-dx/
 tools/parity/gen/
 __pycache__/
 *.pyc

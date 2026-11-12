@@ -721,8 +721,8 @@
         "pass": 289
       },
       "dxbc": {
-        "fail": 3467,
-        "pass": 1919
+        "fail": 3638,
+        "pass": 2504
       },
       "static": {
         "fail": 1406,

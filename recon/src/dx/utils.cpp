@@ -292,13 +292,8 @@ void NvFlexBuffer::unmap()
 }
 
 // ---------------------------------------------------------------------------
-// Public entry point kept by the first slice (flex.obj owns the shipped
-// definition; this keeps the exported surface intact until it lands).
+// NvFlexGetVersion is defined by flex_api.cpp (flex.obj @0x37c30).
 // ---------------------------------------------------------------------------
-NV_FLEX_API int NvFlexGetVersion()
-{
-    return NV_FLEX_VERSION;   // 120, the value the shipped binary returns (@0x37c30)
-}
 
 // ---------------------------------------------------------------------------
 // FlexLogFunc — shipped definition is in flex.obj (@0x34780, 77 bytes):

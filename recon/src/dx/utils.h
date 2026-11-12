@@ -89,7 +89,24 @@ enum BufferResourceValues
 namespace NvFlex
 {
 
-class Texture3D;
+// PDB NvFlex::Texture3D / Texture3DDesc — only needed by the full Context
+// interface above; the texture path is implemented by the Context slices.
+struct Texture3DDesc
+{
+    NvFlexFormat format;          // @0
+    NvFlexDim dim;                // @4
+    bool uploadAccess;            // @16
+    bool downloadAccess;          // @17
+    void* data;                   // @24
+};
+
+class Texture3D : public RefCounted
+{
+public:
+    virtual Resource* getResource() = 0;
+    virtual ResourceRW* getResourceRW() = 0;
+    virtual ~Texture3D() {}
+};
 
 // Buffer copy / upload / download / clear operations.  Every method signature
 // is taken from the shipped Context vtable (PDB `NvFlex::Context` field list
@@ -125,25 +142,22 @@ public:
     virtual void clearUnorderedAccessViewFloat(Buffer* buffer, const float* values) = 0;
     virtual void flush() = 0;
     virtual void computeWaitForGraphics() = 0;
-};
 
-// PDB NvFlex::Texture3D / Texture3DDesc — only needed by the full Context
-// interface above; the texture path is implemented by the Context slices.
-struct Texture3DDesc
-{
-    NvFlexFormat format;   // @0
-    NvFlexDim dim;         // @4
-    unsigned mipLevels;    // @16
-    unsigned flags;        // @20
-    void* data;            // @24
-};
-
-class Texture3D : public RefCounted
-{
-public:
-    virtual Resource* getResource() = 0;
-    virtual ResourceRW* getResourceRW() = 0;
-    virtual ~Texture3D() {}
+    // --- solver / device-layer surface (append-only, flex.obj call sites) ---
+    // Added for the solver pipeline.  The shipped `NvFlex::Context` vtable has
+    // these too (PDB field list 0x2C7D); only the order inside this
+    // reconstruction's vtable is ours.
+    virtual Texture3D* createTexture3D(const Texture3DDesc* desc) = 0;
+    virtual Fence*     createFence() = 0;
+    virtual void       fenceSet(Fence* fence) = 0;
+    virtual void       fenceWait(Fence* fence, unsigned timeoutUs) = 0;
+    virtual void       startFrame() = 0;
+    virtual void       clearState() = 0;
+    virtual void       updateContext() = 0;
+    virtual void       contextPop() = 0;
+    virtual TimerPool* createTimerPool(unsigned capacity) = 0;
+    virtual void       eventMarker(const wchar_t* label, int slot) = 0;
+    virtual int        getDataAftermath(void* data, unsigned size) = 0;
 };
 
 } // namespace NvFlex
