@@ -25,6 +25,7 @@
 #include <dlfcn.h>
 #endif
 #include <stddef.h>
+#include <cstdio>
 
 #include "PhysXDevice.h"
 
@@ -120,6 +121,7 @@ struct CUetblPhysXInterface_st
 typedef CUetblPhysXInterface_st CUetblPhysXInterface;
 
 // flexdecomp: flexDevice.cpp:68
+typedef CUresult (*cuInit_t)(unsigned int Flags);
 typedef CUresult (*cuGetExportTable_t)(const void** ppExportTable, const CUuuid* pExportTableId);
 // flexdecomp: flexDevice.cpp:69
 typedef CUresult (*cuDeviceGet_t)(CUdevice* device, int ordinal);
@@ -133,6 +135,7 @@ typedef CUresult (*cuCtxGetCurrent_t)(CUcontext* pctx);
 typedef CUresult (*cuCtxDestroy_t)(CUcontext ctx);
 
 // flexdecomp: flexDevice.cpp:75-80 (order as in the shipped .bss)
+static cuInit_t cuInit_f;
 static cuGetExportTable_t cuGetExportTable_f;
 static cuDeviceGet_t cuDeviceGet_f;
 static cuCtxCreate_t cuCtxCreate_f;
@@ -202,6 +205,7 @@ static FLEX_FORCEINLINE bool CudaSafeDelayLoadImpl(int deviceOrdinal, CUcontext*
 		return false;
 
 	// flexdecomp: flexDevice.cpp:122-127 (literal order in .rodata)
+	cuInit_f = (cuInit_t)GetProcAddressImpl(hCudaDriver, "cuInit");
 	cuGetExportTable_f = (cuGetExportTable_t)GetProcAddressImpl(hCudaDriver, "cuGetExportTable");
 	cuCtxCreate_f = (cuCtxCreate_t)GetProcAddressImpl(hCudaDriver, "cuCtxCreate");
 	cuDeviceGet_f = (cuDeviceGet_t)GetProcAddressImpl(hCudaDriver, "cuDeviceGet");
@@ -215,6 +219,17 @@ static FLEX_FORCEINLINE bool CudaSafeDelayLoadImpl(int deviceOrdinal, CUcontext*
 	// flexdecomp: flexDevice.cpp:134 - immediate 0x1c at 0x131
 	int flags = CU_CTX_SCHED_BLOCKING_SYNC | CU_CTX_MAP_HOST | CU_CTX_LMEM_RESIZE_TO_MAX;
 	// flexdecomp: flexDevice.cpp:135
+	// Divergence (Windows only): the shipped CUDA 9.2-era device DLL calls no
+	// cuInit anywhere (verified against its disassembly - no import, no
+	// "cuInit" string) because 9.2-era driver entry points initialized the
+	// driver lazily.  The CUDA 13 driver requires explicit initialization:
+	// without cuInit(0), cuDeviceGet and
+	// cuCtxCreateOnNode3DLowLatency return CUDA_ERROR_NOT_INITIALIZED (3)
+	// and NvFlexDeviceCreateCudaContext would always fail.  Recorded as a
+	// behaviour-preserving adaptation in units/nvflexdevice.flexdevice/.
+#if defined(_MSC_VER)
+	cuInit_f(0);
+#endif
 	cuGetExportTable_f((const void**)&lowlatency, &CU_ETID_PhysXInterface);
 
 	// flexdecomp: flexDevice.cpp:139/140 - -1 selects device 0
@@ -227,6 +242,12 @@ static FLEX_FORCEINLINE bool CudaSafeDelayLoadImpl(int deviceOrdinal, CUcontext*
 	int suggestedOrdinal = GetSuggestedDeviceOrdinalImpl();
 	(void)suggestedOrdinal;
 
+#if defined(_MSC_VER)
+	// FLEX_DEVICE_TRACE diagnostic
+	if (GetEnvironmentVariableA("FLEX_DEVICE_TRACE", nullptr, 0))
+		fprintf(stderr, "[devtrace] hCuda=%p getTbl=%p lowlatency=%p\n", hCudaDriver,
+		        (void*)cuGetExportTable_f, (const void*)lowlatency);
+#endif
 	// flexdecomp: flexDevice.cpp:149
 	if (lowlatency)
 	{
@@ -236,6 +257,11 @@ static FLEX_FORCEINLINE bool CudaSafeDelayLoadImpl(int deviceOrdinal, CUcontext*
 
 		// flexdecomp: flexDevice.cpp:154
 		CUresult result = lowlatency->cuCtxCreateOnNode3DLowLatency(outContext, flags, device);
+#if defined(_MSC_VER)
+		if (GetEnvironmentVariableA("FLEX_DEVICE_TRACE", nullptr, 0))
+			fprintf(stderr, "[devtrace] device=%d rc=%d ctx=%p\n", deviceOrdinal,
+			        (int)result, outContext ? *outContext : nullptr);
+#endif
 
 		// flexdecomp: flexDevice.cpp:155-158
 		if (result != CUDA_SUCCESS)
