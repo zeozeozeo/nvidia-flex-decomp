@@ -1,0 +1,3409 @@
+{
+  "shipped_dir": "C:\\Code\\nvidia-flex-decomp\\work\\apitest\\shipped",
+  "recon_dir": "C:\\Code\\nvidia-flex-decomp\\work\\apitest\\recon",
+  "recon_built": true,
+  "scenarios": {
+    "init_lifecycle": {
+      "shipped": {
+        "exit": 0,
+        "stderr_tail": "flex_apitest: scenario init_lifecycle: seed=0 dll=NvFlexReleaseCUDA_x64.dll ext=NvFlexExtReleaseCUDA_x64.dll device=NvFlexDeviceRelease_x64.dll\nflex_apitest: NvFlexGetVersion / NvFlexInit / device queries / shutdown, x2\nflex_apitest: scenario init_lifecycle: completed\n"
+      },
+      "recon": {
+        "exit": 0,
+        "stderr_tail": "flex_apitest: scenario init_lifecycle: seed=0 dll=NvFlexReleaseCUDA_x64.dll ext=NvFlexExtReleaseCUDA_x64.dll device=NvFlexDeviceRelease_x64.dll\nflex_apitest: NvFlexGetVersion / NvFlexInit / device queries / shutdown, x2\nflex_apitest: scenario init_lifecycle: completed\n"
+      }
+    },
+    "solver_lifecycle": {
+      "shipped": {
+        "exit": 0,
+        "stderr_tail": "flex_apitest: scenario solver_lifecycle: seed=0 dll=NvFlexReleaseCUDA_x64.dll ext=NvFlexExtReleaseCUDA_x64.dll device=NvFlexDeviceRelease_x64.dll\nflex_apitest: solver desc, GetSolvers, GetSolverLibrary, destroy\nflex_apitest: scenario solver_lifecycle: completed\n"
+      },
+      "recon": {
+        "exit": 0,
+        "stderr_tail": "flex_apitest: scenario solver_lifecycle: seed=0 dll=NvFlexReleaseCUDA_x64.dll ext=NvFlexExtReleaseCUDA_x64.dll device=NvFlexDeviceRelease_x64.dll\nflex_apitest: solver desc, GetSolvers, GetSolverLibrary, destroy\nflex_apitest: scenario solver_lifecycle: completed\n"
+      }
+    },
+    "params_roundtrip": {
+      "shipped": {
+        "exit": 0,
+        "stderr_tail": "flex_apitest: scenario params_roundtrip: seed=0 dll=NvFlexReleaseCUDA_x64.dll ext=NvFlexExtReleaseCUDA_x64.dll device=NvFlexDeviceRelease_x64.dll\nflex_apitest: SetParams/GetParams bitwise roundtrip of a full NvFlexParams\nflex_apitest: scenario params_roundtrip: completed\n"
+      },
+      "recon": {
+        "exit": 0,
+        "stderr_tail": "flex_apitest: scenario params_roundtrip: seed=0 dll=NvFlexReleaseCUDA_x64.dll ext=NvFlexExtReleaseCUDA_x64.dll device=NvFlexDeviceRelease_x64.dll\nflex_apitest: SetParams/GetParams bitwise roundtrip of a full NvFlexParams\nflex_apitest: scenario params_roundtrip: completed\n"
+      }
+    },
+    "buffers_basic": {
+      "shipped": {
+        "exit": 0,
+        "stderr_tail": "flex_apitest: scenario buffers_basic: seed=0 dll=NvFlexReleaseCUDA_x64.dll ext=NvFlexExtReleaseCUDA_x64.dll device=NvFlexDeviceRelease_x64.dll\nflex_apitest: Alloc/Map/Unmap/Free, buffer roundtrip, CopyDeviceToHost, error paths last\nflex_apitest: error callback error.0 from ..\\..\\cuda\\util.cpp:477\nflex_apitest: scenario buffers_basic: completed\n"
+      },
+      "recon": {
+        "exit": 0,
+        "stderr_tail": "flex_apitest: scenario buffers_basic: seed=0 dll=NvFlexReleaseCUDA_x64.dll ext=NvFlexExtReleaseCUDA_x64.dll device=NvFlexDeviceRelease_x64.dll\nflex_apitest: Alloc/Map/Unmap/Free, buffer roundtrip, CopyDeviceToHost, error paths last\nflex_apitest: error callback error.0 from ./../../../src/cuda/util.cpp:477\nflex_apitest: scenario buffers_basic: completed\n"
+      }
+    },
+    "particles_setget": {
+      "shipped": {
+        "exit": 0,
+        "stderr_tail": "flex_apitest: scenario particles_setget: seed=0 dll=NvFlexReleaseCUDA_x64.dll ext=NvFlexExtReleaseCUDA_x64.dll device=NvFlexDeviceRelease_x64.dll\nflex_apitest: full particle-state Set*/Get* roundtrip, pre-update\nflex_apitest: scenario particles_setget: completed\n"
+      },
+      "recon": {
+        "exit": 0,
+        "stderr_tail": "flex_apitest: scenario particles_setget: seed=0 dll=NvFlexReleaseCUDA_x64.dll ext=NvFlexExtReleaseCUDA_x64.dll device=NvFlexDeviceRelease_x64.dll\nflex_apitest: full particle-state Set*/Get* roundtrip, pre-update\nflex_apitest: scenario particles_setget: completed\n"
+      }
+    },
+    "shapes_meshes": {
+      "shipped": {
+        "exit": 0,
+        "stderr_tail": "flex_apitest: scenario shapes_meshes: seed=0 dll=NvFlexReleaseCUDA_x64.dll ext=NvFlexExtReleaseCUDA_x64.dll device=NvFlexDeviceRelease_x64.dll\nflex_apitest: convex / triangle mesh / SDF create-update-get-destroy + SetShapes\nflex_apitest: scenario shapes_meshes: completed\n"
+      },
+      "recon": {
+        "exit": 0,
+        "stderr_tail": "flex_apitest: scenario shapes_meshes: seed=0 dll=NvFlexReleaseCUDA_x64.dll ext=NvFlexExtReleaseCUDA_x64.dll device=NvFlexDeviceRelease_x64.dll\nflex_apitest: convex / triangle mesh / SDF create-update-get-destroy + SetShapes\nflex_apitest: scenario shapes_meshes: completed\n"
+      }
+    },
+    "rigids_springs_inflatables": {
+      "shipped": {
+        "exit": 0,
+        "stderr_tail": "flex_apitest: scenario rigids_springs_inflatables: seed=0 dll=NvFlexReleaseCUDA_x64.dll ext=NvFlexExtReleaseCUDA_x64.dll device=NvFlexDeviceRelease_x64.dll\nflex_apitest: SetRigids/GetRigids, SetSprings/GetSprings, SetInflatables\nflex_apitest: scenario rigids_springs_inflatables: completed\n"
+      },
+      "recon": {
+        "exit": 0,
+        "stderr_tail": "flex_apitest: scenario rigids_springs_inflatables: seed=0 dll=NvFlexReleaseCUDA_x64.dll ext=NvFlexExtReleaseCUDA_x64.dll device=NvFlexDeviceRelease_x64.dll\nflex_apitest: SetRigids/GetRigids, SetSprings/GetSprings, SetInflatables\nflex_apitest: scenario rigids_springs_inflatables: completed\n"
+      }
+    },
+    "dynamic_triangles_contacts": {
+      "shipped": {
+        "exit": 0,
+        "stderr_tail": "flex_apitest: scenario dynamic_triangles_contacts: seed=0 dll=NvFlexReleaseCUDA_x64.dll ext=NvFlexExtReleaseCUDA_x64.dll device=NvFlexDeviceRelease_x64.dll\nflex_apitest: GetDynamicTriangles + one update + GetContacts/GetNeighbors\nflex_apitest: scenario dynamic_triangles_contacts: completed\n"
+      },
+      "recon": {
+        "exit": 0,
+        "stderr_tail": "flex_apitest: scenario dynamic_triangles_contacts: seed=0 dll=NvFlexReleaseCUDA_x64.dll ext=NvFlexExtReleaseCUDA_x64.dll device=NvFlexDeviceRelease_x64.dll\nflex_apitest: GetDynamicTriangles + one update + GetContacts/GetNeighbors\nflex_apitest: scenario dynamic_triangles_contacts: completed\n"
+      }
+    },
+    "bounds_update": {
+      "shipped": {
+        "exit": 0,
+        "stderr_tail": "flex_apitest: scenario bounds_update: seed=0 dll=NvFlexReleaseCUDA_x64.dll ext=NvFlexExtReleaseCUDA_x64.dll device=NvFlexDeviceRelease_x64.dll\nflex_apitest: two updates of a known particle box, then GetBounds\nflex_apitest: scenario bounds_update: completed\n"
+      },
+      "recon": {
+        "exit": 0,
+        "stderr_tail": "flex_apitest: scenario bounds_update: seed=0 dll=NvFlexReleaseCUDA_x64.dll ext=NvFlexExtReleaseCUDA_x64.dll device=NvFlexDeviceRelease_x64.dll\nflex_apitest: two updates of a known particle box, then GetBounds\nflex_apitest: scenario bounds_update: completed\n"
+      }
+    },
+    "timers_debug": {
+      "shipped": {
+        "exit": 0,
+        "stderr_tail": "flex_apitest: scenario timers_debug: seed=0 dll=NvFlexReleaseCUDA_x64.dll ext=NvFlexExtReleaseCUDA_x64.dll device=NvFlexDeviceRelease_x64.dll\nflex_apitest: SetDebug + timed update + GetTimers/GetDetailTimers (names/counts only; times never recorded)\nflex_apitest: scenario timers_debug: completed\n"
+      },
+      "recon": {
+        "exit": 0,
+        "stderr_tail": "flex_apitest: scenario timers_debug: seed=0 dll=NvFlexReleaseCUDA_x64.dll ext=NvFlexExtReleaseCUDA_x64.dll device=NvFlexDeviceRelease_x64.dll\nflex_apitest: SetDebug + timed update + GetTimers/GetDetailTimers (names/counts only; times never recorded)\nflex_apitest: scenario timers_debug: completed\n"
+      }
+    },
+    "context_flush": {
+      "shipped": {
+        "exit": 0,
+        "stderr_tail": "flex_apitest: scenario context_flush: seed=0 dll=NvFlexReleaseCUDA_x64.dll ext=NvFlexExtReleaseCUDA_x64.dll device=NvFlexDeviceRelease_x64.dll\nflex_apitest: AcquireContext/RestoreContext pairs + Flush + ComputeWaitForGraphics\nflex_apitest: scenario context_flush: completed\n"
+      },
+      "recon": {
+        "exit": 0,
+        "stderr_tail": "flex_apitest: scenario context_flush: seed=0 dll=NvFlexReleaseCUDA_x64.dll ext=NvFlexExtReleaseCUDA_x64.dll device=NvFlexDeviceRelease_x64.dll\nflex_apitest: AcquireContext/RestoreContext pairs + Flush + ComputeWaitForGraphics\nflex_apitest: scenario context_flush: completed\n"
+      }
+    },
+    "register_probes": {
+      "shipped": {
+        "exit": 0,
+        "stderr_tail": "flex_apitest: scenario register_probes: seed=0 dll=NvFlexReleaseCUDA_x64.dll ext=NvFlexExtReleaseCUDA_x64.dll device=NvFlexDeviceRelease_x64.dll\nflex_apitest: OGL/D3D buffer registration with null/invalid args (error paths)\nflex_apitest: probe: RegisterOGLBuffer(lib, 0, 1024, 16)\nflex_apitest: error callback error.0 from ../../cuda/flex.cu:4792\nflex_apitest: error callback error.1 from ../../cuda/flex.cu:4793\nflex_apitest: probe: UnregisterOGLBuffer(ogl)\nflex_apitest: probe: UnregisterOGLBuffer(ogl) returned\nflex_apitest: probe: UnregisterOGLBuffer(nullptr)\nflex_apitest: probe: UnregisterOGLBuffer(nullptr) returned\nflex_apitest: probe: UnregisterD3DBuffer(nullptr)\nflex_apitest: probe: UnregisterD3DBuffer(nullptr) returned\nflex_apitest: scenario register_probes: completed\n"
+      },
+      "recon": {
+        "exit": 0,
+        "stderr_tail": "flex_apitest: scenario register_probes: seed=0 dll=NvFlexReleaseCUDA_x64.dll ext=NvFlexExtReleaseCUDA_x64.dll device=NvFlexDeviceRelease_x64.dll\nflex_apitest: OGL/D3D buffer registration with null/invalid args (error paths)\nflex_apitest: probe: RegisterOGLBuffer(lib, 0, 1024, 16)\nflex_apitest: error callback error.0 from ../../../src/cuda/flex.cu:4792\nflex_apitest: error callback error.1 from ../../../src/cuda/flex.cu:4793\nflex_apitest: probe: UnregisterOGLBuffer(ogl)\nflex_apitest: probe: UnregisterOGLBuffer(ogl) returned\nflex_apitest: probe: UnregisterOGLBuffer(nullptr)\nflex_apitest: probe: UnregisterOGLBuffer(nullptr) returned\nflex_apitest: probe: UnregisterD3DBuffer(nullptr)\nflex_apitest: probe: UnregisterD3DBuffer(nullptr) returned\nflex_apitest: scenario register_probes: completed\n"
+      }
+    },
+    "device_dll": {
+      "shipped": {
+        "exit": 0,
+        "stderr_tail": "flex_apitest: scenario device_dll: seed=0 dll=NvFlexReleaseCUDA_x64.dll ext=NvFlexExtReleaseCUDA_x64.dll device=NvFlexDeviceRelease_x64.dll\nflex_apitest: NvFlexDevice suggested ordinal + CUDA context before NvFlexInit (demo order, FleX/demo/main.cpp ~3185)\nflex_apitest: scenario device_dll: completed\n"
+      },
+      "recon": {
+        "exit": 0,
+        "stderr_tail": "flex_apitest: scenario device_dll: seed=0 dll=NvFlexReleaseCUDA_x64.dll ext=NvFlexExtReleaseCUDA_x64.dll device=NvFlexDeviceRelease_x64.dll\nflex_apitest: NvFlexDevice suggested ordinal + CUDA context before NvFlexInit (demo order, FleX/demo/main.cpp ~3185)\nflex_apitest: scenario device_dll: completed\n"
+      }
+    },
+    "sim_fluid": {
+      "shipped": {
+        "exit": 0,
+        "stderr_tail": "flex_apitest: scenario sim_fluid: seed=0 dll=NvFlexReleaseCUDA_x64.dll ext=NvFlexExtReleaseCUDA_x64.dll device=NvFlexDeviceRelease_x64.dll\nflex_apitest: default feature mode, 2000 fluid particles in a box, 8 frames\nflex_apitest: scenario sim_fluid: completed\n"
+      },
+      "recon": {
+        "exit": 0,
+        "stderr_tail": "flex_apitest: scenario sim_fluid: seed=0 dll=NvFlexReleaseCUDA_x64.dll ext=NvFlexExtReleaseCUDA_x64.dll device=NvFlexDeviceRelease_x64.dll\nflex_apitest: default feature mode, 2000 fluid particles in a box, 8 frames\nflex_apitest: scenario sim_fluid: completed\n"
+      }
+    },
+    "sim_fluid_simple": {
+      "shipped": {
+        "exit": 0,
+        "stderr_tail": "flex_apitest: scenario sim_fluid_simple: seed=0 dll=NvFlexReleaseCUDA_x64.dll ext=NvFlexExtReleaseCUDA_x64.dll device=NvFlexDeviceRelease_x64.dll\nflex_apitest: eNvFlexFeatureModeSimpleFluids, 1000 fluid particles, 6 frames\nflex_apitest: scenario sim_fluid_simple: completed\n"
+      },
+      "recon": {
+        "exit": 0,
+        "stderr_tail": "flex_apitest: scenario sim_fluid_simple: seed=0 dll=NvFlexReleaseCUDA_x64.dll ext=NvFlexExtReleaseCUDA_x64.dll device=NvFlexDeviceRelease_x64.dll\nflex_apitest: eNvFlexFeatureModeSimpleFluids, 1000 fluid particles, 6 frames\nflex_apitest: scenario sim_fluid_simple: completed\n"
+      }
+    },
+    "sim_solid": {
+      "shipped": {
+        "exit": 0,
+        "stderr_tail": "flex_apitest: scenario sim_solid: seed=0 dll=NvFlexReleaseCUDA_x64.dll ext=NvFlexExtReleaseCUDA_x64.dll device=NvFlexDeviceRelease_x64.dll\nflex_apitest: SimpleSolids mode, granular pile onto convex + triangle mesh, 6 frames\nflex_apitest: scenario sim_solid: completed\n"
+      },
+      "recon": {
+        "exit": 0,
+        "stderr_tail": "flex_apitest: scenario sim_solid: seed=0 dll=NvFlexReleaseCUDA_x64.dll ext=NvFlexExtReleaseCUDA_x64.dll device=NvFlexDeviceRelease_x64.dll\nflex_apitest: SimpleSolids mode, granular pile onto convex + triangle mesh, 6 frames\nflex_apitest: scenario sim_solid: completed\n"
+      }
+    },
+    "sim_diffuse": {
+      "shipped": {
+        "exit": 0,
+        "stderr_tail": "flex_apitest: scenario sim_diffuse: seed=0 dll=NvFlexReleaseCUDA_x64.dll ext=NvFlexExtReleaseCUDA_x64.dll device=NvFlexDeviceRelease_x64.dll\nflex_apitest: diffuse params + pre-seeded diffuse particles, 6 frames\nflex_apitest: scenario sim_diffuse: completed\n"
+      },
+      "recon": {
+        "exit": 0,
+        "stderr_tail": "flex_apitest: scenario sim_diffuse: seed=0 dll=NvFlexReleaseCUDA_x64.dll ext=NvFlexExtReleaseCUDA_x64.dll device=NvFlexDeviceRelease_x64.dll\nflex_apitest: diffuse params + pre-seeded diffuse particles, 6 frames\nflex_apitest: scenario sim_diffuse: completed\n"
+      }
+    },
+    "sim_dynamic_triangles": {
+      "shipped": {
+        "exit": 0,
+        "stderr_tail": "flex_apitest: scenario sim_dynamic_triangles: seed=0 dll=NvFlexReleaseCUDA_x64.dll ext=NvFlexExtReleaseCUDA_x64.dll device=NvFlexDeviceRelease_x64.dll\nflex_apitest: cloth-like particle field + deterministically animated pinned row, 5 frames\nflex_apitest: scenario sim_dynamic_triangles: completed\n"
+      },
+      "recon": {
+        "exit": 0,
+        "stderr_tail": "flex_apitest: scenario sim_dynamic_triangles: seed=0 dll=NvFlexReleaseCUDA_x64.dll ext=NvFlexExtReleaseCUDA_x64.dll device=NvFlexDeviceRelease_x64.dll\nflex_apitest: cloth-like particle field + deterministically animated pinned row, 5 frames\nflex_apitest: scenario sim_dynamic_triangles: completed\n"
+      }
+    },
+    "ext_cloth": {
+      "shipped": {
+        "exit": 0,
+        "stderr_tail": "flex_apitest: scenario ext_cloth: seed=0 dll=NvFlexReleaseCUDA_x64.dll ext=NvFlexExtReleaseCUDA_x64.dll device=NvFlexDeviceRelease_x64.dll\nflex_apitest: welded indices + cloth asset + container, 5 ticks\nflex_apitest: scenario ext_cloth: completed\n"
+      },
+      "recon": {
+        "exit": 0,
+        "stderr_tail": "flex_apitest: scenario ext_cloth: seed=0 dll=NvFlexReleaseCUDA_x64.dll ext=NvFlexExtReleaseCUDA_x64.dll device=NvFlexDeviceRelease_x64.dll\nflex_apitest: welded indices + cloth asset + container, 5 ticks\nflex_apitest: scenario ext_cloth: completed\n"
+      }
+    },
+    "ext_rigid": {
+      "shipped": {
+        "exit": 0,
+        "stderr_tail": "flex_apitest: scenario ext_rigid: seed=0 dll=NvFlexReleaseCUDA_x64.dll ext=NvFlexExtReleaseCUDA_x64.dll device=NvFlexDeviceRelease_x64.dll\nflex_apitest: rigid asset from box mesh + container, 5 ticks\nflex_apitest: scenario ext_rigid: completed\n"
+      },
+      "recon": {
+        "exit": 0,
+        "stderr_tail": "flex_apitest: scenario ext_rigid: seed=0 dll=NvFlexReleaseCUDA_x64.dll ext=NvFlexExtReleaseCUDA_x64.dll device=NvFlexDeviceRelease_x64.dll\nflex_apitest: rigid asset from box mesh + container, 5 ticks\nflex_apitest: scenario ext_rigid: completed\n"
+      }
+    },
+    "ext_soft": {
+      "shipped": {
+        "exit": 0,
+        "stderr_tail": "flex_apitest: scenario ext_soft: seed=0 dll=NvFlexReleaseCUDA_x64.dll ext=NvFlexExtReleaseCUDA_x64.dll device=NvFlexDeviceRelease_x64.dll\nflex_apitest: soft asset + soft mesh skinning + soft joint, 5 ticks\nflex_apitest: error callback error.0 from ..\\..\\cuda\\util.cpp:503\nflex_apitest: error callback error.1 from ..\\..\\cuda\\util.cpp:503\nflex_apitest: scenario ext_soft: completed\n"
+      },
+      "recon": {
+        "exit": 0,
+        "stderr_tail": "flex_apitest: scenario ext_soft: seed=0 dll=NvFlexReleaseCUDA_x64.dll ext=NvFlexExtReleaseCUDA_x64.dll device=NvFlexDeviceRelease_x64.dll\nflex_apitest: soft asset + soft mesh skinning + soft joint, 5 ticks\nflex_apitest: error callback error.0 from ./../../../src/cuda/util.cpp:503\nflex_apitest: error callback error.1 from ./../../../src/cuda/util.cpp:503\nflex_apitest: scenario ext_soft: completed\n"
+      }
+    },
+    "ext_tearing": {
+      "shipped": {
+        "exit": 0,
+        "stderr_tail": "flex_apitest: scenario ext_tearing: seed=0 dll=NvFlexReleaseCUDA_x64.dll ext=NvFlexExtReleaseCUDA_x64.dll device=NvFlexDeviceRelease_x64.dll\nflex_apitest: tearing cloth: NvFlexExtTearClothMesh at frame 3, 5 updates\nflex_apitest: scenario ext_tearing: completed\n"
+      },
+      "recon": {
+        "exit": 3221226505,
+        "stderr_tail": "flex_apitest: scenario ext_tearing: seed=0 dll=NvFlexReleaseCUDA_x64.dll ext=NvFlexExtReleaseCUDA_x64.dll device=NvFlexDeviceRelease_x64.dll\nflex_apitest: tearing cloth: NvFlexExtTearClothMesh at frame 3, 5 updates\n"
+      }
+    },
+    "ext_forcefield": {
+      "shipped": {
+        "exit": 0,
+        "stderr_tail": "flex_apitest: scenario ext_forcefield: seed=0 dll=NvFlexReleaseCUDA_x64.dll ext=NvFlexExtReleaseCUDA_x64.dll device=NvFlexDeviceRelease_x64.dll\nflex_apitest: force field callback applied during UpdateSolver, 5 frames\nflex_apitest: scenario ext_forcefield: completed\n"
+      },
+      "recon": {
+        "exit": 0,
+        "stderr_tail": "flex_apitest: scenario ext_forcefield: seed=0 dll=NvFlexReleaseCUDA_x64.dll ext=NvFlexExtReleaseCUDA_x64.dll device=NvFlexDeviceRelease_x64.dll\nflex_apitest: force field callback applied during UpdateSolver, 5 frames\nflex_apitest: scenario ext_forcefield: completed\n"
+      }
+    },
+    "ext_movingframe": {
+      "shipped": {
+        "exit": 0,
+        "stderr_tail": "flex_apitest: scenario ext_movingframe: seed=0 dll=NvFlexReleaseCUDA_x64.dll ext=NvFlexExtReleaseCUDA_x64.dll device=NvFlexDeviceRelease_x64.dll\nflex_apitest: moving frame: Init/Update/Apply on a particle field, 5 frames\nflex_apitest: scenario ext_movingframe: completed\n"
+      },
+      "recon": {
+        "exit": 0,
+        "stderr_tail": "flex_apitest: scenario ext_movingframe: seed=0 dll=NvFlexReleaseCUDA_x64.dll ext=NvFlexExtReleaseCUDA_x64.dll device=NvFlexDeviceRelease_x64.dll\nflex_apitest: moving frame: Init/Update/Apply on a particle field, 5 frames\nflex_apitest: scenario ext_movingframe: completed\n"
+      }
+    },
+    "ext_container_full": {
+      "shipped": {
+        "exit": 0,
+        "stderr_tail": "flex_apitest: scenario ext_container_full: seed=0 dll=NvFlexReleaseCUDA_x64.dll ext=NvFlexExtReleaseCUDA_x64.dll device=NvFlexDeviceRelease_x64.dll\nflex_apitest: container full lifecycle: instances, push/pull, active list, alloc/free, map/unmap, 2 ticks\nflex_apitest: scenario ext_container_full: completed\n"
+      },
+      "recon": {
+        "exit": 0,
+        "stderr_tail": "flex_apitest: scenario ext_container_full: seed=0 dll=NvFlexReleaseCUDA_x64.dll ext=NvFlexExtReleaseCUDA_x64.dll device=NvFlexDeviceRelease_x64.dll\nflex_apitest: container full lifecycle: instances, push/pull, active list, alloc/free, map/unmap, 2 ticks\nflex_apitest: scenario ext_container_full: completed\n"
+      }
+    }
+  },
+  "compare_exit": 1,
+  "verdicts": {
+    "bounds_update": {
+      "bounds_lower": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "bounds_upper": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "bounds_active_count": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      }
+    },
+    "buffers_basic": {
+      "alloc_particle_nonnull": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "alloc_phase_nonnull": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "alloc_index_nonnull": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "buffer_particles": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "buffer_phases": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "buffer_indices": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "freed_ok": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "copy_device_to_host": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "error.0": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "alloc_absurd_nonnull": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "alloc_absurd_masked": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "map_after_free_nonnull": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      }
+    },
+    "context_flush": {
+      "acquire_flush_restore_0": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "acquire_flush_restore_1": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "compute_wait_for_graphics": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      }
+    },
+    "device_dll": {
+      "device_suggested_ordinal": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "device_create_cuda_context": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "device_lib_nonnull": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "device_update_active_count": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "device_destroy_cuda_context": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      }
+    },
+    "dynamic_triangles_contacts": {
+      "desc_max_contacts": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "desc_max_neighbors": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "get_dynamic_triangles_indices": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "get_dynamic_triangles_normals": {
+        "verdict": "mismatch",
+        "max_ulp": 2123995547,
+        "first_diff_offset": 4
+      },
+      "get_contacts_counts": {
+        "verdict": "mismatch",
+        "max_ulp": null,
+        "first_diff_offset": 0
+      },
+      "get_contacts_indices": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "get_contacts_planes_head": {
+        "verdict": "info-mismatch",
+        "max_ulp": 1065353216,
+        "first_diff_offset": 4
+      },
+      "get_contacts_velocities_head": {
+        "verdict": "info-mismatch",
+        "max_ulp": 1065353217,
+        "first_diff_offset": 12
+      },
+      "get_neighbors_counts": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "get_neighbors_api_to_internal": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "get_neighbors_internal_to_api": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "get_neighbors_head": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      }
+    },
+    "ext_cloth": {
+      "welded_count": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "welded_unique_verts": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "welded_original_to_unique": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "cloth_asset_num_particles": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "cloth_asset_max_particles": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "cloth_asset_num_springs": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "cloth_asset_num_shapes": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "cloth_asset_num_triangles": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "f00_particles": {
+        "verdict": "mismatch",
+        "max_ulp": 1,
+        "first_diff_offset": 320
+      },
+      "f01_particles": {
+        "verdict": "mismatch",
+        "max_ulp": 11,
+        "first_diff_offset": 0
+      },
+      "f02_particles": {
+        "verdict": "mismatch",
+        "max_ulp": 166,
+        "first_diff_offset": 0
+      },
+      "f03_particles": {
+        "verdict": "mismatch",
+        "max_ulp": 2502,
+        "first_diff_offset": 0
+      },
+      "f04_particles": {
+        "verdict": "mismatch",
+        "max_ulp": 38584,
+        "first_diff_offset": 0
+      }
+    },
+    "ext_container_full": {
+      "container_asset_num_particles": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "container_asset_max_particles": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "container_asset_num_springs": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "container_asset_num_shapes": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "container_asset_num_triangles": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "container_active_count": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "container_active_head": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "container_alloc_particles": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "container_alloc_indices": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "f00_particles_inst1": {
+        "verdict": "mismatch",
+        "max_ulp": 1,
+        "first_diff_offset": 320
+      },
+      "f00_particles_inst2": {
+        "verdict": "mismatch",
+        "max_ulp": 1,
+        "first_diff_offset": 228
+      },
+      "f00_shape_data_nonnull": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "container_triangle_indices": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "container_triangle_normals": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "f01_particles_inst1": {
+        "verdict": "mismatch",
+        "max_ulp": 11,
+        "first_diff_offset": 0
+      },
+      "f01_particles_inst2": {
+        "verdict": "mismatch",
+        "max_ulp": 13,
+        "first_diff_offset": 48
+      },
+      "f02_particles_inst1": {
+        "verdict": "mismatch",
+        "max_ulp": 166,
+        "first_diff_offset": 0
+      },
+      "f02_particles_inst2": {
+        "verdict": "mismatch",
+        "max_ulp": 169,
+        "first_diff_offset": 0
+      },
+      "container_active_count_after_free": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      }
+    },
+    "ext_forcefield": {
+      "forcefield_callback_nonnull": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "f00_particles": {
+        "verdict": "mismatch",
+        "max_ulp": 9672044,
+        "first_diff_offset": 0
+      },
+      "f00_particles_hash": {
+        "verdict": "mismatch",
+        "max_ulp": null,
+        "first_diff_offset": 0
+      },
+      "f01_particles": {
+        "verdict": "mismatch",
+        "max_ulp": 17538936,
+        "first_diff_offset": 0
+      },
+      "f01_particles_hash": {
+        "verdict": "mismatch",
+        "max_ulp": null,
+        "first_diff_offset": 0
+      },
+      "f02_particles": {
+        "verdict": "mismatch",
+        "max_ulp": 56865933,
+        "first_diff_offset": 0
+      },
+      "f02_particles_hash": {
+        "verdict": "mismatch",
+        "max_ulp": null,
+        "first_diff_offset": 0
+      },
+      "f03_particles": {
+        "verdict": "mismatch",
+        "max_ulp": 2067551709,
+        "first_diff_offset": 0
+      },
+      "f03_particles_hash": {
+        "verdict": "mismatch",
+        "max_ulp": null,
+        "first_diff_offset": 0
+      },
+      "f04_particles": {
+        "verdict": "mismatch",
+        "max_ulp": 2078388528,
+        "first_diff_offset": 0
+      },
+      "f04_particles_hash": {
+        "verdict": "mismatch",
+        "max_ulp": null,
+        "first_diff_offset": 0
+      }
+    },
+    "ext_movingframe": {
+      "f00_particles": {
+        "verdict": "mismatch",
+        "max_ulp": 2035357674,
+        "first_diff_offset": 0
+      },
+      "f00_frame_velocity": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "f00_frame_acceleration": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "f01_particles": {
+        "verdict": "mismatch",
+        "max_ulp": 1021958000,
+        "first_diff_offset": 0
+      },
+      "f01_frame_velocity": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "f01_frame_acceleration": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "f02_particles": {
+        "verdict": "mismatch",
+        "max_ulp": 1021958002,
+        "first_diff_offset": 0
+      },
+      "f02_frame_velocity": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "f02_frame_acceleration": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "f03_particles": {
+        "verdict": "mismatch",
+        "max_ulp": 1021957994,
+        "first_diff_offset": 0
+      },
+      "f03_frame_velocity": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "f03_frame_acceleration": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "f04_particles": {
+        "verdict": "mismatch",
+        "max_ulp": 1021957994,
+        "first_diff_offset": 0
+      },
+      "f04_frame_velocity": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "f04_frame_acceleration": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      }
+    },
+    "ext_rigid": {
+      "rigid_asset_num_particles": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "rigid_asset_max_particles": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "rigid_asset_num_springs": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "rigid_asset_num_shapes": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "rigid_asset_num_triangles": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "f00_particles": {
+        "verdict": "mismatch",
+        "max_ulp": 6540,
+        "first_diff_offset": 0
+      },
+      "f00_shape_data_nonnull": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "f00_shape_positions": {
+        "verdict": "mismatch",
+        "max_ulp": 15099496,
+        "first_diff_offset": 0
+      },
+      "f00_shape_rotations": {
+        "verdict": "mismatch",
+        "max_ulp": 1047217244,
+        "first_diff_offset": 8
+      },
+      "f01_particles": {
+        "verdict": "mismatch",
+        "max_ulp": 19620,
+        "first_diff_offset": 0
+      },
+      "f01_shape_data_nonnull": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "f01_shape_positions": {
+        "verdict": "mismatch",
+        "max_ulp": 15086416,
+        "first_diff_offset": 0
+      },
+      "f01_shape_rotations": {
+        "verdict": "mismatch",
+        "max_ulp": 1047217244,
+        "first_diff_offset": 8
+      },
+      "f02_particles": {
+        "verdict": "mismatch",
+        "max_ulp": 39240,
+        "first_diff_offset": 0
+      },
+      "f02_shape_data_nonnull": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "f02_shape_positions": {
+        "verdict": "mismatch",
+        "max_ulp": 15066796,
+        "first_diff_offset": 0
+      },
+      "f02_shape_rotations": {
+        "verdict": "mismatch",
+        "max_ulp": 1047217244,
+        "first_diff_offset": 8
+      },
+      "f03_particles": {
+        "verdict": "mismatch",
+        "max_ulp": 65400,
+        "first_diff_offset": 0
+      },
+      "f03_shape_data_nonnull": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "f03_shape_positions": {
+        "verdict": "mismatch",
+        "max_ulp": 15040636,
+        "first_diff_offset": 0
+      },
+      "f03_shape_rotations": {
+        "verdict": "mismatch",
+        "max_ulp": 1047217244,
+        "first_diff_offset": 8
+      },
+      "f04_particles": {
+        "verdict": "mismatch",
+        "max_ulp": 98100,
+        "first_diff_offset": 0
+      },
+      "f04_shape_data_nonnull": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "f04_shape_positions": {
+        "verdict": "mismatch",
+        "max_ulp": 15007936,
+        "first_diff_offset": 0
+      },
+      "f04_shape_rotations": {
+        "verdict": "mismatch",
+        "max_ulp": 1047217244,
+        "first_diff_offset": 8
+      }
+    },
+    "ext_soft": {
+      "soft_asset_num_particles": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "soft_asset_max_particles": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "soft_asset_num_springs": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "soft_asset_num_shapes": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "soft_asset_num_triangles": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "skinning_weights": {
+        "verdict": "mismatch",
+        "max_ulp": 1,
+        "first_diff_offset": 4
+      },
+      "skinning_indices": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "soft_joint_nonnull": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "soft_joint_transform_set": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "f00_particles": {
+        "verdict": "mismatch",
+        "max_ulp": 6051329,
+        "first_diff_offset": 0
+      },
+      "f01_particles": {
+        "verdict": "mismatch",
+        "max_ulp": 6513020,
+        "first_diff_offset": 0
+      },
+      "f02_particles": {
+        "verdict": "mismatch",
+        "max_ulp": 6874240,
+        "first_diff_offset": 0
+      },
+      "f03_particles": {
+        "verdict": "mismatch",
+        "max_ulp": 7086044,
+        "first_diff_offset": 0
+      },
+      "f04_particles": {
+        "verdict": "mismatch",
+        "max_ulp": 7190946,
+        "first_diff_offset": 0
+      },
+      "f05_particles_after_update_instances": {
+        "verdict": "mismatch",
+        "max_ulp": 7190946,
+        "first_diff_offset": 0
+      },
+      "error.0": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "error.1": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "f05_shape_data_nonnull": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "f05_shape_positions": {
+        "verdict": "mismatch",
+        "max_ulp": 13093501,
+        "first_diff_offset": 0
+      },
+      "f05_shape_rotations": {
+        "verdict": "mismatch",
+        "max_ulp": 2129794431,
+        "first_diff_offset": 4
+      }
+    },
+    "ext_tearing": {
+      "__scenario__": {
+        "verdict": "candidate-crash",
+        "detail": "C:\\Code\\nvidia-flex-decomp\\work\\apitest\\recon\\ext_tearing.bin: truncated payload at 3921"
+      }
+    },
+    "init_lifecycle": {
+      "version": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "init_desc": {
+        "verdict": "mismatch",
+        "max_ulp": null,
+        "first_diff_offset": 33
+      },
+      "lib_nonnull_0": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "device_name_0": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "device_ptr_0_nonnull": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "device_ptr_0_masked": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "context_ptr_0_nonnull": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "context_ptr_0_masked": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "lib_nonnull_1": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "device_name_1": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "device_ptr_1_nonnull": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "device_ptr_1_masked": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "context_ptr_1_nonnull": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "context_ptr_1_masked": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      }
+    },
+    "params_roundtrip": {
+      "params_input": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "params_roundtrip": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      }
+    },
+    "particles_setget": {
+      "phase_helper_probe": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "shape_flag_helper_probe": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "get_active_count": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "get_particles": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "get_velocities": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "get_phases": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "get_active": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "get_rest_particles": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "get_smooth_particles": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "get_densities": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "get_anisotropy_q1": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "get_anisotropy_q2": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "get_anisotropy_q3": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "get_normals": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "get_diffuse_count": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "get_diffuse_p": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "get_diffuse_v": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      }
+    },
+    "register_probes": {
+      "error.0": {
+        "verdict": "info-mismatch",
+        "max_ulp": null,
+        "first_diff_offset": 13,
+        "detail": "length 98 vs 97"
+      },
+      "error.1": {
+        "verdict": "info-mismatch",
+        "max_ulp": null,
+        "first_diff_offset": 12,
+        "detail": "length 88 vs 89"
+      },
+      "register_ogl_nullid_nonnull": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "register_ogl_nullid_masked": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "unregister_ogl_done": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "unregister_ogl_null_ok": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "unregister_d3d_null_ok": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "register_d3d_skipped": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      }
+    },
+    "rigids_springs_inflatables": {
+      "get_rigids_offsets": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "get_rigids_indices": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "get_rigids_rest_positions": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "get_rigids_rest_normals": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "get_rigids_stiffness": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "get_rigids_thresholds": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "get_rigids_creeps": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "get_rigids_rotations": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "get_rigids_translations": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "get_springs_indices": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "get_springs_lengths": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "get_springs_stiffness": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "inflatables_set": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "dynamic_triangles_indices": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      }
+    },
+    "shapes_meshes": {
+      "convex_create": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "convex_list_count": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "convex_list_ids": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "convex_bounds_lower": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "convex_bounds_upper": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "trimesh_create": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "trimesh_list_count": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "trimesh_list_ids": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "trimesh_bounds_lower": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "trimesh_bounds_upper": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "sdf_create": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "sdf_dims": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "sdf_list_count": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "sdf_list_ids": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "set_shapes_geometry": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "set_shapes_flags": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "set_shapes_positions": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "set_shapes_rotations": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "get_shape_bvh_head": {
+        "verdict": "info-mismatch",
+        "max_ulp": null,
+        "first_diff_offset": 17
+      },
+      "get_shape_bvh_done": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "shapes_destroyed": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      }
+    },
+    "sim_diffuse": {
+      "f00_active_count": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "f00_particles_hash": {
+        "verdict": "mismatch",
+        "max_ulp": null,
+        "first_diff_offset": 0
+      },
+      "f00_velocities_hash": {
+        "verdict": "mismatch",
+        "max_ulp": null,
+        "first_diff_offset": 0
+      },
+      "f00_particles": {
+        "verdict": "mismatch",
+        "max_ulp": 1,
+        "first_diff_offset": 0
+      },
+      "f00_velocities": {
+        "verdict": "mismatch",
+        "max_ulp": 896532481,
+        "first_diff_offset": 0
+      },
+      "f00_phases": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "f00_active": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "f00_densities": {
+        "verdict": "info-mismatch",
+        "max_ulp": 9241,
+        "first_diff_offset": 0
+      },
+      "f00_normals": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "f00_smooth": {
+        "verdict": "mismatch",
+        "max_ulp": 480,
+        "first_diff_offset": 2032
+      },
+      "f00_anisotropy_q1": {
+        "verdict": "mismatch",
+        "max_ulp": 7040,
+        "first_diff_offset": 0
+      },
+      "f00_anisotropy_q2": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "f00_anisotropy_q3": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "f00_diffuse_count": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "f00_diffuse_p": {
+        "verdict": "info-mismatch",
+        "max_ulp": 21606375,
+        "first_diff_offset": 1120
+      },
+      "f00_diffuse_v": {
+        "verdict": "info-mismatch",
+        "max_ulp": 2102940041,
+        "first_diff_offset": 1076
+      },
+      "f01_active_count": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "f01_particles_hash": {
+        "verdict": "mismatch",
+        "max_ulp": null,
+        "first_diff_offset": 0
+      },
+      "f01_velocities_hash": {
+        "verdict": "mismatch",
+        "max_ulp": null,
+        "first_diff_offset": 0
+      },
+      "f01_particles": {
+        "verdict": "mismatch",
+        "max_ulp": 5,
+        "first_diff_offset": 8
+      },
+      "f01_velocities": {
+        "verdict": "mismatch",
+        "max_ulp": 2490368,
+        "first_diff_offset": 0
+      },
+      "f01_phases": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "f01_active": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "f01_densities": {
+        "verdict": "info-mismatch",
+        "max_ulp": 30,
+        "first_diff_offset": 8
+      },
+      "f01_normals": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "f01_smooth": {
+        "verdict": "mismatch",
+        "max_ulp": 1920,
+        "first_diff_offset": 3488
+      },
+      "f01_anisotropy_q1": {
+        "verdict": "mismatch",
+        "max_ulp": 23,
+        "first_diff_offset": 4
+      },
+      "f01_anisotropy_q2": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "f01_anisotropy_q3": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "f01_diffuse_count": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "f01_diffuse_p": {
+        "verdict": "info-mismatch",
+        "max_ulp": 21042876,
+        "first_diff_offset": 1120
+      },
+      "f01_diffuse_v": {
+        "verdict": "info-mismatch",
+        "max_ulp": 2102814748,
+        "first_diff_offset": 1060
+      },
+      "f02_active_count": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "f02_particles_hash": {
+        "verdict": "mismatch",
+        "max_ulp": null,
+        "first_diff_offset": 0
+      },
+      "f02_velocities_hash": {
+        "verdict": "mismatch",
+        "max_ulp": null,
+        "first_diff_offset": 0
+      },
+      "f02_particles": {
+        "verdict": "mismatch",
+        "max_ulp": 8,
+        "first_diff_offset": 0
+      },
+      "f02_velocities": {
+        "verdict": "mismatch",
+        "max_ulp": 4456448,
+        "first_diff_offset": 0
+      },
+      "f02_phases": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "f02_active": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "f02_densities": {
+        "verdict": "info-mismatch",
+        "max_ulp": 84,
+        "first_diff_offset": 0
+      },
+      "f02_normals": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "f02_smooth": {
+        "verdict": "mismatch",
+        "max_ulp": 960,
+        "first_diff_offset": 6688
+      },
+      "f02_anisotropy_q1": {
+        "verdict": "mismatch",
+        "max_ulp": 64,
+        "first_diff_offset": 0
+      },
+      "f02_anisotropy_q2": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "f02_anisotropy_q3": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "f02_diffuse_count": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "f02_diffuse_p": {
+        "verdict": "info-mismatch",
+        "max_ulp": 23200102,
+        "first_diff_offset": 0
+      },
+      "f02_diffuse_v": {
+        "verdict": "info-mismatch",
+        "max_ulp": 2112098366,
+        "first_diff_offset": 0
+      },
+      "f03_active_count": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "f03_particles_hash": {
+        "verdict": "mismatch",
+        "max_ulp": null,
+        "first_diff_offset": 0
+      },
+      "f03_velocities_hash": {
+        "verdict": "mismatch",
+        "max_ulp": null,
+        "first_diff_offset": 0
+      },
+      "f03_particles": {
+        "verdict": "mismatch",
+        "max_ulp": 31,
+        "first_diff_offset": 0
+      },
+      "f03_velocities": {
+        "verdict": "mismatch",
+        "max_ulp": 614400,
+        "first_diff_offset": 4
+      },
+      "f03_phases": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "f03_active": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "f03_densities": {
+        "verdict": "info-mismatch",
+        "max_ulp": 487,
+        "first_diff_offset": 0
+      },
+      "f03_normals": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "f03_smooth": {
+        "verdict": "mismatch",
+        "max_ulp": 2640,
+        "first_diff_offset": 9280
+      },
+      "f03_anisotropy_q1": {
+        "verdict": "mismatch",
+        "max_ulp": 742,
+        "first_diff_offset": 0
+      },
+      "f03_anisotropy_q2": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "f03_anisotropy_q3": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "f03_diffuse_count": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "f03_diffuse_p": {
+        "verdict": "info-mismatch",
+        "max_ulp": 23454010,
+        "first_diff_offset": 0
+      },
+      "f03_diffuse_v": {
+        "verdict": "info-mismatch",
+        "max_ulp": 2127971095,
+        "first_diff_offset": 0
+      },
+      "f04_active_count": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "f04_particles_hash": {
+        "verdict": "mismatch",
+        "max_ulp": null,
+        "first_diff_offset": 0
+      },
+      "f04_velocities_hash": {
+        "verdict": "mismatch",
+        "max_ulp": null,
+        "first_diff_offset": 0
+      },
+      "f04_particles": {
+        "verdict": "mismatch",
+        "max_ulp": 222,
+        "first_diff_offset": 0
+      },
+      "f04_velocities": {
+        "verdict": "mismatch",
+        "max_ulp": 2490368,
+        "first_diff_offset": 0
+      },
+      "f04_phases": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "f04_active": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "f04_densities": {
+        "verdict": "info-mismatch",
+        "max_ulp": 4413,
+        "first_diff_offset": 0
+      },
+      "f04_normals": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "f04_smooth": {
+        "verdict": "mismatch",
+        "max_ulp": 17280,
+        "first_diff_offset": 6272
+      },
+      "f04_anisotropy_q1": {
+        "verdict": "mismatch",
+        "max_ulp": 6723,
+        "first_diff_offset": 0
+      },
+      "f04_anisotropy_q2": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "f04_anisotropy_q3": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "f04_diffuse_count": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "f04_diffuse_p": {
+        "verdict": "info-mismatch",
+        "max_ulp": 26916342,
+        "first_diff_offset": 0
+      },
+      "f04_diffuse_v": {
+        "verdict": "info-mismatch",
+        "max_ulp": 2131207687,
+        "first_diff_offset": 288
+      },
+      "f05_active_count": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "f05_particles_hash": {
+        "verdict": "mismatch",
+        "max_ulp": null,
+        "first_diff_offset": 0
+      },
+      "f05_velocities_hash": {
+        "verdict": "mismatch",
+        "max_ulp": null,
+        "first_diff_offset": 0
+      },
+      "f05_particles": {
+        "verdict": "mismatch",
+        "max_ulp": 419,
+        "first_diff_offset": 0
+      },
+      "f05_velocities": {
+        "verdict": "mismatch",
+        "max_ulp": 1831075841,
+        "first_diff_offset": 0
+      },
+      "f05_phases": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "f05_active": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "f05_densities": {
+        "verdict": "info-mismatch",
+        "max_ulp": 4667,
+        "first_diff_offset": 0
+      },
+      "f05_normals": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "f05_smooth": {
+        "verdict": "mismatch",
+        "max_ulp": 3120,
+        "first_diff_offset": 10448
+      },
+      "f05_anisotropy_q1": {
+        "verdict": "mismatch",
+        "max_ulp": 3555,
+        "first_diff_offset": 0
+      },
+      "f05_anisotropy_q2": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "f05_anisotropy_q3": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "f05_diffuse_count": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "f05_diffuse_p": {
+        "verdict": "info-mismatch",
+        "max_ulp": 37588386,
+        "first_diff_offset": 0
+      },
+      "f05_diffuse_v": {
+        "verdict": "info-mismatch",
+        "max_ulp": 2139622969,
+        "first_diff_offset": 48
+      }
+    },
+    "sim_dynamic_triangles": {
+      "f00_active_count": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "f00_particles_hash": {
+        "verdict": "mismatch",
+        "max_ulp": null,
+        "first_diff_offset": 0
+      },
+      "f00_velocities_hash": {
+        "verdict": "mismatch",
+        "max_ulp": null,
+        "first_diff_offset": 0
+      },
+      "f00_particles": {
+        "verdict": "mismatch",
+        "max_ulp": 144936,
+        "first_diff_offset": 1732
+      },
+      "f00_velocities": {
+        "verdict": "mismatch",
+        "max_ulp": 24270864,
+        "first_diff_offset": 1300
+      },
+      "f00_phases": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "f00_active": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "f00_densities": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "f00_normals": {
+        "verdict": "mismatch",
+        "max_ulp": 2130706433,
+        "first_diff_offset": 8
+      },
+      "f00_smooth": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "f00_anisotropy_q1": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "f00_anisotropy_q2": {
+        "verdict": "mismatch",
+        "max_ulp": 2172649473,
+        "first_diff_offset": 8
+      },
+      "f00_anisotropy_q3": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "f01_active_count": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "f01_particles_hash": {
+        "verdict": "mismatch",
+        "max_ulp": null,
+        "first_diff_offset": 0
+      },
+      "f01_velocities_hash": {
+        "verdict": "mismatch",
+        "max_ulp": null,
+        "first_diff_offset": 0
+      },
+      "f01_particles": {
+        "verdict": "mismatch",
+        "max_ulp": 144936,
+        "first_diff_offset": 1732
+      },
+      "f01_velocities": {
+        "verdict": "mismatch",
+        "max_ulp": 24270864,
+        "first_diff_offset": 1300
+      },
+      "f01_phases": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "f01_active": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "f01_densities": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "f01_normals": {
+        "verdict": "mismatch",
+        "max_ulp": 2130706433,
+        "first_diff_offset": 8
+      },
+      "f01_smooth": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "f01_anisotropy_q1": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "f01_anisotropy_q2": {
+        "verdict": "mismatch",
+        "max_ulp": 2172649473,
+        "first_diff_offset": 8
+      },
+      "f01_anisotropy_q3": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "f02_active_count": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "f02_particles_hash": {
+        "verdict": "mismatch",
+        "max_ulp": null,
+        "first_diff_offset": 0
+      },
+      "f02_velocities_hash": {
+        "verdict": "mismatch",
+        "max_ulp": null,
+        "first_diff_offset": 0
+      },
+      "f02_particles": {
+        "verdict": "mismatch",
+        "max_ulp": 144936,
+        "first_diff_offset": 1732
+      },
+      "f02_velocities": {
+        "verdict": "mismatch",
+        "max_ulp": 24270864,
+        "first_diff_offset": 1300
+      },
+      "f02_phases": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "f02_active": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "f02_densities": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "f02_normals": {
+        "verdict": "mismatch",
+        "max_ulp": 2130706433,
+        "first_diff_offset": 8
+      },
+      "f02_smooth": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "f02_anisotropy_q1": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "f02_anisotropy_q2": {
+        "verdict": "mismatch",
+        "max_ulp": 2172649473,
+        "first_diff_offset": 8
+      },
+      "f02_anisotropy_q3": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "f03_active_count": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "f03_particles_hash": {
+        "verdict": "mismatch",
+        "max_ulp": null,
+        "first_diff_offset": 0
+      },
+      "f03_velocities_hash": {
+        "verdict": "mismatch",
+        "max_ulp": null,
+        "first_diff_offset": 0
+      },
+      "f03_particles": {
+        "verdict": "mismatch",
+        "max_ulp": 144936,
+        "first_diff_offset": 1732
+      },
+      "f03_velocities": {
+        "verdict": "mismatch",
+        "max_ulp": 24270864,
+        "first_diff_offset": 1300
+      },
+      "f03_phases": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "f03_active": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "f03_densities": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "f03_normals": {
+        "verdict": "mismatch",
+        "max_ulp": 2130706433,
+        "first_diff_offset": 8
+      },
+      "f03_smooth": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "f03_anisotropy_q1": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "f03_anisotropy_q2": {
+        "verdict": "mismatch",
+        "max_ulp": 2172649473,
+        "first_diff_offset": 8
+      },
+      "f03_anisotropy_q3": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "f04_active_count": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "f04_particles_hash": {
+        "verdict": "mismatch",
+        "max_ulp": null,
+        "first_diff_offset": 0
+      },
+      "f04_velocities_hash": {
+        "verdict": "mismatch",
+        "max_ulp": null,
+        "first_diff_offset": 0
+      },
+      "f04_particles": {
+        "verdict": "mismatch",
+        "max_ulp": 144936,
+        "first_diff_offset": 1732
+      },
+      "f04_velocities": {
+        "verdict": "mismatch",
+        "max_ulp": 24270864,
+        "first_diff_offset": 1300
+      },
+      "f04_phases": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "f04_active": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "f04_densities": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "f04_normals": {
+        "verdict": "mismatch",
+        "max_ulp": 2130706433,
+        "first_diff_offset": 8
+      },
+      "f04_smooth": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "f04_anisotropy_q1": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "f04_anisotropy_q2": {
+        "verdict": "mismatch",
+        "max_ulp": 2172649473,
+        "first_diff_offset": 8
+      },
+      "f04_anisotropy_q3": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "get_dynamic_triangles_indices": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "get_dynamic_triangles_normals": {
+        "verdict": "mismatch",
+        "max_ulp": 2130706433,
+        "first_diff_offset": 8
+      }
+    },
+    "sim_fluid": {
+      "f00_active_count": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "f00_particles_hash": {
+        "verdict": "mismatch",
+        "max_ulp": null,
+        "first_diff_offset": 0
+      },
+      "f00_velocities_hash": {
+        "verdict": "mismatch",
+        "max_ulp": null,
+        "first_diff_offset": 0
+      },
+      "f00_particles": {
+        "verdict": "mismatch",
+        "max_ulp": 1,
+        "first_diff_offset": 0
+      },
+      "f00_velocities": {
+        "verdict": "mismatch",
+        "max_ulp": 896532480,
+        "first_diff_offset": 0
+      },
+      "f00_phases": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "f00_active": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "f00_densities": {
+        "verdict": "info-mismatch",
+        "max_ulp": 78390,
+        "first_diff_offset": 0
+      },
+      "f00_normals": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "f00_smooth": {
+        "verdict": "mismatch",
+        "max_ulp": 5,
+        "first_diff_offset": 0
+      },
+      "f00_anisotropy_q1": {
+        "verdict": "mismatch",
+        "max_ulp": 2125530874,
+        "first_diff_offset": 0
+      },
+      "f00_anisotropy_q2": {
+        "verdict": "mismatch",
+        "max_ulp": 2126161201,
+        "first_diff_offset": 0
+      },
+      "f00_anisotropy_q3": {
+        "verdict": "mismatch",
+        "max_ulp": 2125687519,
+        "first_diff_offset": 0
+      },
+      "f01_active_count": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "f01_particles_hash": {
+        "verdict": "mismatch",
+        "max_ulp": null,
+        "first_diff_offset": 0
+      },
+      "f01_velocities_hash": {
+        "verdict": "mismatch",
+        "max_ulp": null,
+        "first_diff_offset": 0
+      },
+      "f02_active_count": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "f02_particles_hash": {
+        "verdict": "mismatch",
+        "max_ulp": null,
+        "first_diff_offset": 0
+      },
+      "f02_velocities_hash": {
+        "verdict": "mismatch",
+        "max_ulp": null,
+        "first_diff_offset": 0
+      },
+      "f03_active_count": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "f03_particles_hash": {
+        "verdict": "mismatch",
+        "max_ulp": null,
+        "first_diff_offset": 0
+      },
+      "f03_velocities_hash": {
+        "verdict": "mismatch",
+        "max_ulp": null,
+        "first_diff_offset": 0
+      },
+      "f04_active_count": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "f04_particles_hash": {
+        "verdict": "mismatch",
+        "max_ulp": null,
+        "first_diff_offset": 0
+      },
+      "f04_velocities_hash": {
+        "verdict": "mismatch",
+        "max_ulp": null,
+        "first_diff_offset": 0
+      },
+      "f04_particles": {
+        "verdict": "mismatch",
+        "max_ulp": 360,
+        "first_diff_offset": 0
+      },
+      "f04_velocities": {
+        "verdict": "mismatch",
+        "max_ulp": 677888,
+        "first_diff_offset": 0
+      },
+      "f04_phases": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "f04_active": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "f04_densities": {
+        "verdict": "info-mismatch",
+        "max_ulp": 23906,
+        "first_diff_offset": 0
+      },
+      "f04_normals": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "f04_smooth": {
+        "verdict": "mismatch",
+        "max_ulp": 520,
+        "first_diff_offset": 0
+      },
+      "f04_anisotropy_q1": {
+        "verdict": "mismatch",
+        "max_ulp": 2105577108,
+        "first_diff_offset": 0
+      },
+      "f04_anisotropy_q2": {
+        "verdict": "mismatch",
+        "max_ulp": 2119353166,
+        "first_diff_offset": 0
+      },
+      "f04_anisotropy_q3": {
+        "verdict": "mismatch",
+        "max_ulp": 2119748530,
+        "first_diff_offset": 0
+      },
+      "f05_active_count": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "f05_particles_hash": {
+        "verdict": "mismatch",
+        "max_ulp": null,
+        "first_diff_offset": 0
+      },
+      "f05_velocities_hash": {
+        "verdict": "mismatch",
+        "max_ulp": null,
+        "first_diff_offset": 0
+      },
+      "f06_active_count": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "f06_particles_hash": {
+        "verdict": "mismatch",
+        "max_ulp": null,
+        "first_diff_offset": 0
+      },
+      "f06_velocities_hash": {
+        "verdict": "mismatch",
+        "max_ulp": null,
+        "first_diff_offset": 0
+      },
+      "f07_active_count": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "f07_particles_hash": {
+        "verdict": "mismatch",
+        "max_ulp": null,
+        "first_diff_offset": 0
+      },
+      "f07_velocities_hash": {
+        "verdict": "mismatch",
+        "max_ulp": null,
+        "first_diff_offset": 0
+      }
+    },
+    "sim_fluid_simple": {
+      "f00_active_count": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "f00_particles_hash": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "f00_velocities_hash": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "f00_particles": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "f00_velocities": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "f00_phases": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "f00_active": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "f00_densities": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "f00_normals": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "f00_smooth": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "f00_anisotropy_q1": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "f00_anisotropy_q2": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "f00_anisotropy_q3": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "f01_active_count": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "f01_particles_hash": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "f01_velocities_hash": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "f01_particles": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "f01_velocities": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "f01_phases": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "f01_active": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "f01_densities": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "f01_normals": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "f01_smooth": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "f01_anisotropy_q1": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "f01_anisotropy_q2": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "f01_anisotropy_q3": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "f02_active_count": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "f02_particles_hash": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "f02_velocities_hash": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "f02_particles": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "f02_velocities": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "f02_phases": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "f02_active": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "f02_densities": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "f02_normals": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "f02_smooth": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "f02_anisotropy_q1": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "f02_anisotropy_q2": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "f02_anisotropy_q3": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "f03_active_count": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "f03_particles_hash": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "f03_velocities_hash": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "f03_particles": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "f03_velocities": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "f03_phases": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "f03_active": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "f03_densities": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "f03_normals": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "f03_smooth": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "f03_anisotropy_q1": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "f03_anisotropy_q2": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "f03_anisotropy_q3": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "f04_active_count": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "f04_particles_hash": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "f04_velocities_hash": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "f04_particles": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "f04_velocities": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "f04_phases": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "f04_active": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "f04_densities": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "f04_normals": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "f04_smooth": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "f04_anisotropy_q1": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "f04_anisotropy_q2": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "f04_anisotropy_q3": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "f05_active_count": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "f05_particles_hash": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "f05_velocities_hash": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "f05_particles": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "f05_velocities": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "f05_phases": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "f05_active": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "f05_densities": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "f05_normals": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "f05_smooth": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "f05_anisotropy_q1": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "f05_anisotropy_q2": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "f05_anisotropy_q3": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      }
+    },
+    "sim_solid": {
+      "f00_active_count": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "f00_particles_hash": {
+        "verdict": "mismatch",
+        "max_ulp": null,
+        "first_diff_offset": 0
+      },
+      "f00_velocities_hash": {
+        "verdict": "mismatch",
+        "max_ulp": null,
+        "first_diff_offset": 0
+      },
+      "f00_particles": {
+        "verdict": "mismatch",
+        "max_ulp": 2071107890,
+        "first_diff_offset": 0
+      },
+      "f00_velocities": {
+        "verdict": "mismatch",
+        "max_ulp": 2108761898,
+        "first_diff_offset": 0
+      },
+      "f00_phases": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "f00_active": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "f00_densities": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "f00_normals": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "f00_smooth": {
+        "verdict": "mismatch",
+        "max_ulp": 1041044304,
+        "first_diff_offset": 0
+      },
+      "f00_anisotropy_q1": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "f00_anisotropy_q2": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "f00_anisotropy_q3": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "f01_active_count": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "f01_particles_hash": {
+        "verdict": "mismatch",
+        "max_ulp": null,
+        "first_diff_offset": 0
+      },
+      "f01_velocities_hash": {
+        "verdict": "mismatch",
+        "max_ulp": null,
+        "first_diff_offset": 0
+      },
+      "f01_particles": {
+        "verdict": "mismatch",
+        "max_ulp": 19862392,
+        "first_diff_offset": 0
+      },
+      "f01_velocities": {
+        "verdict": "mismatch",
+        "max_ulp": 2125435596,
+        "first_diff_offset": 0
+      },
+      "f01_phases": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "f01_active": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "f01_densities": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "f01_normals": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "f01_smooth": {
+        "verdict": "mismatch",
+        "max_ulp": 1016586839,
+        "first_diff_offset": 672
+      },
+      "f01_anisotropy_q1": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "f01_anisotropy_q2": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "f01_anisotropy_q3": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "f02_active_count": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "f02_particles_hash": {
+        "verdict": "mismatch",
+        "max_ulp": null,
+        "first_diff_offset": 0
+      },
+      "f02_velocities_hash": {
+        "verdict": "mismatch",
+        "max_ulp": null,
+        "first_diff_offset": 0
+      },
+      "f02_particles": {
+        "verdict": "mismatch",
+        "max_ulp": 16777216,
+        "first_diff_offset": 0
+      },
+      "f02_velocities": {
+        "verdict": "mismatch",
+        "max_ulp": 2127443658,
+        "first_diff_offset": 4
+      },
+      "f02_phases": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "f02_active": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "f02_densities": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "f02_normals": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "f02_smooth": {
+        "verdict": "mismatch",
+        "max_ulp": 1037944575,
+        "first_diff_offset": 480
+      },
+      "f02_anisotropy_q1": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "f02_anisotropy_q2": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "f02_anisotropy_q3": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "f03_active_count": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "f03_particles_hash": {
+        "verdict": "mismatch",
+        "max_ulp": null,
+        "first_diff_offset": 0
+      },
+      "f03_velocities_hash": {
+        "verdict": "mismatch",
+        "max_ulp": null,
+        "first_diff_offset": 0
+      },
+      "f03_particles": {
+        "verdict": "mismatch",
+        "max_ulp": 16777216,
+        "first_diff_offset": 0
+      },
+      "f03_velocities": {
+        "verdict": "mismatch",
+        "max_ulp": 2127614907,
+        "first_diff_offset": 0
+      },
+      "f03_phases": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "f03_active": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "f03_densities": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "f03_normals": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "f03_smooth": {
+        "verdict": "mismatch",
+        "max_ulp": 1042894464,
+        "first_diff_offset": 32
+      },
+      "f03_anisotropy_q1": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "f03_anisotropy_q2": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "f03_anisotropy_q3": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "f04_active_count": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "f04_particles_hash": {
+        "verdict": "mismatch",
+        "max_ulp": null,
+        "first_diff_offset": 0
+      },
+      "f04_velocities_hash": {
+        "verdict": "mismatch",
+        "max_ulp": null,
+        "first_diff_offset": 0
+      },
+      "f04_particles": {
+        "verdict": "mismatch",
+        "max_ulp": 23450898,
+        "first_diff_offset": 0
+      },
+      "f04_velocities": {
+        "verdict": "mismatch",
+        "max_ulp": 2136156725,
+        "first_diff_offset": 4
+      },
+      "f04_phases": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "f04_active": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "f04_densities": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "f04_normals": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "f04_smooth": {
+        "verdict": "mismatch",
+        "max_ulp": 1044549264,
+        "first_diff_offset": 32
+      },
+      "f04_anisotropy_q1": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "f04_anisotropy_q2": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "f04_anisotropy_q3": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "f05_active_count": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "f05_particles_hash": {
+        "verdict": "mismatch",
+        "max_ulp": null,
+        "first_diff_offset": 0
+      },
+      "f05_velocities_hash": {
+        "verdict": "mismatch",
+        "max_ulp": null,
+        "first_diff_offset": 0
+      },
+      "f05_particles": {
+        "verdict": "mismatch",
+        "max_ulp": 17608633,
+        "first_diff_offset": 0
+      },
+      "f05_velocities": {
+        "verdict": "mismatch",
+        "max_ulp": 2134547144,
+        "first_diff_offset": 0
+      },
+      "f05_phases": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "f05_active": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "f05_densities": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "f05_normals": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "f05_smooth": {
+        "verdict": "mismatch",
+        "max_ulp": 1044270039,
+        "first_diff_offset": 128
+      },
+      "f05_anisotropy_q1": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "f05_anisotropy_q2": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "f05_anisotropy_q3": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      }
+    },
+    "smoke_buffer": {
+      "__scenario__": {
+        "verdict": "missing",
+        "detail": "no smoke_buffer.bin in C:\\Code\\nvidia-flex-decomp\\work\\apitest\\recon"
+      }
+    },
+    "smoke_params": {
+      "__scenario__": {
+        "verdict": "missing",
+        "detail": "no smoke_params.bin in C:\\Code\\nvidia-flex-decomp\\work\\apitest\\recon"
+      }
+    },
+    "solver_lifecycle": {
+      "solver_desc_defaults": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "solver_desc_created": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "solver_desc_get": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "solvers_count": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "solvers_ptrs": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "solver_library_nonnull": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "solver_library_masked": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "solvers_count_after_destroy": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      }
+    },
+    "timers_debug": {
+      "timer_stage_names": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "timers_nonzero_count": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "detail_timer_count": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "detail_timer_0": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "detail_timer_1": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "detail_timer_2": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "detail_timer_3": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "detail_timer_4": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "detail_timer_5": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "detail_timer_6": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "detail_timer_7": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "detail_timer_8": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "detail_timer_9": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "detail_timer_10": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "detail_timer_11": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "detail_timer_12": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "detail_timer_13": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "detail_timer_14": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "detail_timer_15": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "detail_timer_16": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "detail_timer_17": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "detail_timer_18": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "detail_timer_19": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "detail_timer_20": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "detail_timer_21": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "detail_timer_22": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "detail_timer_23": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "debug_disabled": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "callback_invocations": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "device_latency_queried": {
+        "verdict": "match",
+        "max_ulp": 0,
+        "first_diff_offset": null
+      },
+      "device_latency_seconds": {
+        "verdict": "info-mismatch",
+        "max_ulp": 7407208,
+        "first_diff_offset": 0
+      }
+    }
+  },
+  "failing_records": 178
+}

@@ -1,0 +1,203 @@
+{
+  "shipped": {
+    "nvflex": [
+      "NvFlexAcquireContext",
+      "NvFlexAllocBuffer",
+      "NvFlexComputeWaitForGraphics",
+      "NvFlexCopyDeviceToHost",
+      "NvFlexCreateConvexMesh",
+      "NvFlexCreateDistanceField",
+      "NvFlexCreateSolver",
+      "NvFlexCreateTriangleMesh",
+      "NvFlexDestroyConvexMesh",
+      "NvFlexDestroyDistanceField",
+      "NvFlexDestroySolver",
+      "NvFlexDestroyTriangleMesh",
+      "NvFlexFlush",
+      "NvFlexFreeBuffer",
+      "NvFlexGetActive",
+      "NvFlexGetActiveCount",
+      "NvFlexGetAnisotropy",
+      "NvFlexGetBounds",
+      "NvFlexGetContacts",
+      "NvFlexGetConvexMeshBounds",
+      "NvFlexGetConvexMeshes",
+      "NvFlexGetDensities",
+      "NvFlexGetDetailTimers",
+      "NvFlexGetDeviceAndContext",
+      "NvFlexGetDeviceLatency",
+      "NvFlexGetDeviceName",
+      "NvFlexGetDiffuseParticles",
+      "NvFlexGetDistanceFields",
+      "NvFlexGetDynamicTriangles",
+      "NvFlexGetNeighbors",
+      "NvFlexGetNormals",
+      "NvFlexGetParams",
+      "NvFlexGetParticles",
+      "NvFlexGetPhases",
+      "NvFlexGetRestParticles",
+      "NvFlexGetRigids",
+      "NvFlexGetShapeBVH",
+      "NvFlexGetSmoothParticles",
+      "NvFlexGetSolverDesc",
+      "NvFlexGetSolverLibrary",
+      "NvFlexGetSolvers",
+      "NvFlexGetSprings",
+      "NvFlexGetTimers",
+      "NvFlexGetTriangleMeshBounds",
+      "NvFlexGetTriangleMeshes",
+      "NvFlexGetVelocities",
+      "NvFlexGetVersion",
+      "NvFlexInit",
+      "NvFlexMakePhase",
+      "NvFlexMakePhaseWithChannels",
+      "NvFlexMakeShapeFlags",
+      "NvFlexMakeShapeFlagsWithChannels",
+      "NvFlexMap",
+      "NvFlexRegisterD3DBuffer",
+      "NvFlexRegisterOGLBuffer",
+      "NvFlexRegisterSolverCallback",
+      "NvFlexRestoreContext",
+      "NvFlexSetActive",
+      "NvFlexSetActiveCount",
+      "NvFlexSetDebug",
+      "NvFlexSetDiffuseParticles",
+      "NvFlexSetDynamicTriangles",
+      "NvFlexSetInflatables",
+      "NvFlexSetNormals",
+      "NvFlexSetParams",
+      "NvFlexSetParticles",
+      "NvFlexSetPhases",
+      "NvFlexSetRestParticles",
+      "NvFlexSetRigids",
+      "NvFlexSetShapes",
+      "NvFlexSetSolverDescDefaults",
+      "NvFlexSetSprings",
+      "NvFlexSetVelocities",
+      "NvFlexShutdown",
+      "NvFlexUnmap",
+      "NvFlexUnregisterD3DBuffer",
+      "NvFlexUnregisterOGLBuffer",
+      "NvFlexUpdateConvexMesh",
+      "NvFlexUpdateDistanceField",
+      "NvFlexUpdateSolver",
+      "NvFlexUpdateTriangleMesh"
+    ],
+    "nvflexext": [
+      "NvFlexExtAllocParticles",
+      "NvFlexExtCreateClothFromMesh",
+      "NvFlexExtCreateContainer",
+      "NvFlexExtCreateForceFieldCallback",
+      "NvFlexExtCreateInstance",
+      "NvFlexExtCreateRigidFromMesh",
+      "NvFlexExtCreateSoftFromMesh",
+      "NvFlexExtCreateSoftJoint",
+      "NvFlexExtCreateSoftMeshSkinning",
+      "NvFlexExtCreateTearingClothFromMesh",
+      "NvFlexExtCreateWeldedMeshIndices",
+      "NvFlexExtDestroyAsset",
+      "NvFlexExtDestroyContainer",
+      "NvFlexExtDestroyForceFieldCallback",
+      "NvFlexExtDestroyInstance",
+      "NvFlexExtDestroySoftJoint",
+      "NvFlexExtDestroyTearingCloth",
+      "NvFlexExtFreeParticles",
+      "NvFlexExtGetActiveList",
+      "NvFlexExtMapParticleData",
+      "NvFlexExtMapShapeData",
+      "NvFlexExtMapTriangleData",
+      "NvFlexExtMovingFrameApply",
+      "NvFlexExtMovingFrameInit",
+      "NvFlexExtMovingFrameUpdate",
+      "NvFlexExtNotifyAssetChanged",
+      "NvFlexExtPullFromDevice",
+      "NvFlexExtPushToDevice",
+      "NvFlexExtSetForceFields",
+      "NvFlexExtSoftJointSetTransform",
+      "NvFlexExtTearClothMesh",
+      "NvFlexExtTickContainer",
+      "NvFlexExtUnmapParticleData",
+      "NvFlexExtUnmapShapeData",
+      "NvFlexExtUnmapTriangleData",
+      "NvFlexExtUpdateInstances",
+      "NvFlexMakePhase",
+      "NvFlexMakePhaseWithChannels",
+      "NvFlexMakeShapeFlags",
+      "NvFlexMakeShapeFlagsWithChannels"
+    ],
+    "nvflexdevice": [
+      "?NvFlexDeviceCreateCudaContext@@YA_NH@Z",
+      "?NvFlexDeviceDestroyCudaContext@@YAXXZ",
+      "?NvFlexDeviceGetSuggestedOrdinal@@YAHXZ"
+    ]
+  },
+  "defs": {
+    "nvflex": {
+      "shipped": 81,
+      "def": 81,
+      "missing": [],
+      "extra": []
+    },
+    "nvflexext": {
+      "shipped": 40,
+      "def": 40,
+      "missing": [],
+      "extra": []
+    },
+    "nvflexdevice": {
+      "shipped": 3,
+      "def": 3,
+      "missing": [],
+      "extra": []
+    }
+  },
+  "recon": {
+    "nvflex": {
+      "shipped": 81,
+      "recon": 81,
+      "missing": [],
+      "extra": []
+    },
+    "nvflexext": {
+      "shipped": 40,
+      "recon": 40,
+      "missing": [],
+      "extra": []
+    },
+    "nvflexdevice": {
+      "shipped": 3,
+      "recon": 3,
+      "missing": [],
+      "extra": []
+    }
+  },
+  "recon_built": true,
+  "packs": [
+    "core_scenarios.cpp",
+    "ext_scenarios.cpp",
+    "sim_scenarios.cpp"
+  ],
+  "coverage": {
+    "nvflex": {
+      "shipped": 81,
+      "covered": 80,
+      "uncovered": [
+        "NvFlexRegisterD3DBuffer"
+      ]
+    },
+    "nvflexext": {
+      "shipped": 40,
+      "covered": 40,
+      "uncovered": []
+    },
+    "nvflexdevice": {
+      "shipped": 3,
+      "covered": 3,
+      "uncovered": []
+    }
+  },
+  "warnings": [],
+  "problems": [
+    "1 shipped exports not exercised by any scenario pack: ['nvflex:NvFlexRegisterD3DBuffer']"
+  ]
+}

@@ -97,12 +97,14 @@ __global__ void FLEX_KERNEL_API Predict(int numParticles, const int* indices, co
     }
     reinterpret_cast<float3*>(outVelocities)[p] = v;
 
-    // PTX 154-166
+    // PTX 154-166.  The shipped object stores w as `add.ftz.f32 %f45, %f8,
+    // 0f00000000` (Predict, work/ptx-shipped/flex.sm30.ptx:171): under ftz the
+    // compiler cannot fold x+0.0f because it normalizes -0.0f to +0.0f.
     float4 newPos;
-    newPos.x = v.x * dt + pos.x;
-    newPos.y = v.y * dt + pos.y;
-    newPos.z = v.z * dt + pos.z;
-    newPos.w = pos.w;
+    newPos.x = __fmaf_rn(v.x, dt, pos.x);
+    newPos.y = __fmaf_rn(v.y, dt, pos.y);
+    newPos.z = __fmaf_rn(v.z, dt, pos.z);
+    newPos.w = __fadd_rn(pos.w, 0.0f);
     reinterpret_cast<float4*>(newPositions)[p] = newPos;
 }
 
@@ -284,7 +286,10 @@ __global__ void FLEX_KERNEL_API ContinuousShockPropagation(int numParticles, XVe
         const float g2 = gx * gx + gy * gy + gz * gz;
         float3 dir = make_float3(0.0f, 0.0f, 0.0f);
         if (g2 > 0.0f) {
-            const float inv = __frcp_rn(__fsqrt_rn(g2));
+            // Shipped uses rsqrt.approx directly (flex.sm30.ptx:1002
+            // `rsqrt.approx.ftz.f32 %f30, %f7`), not a sqrt+rcp pair; the
+            // two differ in the last ULP.
+            const float inv = rsqrtf(g2);
             dir = make_float3(gx * inv, gy * inv, gz * inv);
         }
         minDir = dir;
@@ -455,11 +460,26 @@ __global__ void FLEX_KERNEL_API SolveDensities(int numParticles, Vec3Iter prevPo
                     lambda.y -= selfNormal.y - otherNormal.y;
                     lambda.z -= selfNormal.z - otherNormal.z;
                 }
-            } else {
+            } else if (T) {
+                // Shipped Lb1 keeps the fma form here (flex.sm30.ptx BB28_7:
+                // `mul.ftz.f32 %f140, %f4, %f59; fma.rn.ftz.f32 %f234,
+                // %f227, %f140, %f234` at 10409-10412).
                 const float s = pos.w * scale;
                 lambda.x += dirx * s;
                 lambda.y += diry * s;
                 lambda.z += dirz * s;
+            } else {
+                // Shipped Lb0 computes this as neg+mul+sub, not fma: the two
+                // branch arms share the `lambda -= dir*t` tail, so 9.2
+                // negated the product first (flex.sm30.ptx:10691-10695:
+                // mul.ftz.f32 %f137, %f4, %f56; neg.ftz.f32 %f206, %f137)
+                // and kept mul.ftz + sub.ftz separate.  nvcc 13 contracts the
+                // += into fma.rn, which changes the rounding - so pin the
+                // shipped form explicitly.
+                const float s = -__fmul_rn(pos.w, scale);
+                lambda.x = __fsub_rn(lambda.x, __fmul_rn(dirx, s));
+                lambda.y = __fsub_rn(lambda.y, __fmul_rn(diry, s));
+                lambda.z = __fsub_rn(lambda.z, __fmul_rn(dirz, s));
             }
             contactsSolved += 1.0f;
             continue;
@@ -757,9 +777,14 @@ __global__ void FLEX_KERNEL_API ApplyDeltas(int numParticles, Vec3Iter positions
     } else {
         s = relaxation;
     }
+    // The shipped object fuses the w update as `fma.rn.ftz.f32 %f20, %f1,
+    // 0f00000000, %f12` (Lb0, flex.sm30.ptx:15768) and `fma.rn.ftz.f32 %f25,
+    // %f13, 0f00000000, %f17` (Lb1, flex.sm30.ptx:15720): w is scaled-by-zero
+    // + old w, exactly like the xyz lanes.
     v.x += d.x * s;
     v.y += d.y * s;
     v.z += d.z * s;
+    v.w = __fmaf_rn(s, 0.0f, v.w);
     reinterpret_cast<float4*>(newPositions.x)[i] = v;
 }
 
@@ -795,11 +820,15 @@ __global__ void FLEX_KERNEL_API SolveContacts(Vec3Iter prevPosition, Vec3Iter po
     const float dynamicFriction = gParams.kDynamicFriction;      // gParams+272
     const float staticFriction = gParams.kStaticFriction;        // gParams+276
 
-    // The shipped PTX contains a single copy of this loop body (no unrolling);
-    // keep the modern compiler from expanding it.
+    // The shipped PTX contains a single copy of this loop body (no unrolling
+    // and no peeled first iteration); keep the modern compiler from expanding
+    // it.  The shipped loop carries two induction variables (PTX 15858/15953:
+    // mad.lo.s32 %r20 = maxContacts*i + (numContacts-1) hoisted before the
+    // loop, the body indexes with %r20/%rd4 and re-derives j from them at
+    // BB35_14), which is also what keeps nvcc 13 from peeling iteration 0.
+    int c = maxContacts * i + numContacts - 1;
 #pragma unroll 1
-    for (int j = numContacts - 1; j > -1; --j) {
-        const int c = maxContacts * i + j;
+    for (int j = numContacts - 1; j > -1; --j, --c) {
         const float4 plane = reinterpret_cast<const float4*>(collisionPlanes)[c];
 
         const float d = plane.w + (pos.z * plane.z + (pos.y * plane.y + pos.x * plane.x));
@@ -807,10 +836,15 @@ __global__ void FLEX_KERNEL_API SolveContacts(Vec3Iter prevPosition, Vec3Iter po
 
         float lx = 0.0f, ly = 0.0f, lz = 0.0f;
         if (adhesion != 0.0f) {
+            // Shipped PTX (flex.sm30.ptx:15833-15841) subtracts from zero
+            // (`mov.f32 %f65, 0f00000000; sub.ftz.f32 %f113, %f65, %f62`)
+            // instead of negating, and keeps the following `-= plane*sep`
+            // subtracts separate.  Pin both forms; nvcc 13 otherwise folds
+            // the two subs together and rewrites 0-A as neg(A).
             const float s = d * adhesion;
-            lx = -plane.x * s;
-            ly = -plane.y * s;
-            lz = -plane.z * s;
+            lx = __fsub_rn(0.0f, __fmul_rn(plane.x, s));
+            ly = __fsub_rn(0.0f, __fmul_rn(plane.y, s));
+            lz = __fsub_rn(0.0f, __fmul_rn(plane.z, s));
         }
         if (sep >= 0.0f) continue;   // no penetration against this plane
 
@@ -922,7 +956,11 @@ __global__ void FLEX_KERNEL_API SolveVelocities(int numParticles, Vec3Iter sorte
             const float dvz = vn.z - V.z;
 
             const float dist = sqrtf(distSq);
-            const float inv = 1.0f / dist;
+            // The shipped loop derives the direction from rsqrtf(distSq)
+            // directly (flex.sm30.ptx BB37_9, lines 17278-17281:
+            // rsqrt.approx.ftz.f32 %f391, %f15; mul.ftz.f32 %f16, %f12, %f391)
+            // - not from 1/sqrtf - and the two differ in the last ULP.
+            const float inv = rsqrtf(distSq);
             const float dirx = dx * inv;
             const float diry = dy * inv;
             const float dirz = dz * inv;
@@ -973,18 +1011,20 @@ __global__ void FLEX_KERNEL_API SolveVelocities(int numParticles, Vec3Iter sorte
     }
 
     // PTX 787-803: dissipation, scaled by the number of fluid neighbours.
+    // Shipped associates left: ((V.x*dt)*fluidNeighbors)*kDissipation
+    // (flex.sm30.ptx BB37_63, lines 17882-17891), so the scale must not be
+    // factored out of the per-component multiply.
     if (gParams.kDissipation > 0.0f) {
-        const float s = (dt * fluidNeighbors) * gParams.kDissipation;
-        visc.x -= V.x * s;
-        visc.y -= V.y * s;
-        visc.z -= V.z * s;
+        visc.x -= V.x * dt * fluidNeighbors * gParams.kDissipation;
+        visc.y -= V.y * dt * fluidNeighbors * gParams.kDissipation;
+        visc.z -= V.z * dt * fluidNeighbors * gParams.kDissipation;
     }
-    // PTX 805-818: damping.
+    // PTX 805-818: damping; shipped associates ((V.x*dt)*kDamping)
+    // (flex.sm30.ptx BB37_65, lines 17898-17906).
     if (gParams.kDamping > 0.0f) {
-        const float s = dt * gParams.kDamping;
-        visc.x -= V.x * s;
-        visc.y -= V.y * s;
-        visc.z -= V.z * s;
+        visc.x -= V.x * dt * gParams.kDamping;
+        visc.y -= V.y * dt * gParams.kDamping;
+        visc.z -= V.z * dt * gParams.kDamping;
     }
 
     // PTX 820-1154: restitution against the collision planes.
@@ -1015,9 +1055,12 @@ __global__ void FLEX_KERNEL_API SolveVelocities(int numParticles, Vec3Iter sorte
                 }
             }
             const float s = (hits > 1.0f) ? (1.0f / hits) : 1.0f;
-            visc.x += lam.x * s;
-            visc.y += lam.y * s;
-            visc.z += lam.z * s;
+            // Shipped accumulates with fma (flex.sm30.ptx BB37_93, line 18129:
+            // fma.rn.ftz.f32 %f795, %f858, %f731, %f795); nvcc 13 emits
+            // mul+add for +=, which rounds differently.
+            visc.x = __fmaf_rn(lam.x, s, visc.x);
+            visc.y = __fmaf_rn(lam.y, s, visc.y);
+            visc.z = __fmaf_rn(lam.z, s, visc.z);
         }
     }
 
@@ -1026,8 +1069,11 @@ __global__ void FLEX_KERNEL_API SolveVelocities(int numParticles, Vec3Iter sorte
         const float speedSq = V.x * V.x + V.y * V.y + V.z * V.z;
         float potential = 0.0f;
         if (selfPhase & eNvFlexPhaseFluid) {
-            const float a =
-                fmaxf(1.0f - 2.0f * density * gParams.kInvRestDensity, 0.0f);  // +180
+            // Shipped computes a as fma(density*-2.0f, kInvRestDensity, 1.0f)
+            // (flex.sm30.ptx BB37_94, line 18145: mul.ftz.f32 %f737, %f798,
+            // 0fC0000000; fma.rn.ftz.f32 %f738, %f737, %f736, 0f3F800000);
+            // writing 1.0f - (2*density)*invRest adds one rounding step.
+            const float a = fmaxf(density * -2.0f * gParams.kInvRestDensity + 1.0f, 0.0f);  // +180
             potential = (speedSq * 3.0f) * (diffuse * a);
         }
         potentials[i] = potential;

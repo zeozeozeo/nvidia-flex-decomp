@@ -22,6 +22,8 @@
 // fixed constants or apitest::Rng seeded from --seed (apitest::g_seed).
 
 #include <windows.h>
+#include <dbghelp.h>
+#pragma comment(lib, "dbghelp.lib")
 
 #include "scenario.h"
 
@@ -239,7 +241,46 @@ const apitest::Scenario* find_scenario(const Registry& reg,
 
 } // namespace
 
+// VEH crash reporter: symbolized stack on fatal exceptions (the recon DLL
+// carries /Zi PDBs; run from a directory where they sit next to the DLLs).
+static void FlexPrintStack(PCONTEXT) {
+  void* frames[32];
+  USHORT n = CaptureStackBackTrace(0, 32, frames, nullptr);
+  SymSetOptions(SYMOPT_UNDNAME | SYMOPT_DEFERRED_LOADS);
+  SymInitialize(GetCurrentProcess(), nullptr, TRUE);
+  char buf[sizeof(SYMBOL_INFO) + 256] = {};
+  SYMBOL_INFO* sym = reinterpret_cast<SYMBOL_INFO*>(buf);
+  sym->SizeOfStruct = sizeof(SYMBOL_INFO);
+  sym->MaxNameLen = 255;
+  for (USHORT i = 0; i < n; ++i) {
+    DWORD64 addr = reinterpret_cast<DWORD64>(frames[i]);
+    if (SymFromAddr(GetCurrentProcess(), addr, nullptr, sym))
+      fprintf(stderr, "  frame %02u: %s + %llu\n", i, sym->Name,
+              (unsigned long long)(addr - sym->Address));
+    else {
+      HMODULE m = nullptr;
+      char mname[MAX_PATH] = "?";
+      if (GetModuleHandleExA(GET_MODULE_HANDLE_EX_FLAG_FROM_ADDRESS |
+                                 GET_MODULE_HANDLE_EX_FLAG_UNCHANGED_REFCOUNT,
+                             (LPCSTR)frames[i], &m))
+        GetModuleFileNameA(m, mname, MAX_PATH);
+      fprintf(stderr, "  frame %02u: %s + 0x%llx\n", i, mname,
+              (unsigned long long)((char*)frames[i] - (char*)m));
+    }
+  }
+}
+
+static LONG WINAPI FlexCrashHandler(EXCEPTION_POINTERS* ep) {
+  fprintf(stderr, "APITEST-CRASH code=0x%08llX addr=%p\n",
+          (unsigned long long)ep->ExceptionRecord->ExceptionCode,
+          ep->ExceptionRecord->ExceptionAddress);
+  FlexPrintStack(ep->ContextRecord);
+  fflush(nullptr);
+  return EXCEPTION_CONTINUE_SEARCH;
+}
+
 int main(int argc, char** argv) {
+  AddVectoredExceptionHandler(0, FlexCrashHandler);
   const Args args = parse_args(argc, argv);
   if (!args.valid) return 4;  // bad CLI behaves like "unknown scenario"
 

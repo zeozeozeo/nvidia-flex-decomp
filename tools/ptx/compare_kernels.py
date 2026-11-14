@@ -134,7 +134,8 @@ def recon_ptx(module: str, out_dir: Path) -> Path | None:
             print(f"  skip missing {src}")
             continue
         r = subprocess.run(
-            ["nvcc", "-ptx", "-O3", "-arch=sm_75", "-D_MSC_VER=1944",
+            ["nvcc", "-ptx", "-O3", "-arch=sm_75", "-D_MSC_VER=1944", "-DNDEBUG",
+             "--use_fast_math",
              "-I", str(RECON / "include"), "-I", str(RECON / "include" / "nvflex"),
              "-I", str(RECON / "core"), "-I", str(RECON / "src" / "cuda"),
              "-o", str(out_dir / "tmp.ptx"), str(p)],

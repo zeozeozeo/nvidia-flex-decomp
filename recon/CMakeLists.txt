@@ -25,7 +25,15 @@ if(WIN32)
   # static CRT: the shipped NvFlexReleaseCUDA_x64.dll imports no CRT
   set(CMAKE_CXX_FLAGS_RELEASE "/O2 /Zi /DNDEBUG")
   set(CMAKE_C_FLAGS_RELEASE "/O2 /Zi /DNDEBUG")
-  set(CMAKE_CUDA_FLAGS_RELEASE "-O3 -lineinfo -DNDEBUG")
+  # --use_fast_math reproduces the shipped CUDA 9.2 build configuration: the
+  # shipped PTX uses ftz/approx forms throughout (mul.ftz.f32, fma.rn.ftz.f32,
+  # rsqrt.approx.ftz.f32, sqrt.approx.ftz.f32, rcp.approx.ftz.f32,
+  # div.approx.ftz.f32, ex2.approx.ftz.f32 -- work/ptx-shipped/flex.sm30.ptx),
+  # which nvcc only emits under --use_fast_math (= --ftz=true --prec-div=false
+  # --prec-sqrt=false --fmad=true).  Explicit _rn intrinsics in the kernel
+  # sources are unaffected by this flag, so the PTX transcriptions keep their
+  # exact shipped forms.
+  set(CMAKE_CUDA_FLAGS_RELEASE "-O3 -lineinfo -DNDEBUG --use_fast_math")
   # MSVC toolset pin: nvcc 13.5 miscompiles the CRT include guards against
   # the VS18-native 14.52 toolset (vadefs.h/corecrt.h double definitions);
   # 14.44 (the VS2022-lineage toolset installed alongside) is the supported

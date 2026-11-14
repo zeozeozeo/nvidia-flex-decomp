@@ -178,7 +178,12 @@ __global__ void FLEX_KERNEL_API SolveDensitiesSimpleFluids(int numParticles, Vec
             continue;
 
         const float r = sqrtf(r2);
-        const float3 dir = scale3(d, 1.0f / r);  // PTX computes d * rcp(r)
+        // Shipped computes d * rsqrtf(r2) directly (flex.sm30.ptx SimpleSolids
+        // body: sqrt.approx.ftz.f32 + rsqrt.approx.ftz.f32 of the same r2),
+        // not d * rcp(r); nvcc 13 folds 1.0f/sqrtf into rcp.approx, which
+        // differs in the last ULP.
+        const float inv = rsqrtf(r2);
+        const float3 dir = scale3(d, inv);
 
         const float m = mi + densities[n];
         const float q = r * gParams.kInvRadius;      // gParams+144
@@ -244,7 +249,9 @@ __global__ void FLEX_KERNEL_API SolveDensitiesSimpleSolids(int numParticles, Vec
             continue;
 
         const float r = sqrtf(r2);
-        const float3 dir = scale3(d, 1.0f / r);
+        // Shipped uses d * rsqrtf(r2) (see the SimpleFluids note above).
+        const float inv = rsqrtf(r2);
+        const float3 dir = scale3(d, inv);
         if (r > restDistance)
             continue;
 
@@ -427,7 +434,11 @@ __global__ void FLEX_KERNEL_API UpdateTriangles(int numTris, Vec3Iter p1, Vec3It
     const float4 b = fetch4(gParams.kTextures.sortedNewPositionsTex, v1);
     const float4 c = fetch4(gParams.kTextures.sortedNewPositionsTex, v2);
 
-    float3 n = cross3(sub3(toFloat3(b), toFloat3(a)), sub3(toFloat3(c), toFloat3(a)));
+    // Shipped computes the triangle normal as cross(c-a, b-a) - the operand
+    // order is reversed relative to cross(b-a, c-a), which negates the normal
+    // (flex.sm30.ptx:2995-3005: f13 = f70*f72 - f69*f73 with f68..f70 = b-a
+    // and f71..f73 = c-a decodes to cross(c-a, b-a).xyz).
+    float3 n = cross3(sub3(toFloat3(c), toFloat3(a)), sub3(toFloat3(b), toFloat3(a)));
     const float n2 = dot3(n, n);
     if (n2 > 0.0f)
         n = scale3(n, 1.0f / sqrtf(n2));  // PTX 3013-3018
@@ -819,7 +830,13 @@ __global__ void FLEX_KERNEL_API CalculateAnisotropy(int numParticles, const int*
         const float r2 = dot3(d, d);
         if (!(r2 < radiusSq && r2 > 0.0f))
             continue;
-        const float q = sqrtf(r2) * invRadius;
+        // The shipped centroid loop derives dist as distSq*rsqrtf(distSq),
+        // not sqrtf(distSq) (flex.sm30.ptx BB19_11, lines 5557-5561:
+        // rsqrt.approx.ftz.f32 %f279, %f21; mul.ftz.f32 %f280, %f21, %f279;
+        // mul.ftz.f32 %f281, %f280, %f5).  r2*rsqrt(r2) and sqrt.approx(r2)
+        // differ in the last ULP, so keep the shipped form.  The covariance
+        // loop below uses sqrt.approx directly (BB19_36, line 5849).
+        const float q = r2 * rsqrtf(r2) * invRadius;
         const float w = 1.0f - q * q * q;
         sum = add3(sum, scale3(toFloat3(pn), w));
         wsum += w;
@@ -861,15 +878,26 @@ __global__ void FLEX_KERNEL_API CalculateAnisotropy(int numParticles, const int*
         const float ex = pn.x - center.x;
         const float ey = pn.y - center.y;
         const float ez = pn.z - center.z;
-        a00 += w * ex * ex;
-        a01 += w * ex * ey;
-        a02 += w * ex * ez;
-        a10 += w * ey * ex;
-        a11 += w * ey * ey;
-        a12 += w * ey * ez;
-        a20 += w * ez * ex;
-        a21 += w * ez * ey;
-        a22 += w * ez * ez;
+        // The shipped covariance loop hoists the six unique products and
+        // accumulates with fma(w, prod, acc) (flex.sm30.ptx BB19_36, lines
+        // 5855-5888: mul.ftz.f32 %f380, %f379, %f379 (ex*ex); ... fma.rn.ftz.f32
+        // %f557, %f389, %f380, %f557).  Writing w*ex*ex reassociates to
+        // (w*ex)*ex and rounds differently, so pin the shipped association.
+        const float exx = ex * ex;
+        const float eyex = ey * ex;
+        const float ezex = ez * ex;
+        const float eyy = ey * ey;
+        const float ezey = ez * ey;
+        const float ezz = ez * ez;
+        a00 = __fmaf_rn(w, exx, a00);
+        a01 = __fmaf_rn(w, eyex, a01);
+        a02 = __fmaf_rn(w, ezex, a02);
+        a10 = __fmaf_rn(w, eyex, a10);
+        a11 = __fmaf_rn(w, eyy, a11);
+        a12 = __fmaf_rn(w, ezey, a12);
+        a20 = __fmaf_rn(w, ezex, a20);
+        a21 = __fmaf_rn(w, ezey, a21);
+        a22 = __fmaf_rn(w, ezz, a22);
     }
     a00 *= inv;
     a01 *= inv;
@@ -885,7 +913,10 @@ __global__ void FLEX_KERNEL_API CalculateAnisotropy(int numParticles, const int*
     float3 v1 = make_float3(0.0f, 1.0f, 0.0f);
     float3 v2 = make_float3(0.0f, 0.0f, 1.0f);
 
-#pragma unroll
+    // The shipped object keeps ONE rolled copy of the sweep body (PTX BB19_50,
+    // line 6268: add.s32 %r116, 1; setp.lt.s32 %p53, %r116, 4; bra BB19_39);
+    // nvcc 13 unrolls the 4 sweeps into 4 full copies unless pinned.
+#pragma unroll 1
     for (int sweep = 0; sweep < 4; ++sweep) {
         // pick the largest |off-diagonal| among a20, a10, a21 (PTX 5957-5971)
         float best = fabsf(a10);
@@ -905,7 +936,9 @@ __global__ void FLEX_KERNEL_API CalculateAnisotropy(int numParticles, const int*
             if (a10 == 0.0f)
                 continue;
             const float theta = (a00 - a11) / (2.0f * a10);
-            const float t = copysignf(1.0f / (fabsf(theta) + sqrtf(theta * theta + 1.0f)), theta);
+            // Shipped uses div.approx.f32 with a literal 1.0 numerator here (flex.sm30.ptx:6011 `div.approx.ftz.f32 %f470, %f469, %f468`), not
+            // rcp.approx; nvcc 13 canonicalizes 1.0f/x to rcp.approx, so pin __fdividef.
+            const float t = copysignf(__fdividef(1.0f, fabsf(theta) + sqrtf(theta * theta + 1.0f)), theta);
             const float c = rsqrtf(t * t + 1.0f);
             const float sn = c * t;
             const float shifted = t * a10;
@@ -924,7 +957,9 @@ __global__ void FLEX_KERNEL_API CalculateAnisotropy(int numParticles, const int*
             if (a20 == 0.0f)
                 continue;
             const float theta = (a00 - a22) / (2.0f * a20);
-            const float t = copysignf(1.0f / (fabsf(theta) + sqrtf(theta * theta + 1.0f)), theta);
+            // Shipped uses div.approx.f32 with a literal 1.0 numerator here (flex.sm30.ptx:6011 `div.approx.ftz.f32 %f470, %f469, %f468`), not
+            // rcp.approx; nvcc 13 canonicalizes 1.0f/x to rcp.approx, so pin __fdividef.
+            const float t = copysignf(__fdividef(1.0f, fabsf(theta) + sqrtf(theta * theta + 1.0f)), theta);
             const float c = rsqrtf(t * t + 1.0f);
             const float sn = c * t;
             const float shifted = t * a20;
@@ -941,7 +976,9 @@ __global__ void FLEX_KERNEL_API CalculateAnisotropy(int numParticles, const int*
             if (a21 == 0.0f)
                 continue;
             const float theta = (a11 - a22) / (2.0f * a21);
-            const float t = copysignf(1.0f / (fabsf(theta) + sqrtf(theta * theta + 1.0f)), theta);
+            // Shipped uses div.approx.f32 with a literal 1.0 numerator here (flex.sm30.ptx:6011 `div.approx.ftz.f32 %f470, %f469, %f468`), not
+            // rcp.approx; nvcc 13 canonicalizes 1.0f/x to rcp.approx, so pin __fdividef.
+            const float t = copysignf(__fdividef(1.0f, fabsf(theta) + sqrtf(theta * theta + 1.0f)), theta);
             const float c = rsqrtf(t * t + 1.0f);
             const float sn = c * t;
             const float shifted = t * a21;
@@ -1005,9 +1042,12 @@ __global__ void FLEX_KERNEL_API CreateDiffuseParticles(int numParticles, Vec3Ite
     float4* outVel = reinterpret_cast<float4*>(diffuseVelocities);
 
     float4 op;
-    op.x = pos.x - vel.x * (r0 * scale) + r0 * restDistance * 0.25f;
-    op.y = pos.y - vel.y * (r0 * scale) + r1 * restDistance * 0.25f;
-    op.z = pos.z - vel.z * (r0 * scale) + r2 * restDistance * 0.25f;
+    // Shipped associates the velocity term as (vel*r0)*scale (flex.sm30.ptx
+    // 6335-6340: mul.ftz.f32 %f17, %f7, %f16; mul.ftz.f32 %f20, %f17, %f11)
+    // and the offset as fma(r*restDistance, 0.25f, pos-velTerm) (6350-6352).
+    op.x = pos.x - vel.x * r0 * scale + r0 * restDistance * 0.25f;
+    op.y = pos.y - vel.y * r0 * scale + r1 * restDistance * 0.25f;
+    op.z = pos.z - vel.z * r0 * scale + r2 * restDistance * 0.25f;
     op.w = life;
     outPos[n] = op;
     outVel[n] = make_float4(vel.x, vel.y, vel.z, 0.0f);
@@ -1232,7 +1272,12 @@ f251 = fmaf(f5, f248, f250);
 f254 = fmaf(f7, f252, f251);
 f255 = f253 + f254;
 f256 = f255 - f246;
-p6 = !(f256 > f247);
+// Shipped: p6 = (f256 > f247) and the plane contact is stored only when
+// !p8 = (r158 < r5) && (f256 <= f247) (flex.sm30.ptx:7294-7297:
+// setp.gtu.ftz.f32 %p6, %f256, %f247; setp.ge.s32 %p7, %r158, %r5;
+// or.pred %p8, %p7, %p6).  The transcription had inverted p6, which stored
+// plane contacts for particles OUTSIDE the collision band.
+p6 = (f256 > f247);
 p7 = ((int)(r158) >= (int)(r5));
 p8 = p7 || p6;
 if (p8) goto BB24_10;
@@ -1309,7 +1354,7 @@ f265 = fmaf(f5, f262, f264);
 f268 = fmaf(f7, f266, f265);
 f269 = f267 + f268;
 f270 = f269 - f246;
-p12 = !(f270 > f247);
+p12 = (f270 > f247);
 p13 = ((int)(r158) >= (int)(r5));
 p14 = p13 || p12;
 if (p14) goto BB24_15;
@@ -1347,7 +1392,7 @@ f274 = fmaf(f5, f271, f273);
 f277 = fmaf(f7, f275, f274);
 f278 = f276 + f277;
 f279 = f278 - f246;
-p16 = !(f279 > f247);
+p16 = (f279 > f247);
 p17 = ((int)(r167) >= (int)(r5));
 p18 = p17 || p16;
 if (p18) goto BB24_20;
@@ -1374,7 +1419,7 @@ f283 = fmaf(f5, f280, f282);
 f286 = fmaf(f7, f284, f283);
 f287 = f285 + f286;
 f288 = f287 - f246;
-p19 = !(f288 > f247);
+p19 = (f288 > f247);
 p20 = ((int)(r167) >= (int)(r5));
 p21 = p20 || p19;
 if (p21) goto BB24_22;
@@ -1401,7 +1446,7 @@ f292 = fmaf(f5, f289, f291);
 f295 = fmaf(f7, f293, f292);
 f296 = f294 + f295;
 f297 = f296 - f246;
-p22 = !(f297 > f247);
+p22 = (f297 > f247);
 p23 = ((int)(r167) >= (int)(r5));
 p24 = p23 || p22;
 if (p24) goto BB24_24;
@@ -1428,7 +1473,7 @@ f301 = fmaf(f5, f298, f300);
 f304 = fmaf(f7, f302, f301);
 f305 = f303 + f304;
 f306 = f305 - f246;
-p25 = !(f306 > f247);
+p25 = (f306 > f247);
 p26 = ((int)(r167) >= (int)(r5));
 p27 = p26 || p25;
 if (p27) goto BB24_26;
@@ -1534,7 +1579,7 @@ f708 = f707 * f188;
 f709 = fmaf(f706, f187, f708);
 f710 = f97 - f101;
 f192 = fmaf(f710, f189, f709);
-p95 = !(f192 != __uint_as_float(0x00000000u));
+p95 = (f192 != __uint_as_float(0x00000000u));
 if (p95) goto BB24_73;
 goto BB24_71;
 BB24_73:
@@ -1548,7 +1593,7 @@ p99 = (f194 > f172);
 f172 = (p99) ? f194 : f172;
 goto BB24_76;
 BB24_71:
-p96 = !(f191 <= __uint_as_float(0x00000000u));
+p96 = (f191 <= __uint_as_float(0x00000000u));
 if (p96) goto BB24_77;
 goto BB24_72;
 BB24_74:
@@ -1559,7 +1604,7 @@ p100 = (f172 >= f171);
 if (p100) goto BB24_80;
 BB24_77:
 f201 = fabsf(f191);
-p101 = !(f201 >= f170);
+p101 = (f201 >= f170);
 if (p101) goto BB24_79;
 f176 = f187;
 f175 = f188;
@@ -1583,10 +1628,10 @@ f159 = fmaf(f97, f97, f616);
 f160 = sqrtf(f159);
 f617 = f160 - f102;
 f618 = f617 - f307;
-p89 = !(f618 >= f308);
+p89 = (f618 >= f308);
 if (p89) goto BB24_94;
 f917 = __uint_as_float(0x00000000u);
-p90 = !(f159 <= __uint_as_float(0x00000000u));
+p90 = (f159 <= __uint_as_float(0x00000000u));
 f918 = f917;
 f919 = f917;
 if (p90) goto BB24_65;
@@ -1776,7 +1821,7 @@ f115 = f112 * f396;
 { float4 tx_ = tex3D<float4>((cudaTextureObject_t)rd18, f113, f114, f115); f116=tx_.x; f397=tx_.y; f398=tx_.z; f399=tx_.w; }
 f400 = f307 + f308;
 f401 = f109 * f400;
-p67 = !(f116 >= f401);
+p67 = (f116 >= f401);
 if (p67) goto BB24_94;
 f402 = f113 + __uint_as_float(0x3F800000u);
 { float4 tx_ = tex3D<float4>((cudaTextureObject_t)rd18, f402, f114, f115); f403=tx_.x; f404=tx_.y; f405=tx_.z; f406=tx_.w; }
@@ -1799,7 +1844,7 @@ f122 = f102 * f112;
 f432 = f118 * f118;
 f433 = fmaf(f117, f117, f432);
 f123 = fmaf(f119, f119, f433);
-p68 = !(f123 <= __uint_as_float(0x00000000u));
+p68 = (f123 <= __uint_as_float(0x00000000u));
 if (p68) goto BB24_94;
 f434 = rsqrtf(f123);
 f124 = f117 * f434;
@@ -1960,7 +2005,7 @@ BB24_93:
 r167 = r167 + 1;
 goto BB24_94;
 BB24_54:
-p78 = !(f912 <= __uint_as_float(0x3F800000u));
+p78 = (f912 <= __uint_as_float(0x3F800000u));
 if (p78) goto BB24_57;
 f524 = f143 - f140;
 f525 = f524 / f139;
@@ -1990,7 +2035,7 @@ if (!p85) goto BB24_94;
 goto BB24_58;
 BB24_58:
 f914 = __uint_as_float(0x00000000u);
-p86 = !(f131 <= __uint_as_float(0x00000000u));
+p86 = (f131 <= __uint_as_float(0x00000000u));
 f915 = f914;
 f916 = f914;
 if (p86) goto BB24_60;
@@ -2300,7 +2345,7 @@ f804 = fminf(f800, f803);
 f805 = fmaxf(f796, f804);
 f806 = fmaxf(f800, f803);
 f807 = fminf(f798, f806);
-p107 = !(f807 <= f805);
+p107 = (f807 <= f805);
 if (p107) goto BB24_94;
 f899 = f307 + f308;
 f898 = f103 + f899;
@@ -2313,15 +2358,17 @@ f813 = f99 + f213;
 f814 = fabsf(f813);
 p109 = (f814 < f812);
 f947 = (p109) ? __uint_as_float(0xBF800000u) : f811;
-p110 = !(f814 >= f812);
-p111 = !(f810 >= __uint_as_float(0x7F7FFFFFu));
+// Shipped: setp.geu.f32 %p110, %f816, %f814; setp.geu.f32 %p111, %f812,
+// 0f7F7FFFFF; and.pred %p112, %p111, %p110 (flex.sm30.ptx:8433-8435).
+p110 = (f814 >= f812);
+p111 = (f810 >= __uint_as_float(0x7F7FFFFFu));
 p112 = p111 && p110;
 f815 = -f102;
 f949 = (p112) ? __uint_as_float(0x00000000u) : f815;
 f950 = (p109) ? f814 : f812;
 f816 = f100 - f898;
 f219 = fabsf(f816);
-p113 = !(f219 >= f950);
+p113 = (f219 >= f950);
 if (p113) goto BB24_85;
 f949 = -f103;
 f948 = __uint_as_float(0x3F800000u);
@@ -2332,7 +2379,7 @@ f901 = f307 + f308;
 f900 = f103 + f901;
 f819 = f100 + f900;
 f225 = fabsf(f819);
-p114 = !(f225 >= f950);
+p114 = (f225 >= f950);
 if (p114) goto BB24_87;
 f949 = -f103;
 f948 = __uint_as_float(0xBF800000u);
@@ -2344,7 +2391,7 @@ f902 = f104 + f903;
 f823 = f101 - f902;
 f231 = fabsf(f823);
 f958 = __uint_as_float(0x00000000u);
-p115 = !(f231 >= f950);
+p115 = (f231 >= f950);
 if (p115) goto BB24_89;
 f958 = __uint_as_float(0x3F800000u);
 f949 = -f104;
@@ -2356,7 +2403,7 @@ f905 = f307 + f308;
 f904 = f104 + f905;
 f827 = f101 + f904;
 f828 = fabsf(f827);
-p116 = !(f828 >= f950);
+p116 = (f828 >= f950);
 if (p116) goto BB24_91;
 f949 = -f104;
 f958 = __uint_as_float(0xBF800000u);
@@ -3230,6 +3277,14 @@ return;
 // flexdecomp: src/cuda/flex.cu:6009 _Z20TransformShapeBoundsP8XVector4IfES1_PKS0_PK5XQuatIfES3_S7_PK23NvFlexCollisionGeometryPKiiPK22FlexConvexMeshInternalPK24FlexTriangleMeshInternal
 // Conservative AABB of every collision shape for the previous and current
 // transforms (PTX 22242-22658).
+// flexdecomp: src/cuda/flex.cu _Z20TransformShapeBounds
+// PTX 18333-18748 (flex.sm30.ptx).  Literal transcription of the shipped
+// float chain: the quaternion basis is built in the shipped w-form with the
+// compiler-materialized *0.0f signed-zero terms, and the world box is
+// center = pos + M*(localCenter), half = 0.5*sum(|full_i * column_i|) with
+// the shipped association.  The textbook matrix form reassociates every
+// product and diverges bitwise, which corrupts the mesh BVH and every
+// mesh-collision scenario.
 __global__ void FLEX_KERNEL_API TransformShapeBounds(XVector4<float>* lowerOut, XVector4<float>* upperOut,
                                      const XVector4<float>* positions,
                                      const XQuat<float>* rotations,
@@ -3243,115 +3298,290 @@ __global__ void FLEX_KERNEL_API TransformShapeBounds(XVector4<float>* lowerOut, 
     if (i >= numShapes)
         return;
 
-    const int type = flags[i] & 7;
+    const int type = flags[i] & 7;                 // PTX 18397: and.b32 7
     const float4 g = reinterpret_cast<const float4*>(geometry)[i];
 
-    // local-space bounds from the shape geometry (PTX 22329-22403)
-    float3 lo, hi;
-    switch (type) {
-    case eNvFlexShapeCapsule: {
-        const float radius = g.x;
-        const float halfHeight = g.y;
-        lo = make_float3(-(halfHeight + radius), -radius, -radius);
-        hi = make_float3(halfHeight + radius, radius, radius);
-        break;
-    }
-    case eNvFlexShapeBox:
-        lo = make_float3(-g.x, -g.y, -g.z);
-        hi = make_float3(g.x, g.y, g.z);
-        break;
-    case eNvFlexShapeConvexMesh: {
-        // DWARF: size 32, mLower at byte 8, mUpper at byte 20
-        const char* mesh = reinterpret_cast<const char*>(convexMeshes) + ((int)g.w - 1) * 32;
-        const float* lower = reinterpret_cast<const float*>(mesh + 8);
-        const float* upper = reinterpret_cast<const float*>(mesh + 20);
-        lo = make_float3(g.x * lower[0], g.y * lower[1], g.z * lower[2]);
-        hi = make_float3(g.x * upper[0], g.y * upper[1], g.z * upper[2]);
-        break;
-    }
-    case eNvFlexShapeTriangleMesh: {
-        // DWARF: size 144, mLower at byte 120, mUpper at byte 132
-        const char* mesh = reinterpret_cast<const char*>(triangleMeshes) + ((int)g.w - 1) * 144;
-        const float* lower = reinterpret_cast<const float*>(mesh + 120);
-        const float* upper = reinterpret_cast<const float*>(mesh + 132);
-        lo = make_float3(g.x * lower[0], g.y * lower[1], g.z * lower[2]);
-        hi = make_float3(g.x * upper[0], g.y * upper[1], g.z * upper[2]);
-        break;
-    }
-    case eNvFlexShapeSphere:
-    case eNvFlexShapeSDF:
-        lo = make_float3(-g.x, -g.x, -g.x);
-        hi = make_float3(g.x, g.x, g.x);
-        break;
-    default:
-        lo = make_float3(0.0f, 0.0f, 0.0f);
-        hi = make_float3(0.0f, 0.0f, 0.0f);
-        break;
-    }
-
-    // 3x3 rotation matrix of a quaternion (PTX 22407-22470)
-    auto rotation = [](const XQuat<float>& q, float m[3][3]) {
-        const float x = q.x, y = q.y, z = q.z, w = q.w;
-        m[0][0] = 1.0f - 2.0f * (y * y + z * z);
-        m[0][1] = 2.0f * (x * y + w * z);
-        m[0][2] = 2.0f * (x * z - w * y);
-        m[1][0] = 2.0f * (x * y - w * z);
-        m[1][1] = 1.0f - 2.0f * (x * x + z * z);
-        m[1][2] = 2.0f * (y * z + w * x);
-        m[2][0] = 2.0f * (x * z + w * y);
-        m[2][1] = 2.0f * (y * z - w * x);
-        m[2][2] = 1.0f - 2.0f * (x * x + y * y);
-    };
-
-    const float3 halfExtent = scale3(sub3(hi, lo), 0.5f);
-    float3 rotLower, rotUpper;
-
-    // helper duplicated for the current and previous transform (PTX 22474-22535)
-    {
-        float m[3][3];
-        rotation(rotations[i], m);
-        const float3 centerOff = make_float3(
-            halfExtent.x * m[0][0] + halfExtent.y * m[1][0] + halfExtent.z * m[2][0],
-            halfExtent.x * m[0][1] + halfExtent.y * m[1][1] + halfExtent.z * m[2][1],
-            halfExtent.x * m[0][2] + halfExtent.y * m[1][2] + halfExtent.z * m[2][2]);
-        const float3 full = sub3(hi, lo);
-        const float3 e = make_float3(
-            fabsf(full.x * m[0][0]) + fabsf(full.y * m[1][0]) + fabsf(full.z * m[2][0]),
-            fabsf(full.x * m[0][1]) + fabsf(full.y * m[1][1]) + fabsf(full.z * m[2][1]),
-            fabsf(full.x * m[0][2]) + fabsf(full.y * m[1][2]) + fabsf(full.z * m[2][2]));
-        const float3 c = add3(toFloat3(reinterpret_cast<const float4*>(positions)[i]), centerOff);
-        rotLower = sub3(c, scale3(e, 0.5f));
-        rotUpper = add3(c, scale3(e, 0.5f));
+    // local-space bounds (PTX 18401-18520); type order and the literal
+    // +0.0f/-0.0f operands match the shipped switch.
+    float lox, loy, loz, hix, hiy, hiz;
+    if (type > 2) {
+        if (type == 3) {
+            const char* mesh = reinterpret_cast<const char*>(convexMeshes) + ((int)g.w - 1) * 32;
+            const float* lower = reinterpret_cast<const float*>(mesh + 8);
+            const float* upper = reinterpret_cast<const float*>(mesh + 20);
+            lox = __fmul_rn(g.x, lower[0]); loy = __fmul_rn(g.y, lower[1]); loz = __fmul_rn(g.z, lower[2]);
+            hix = __fmul_rn(g.x, upper[0]); hiy = __fmul_rn(g.y, upper[1]); hiz = __fmul_rn(g.z, upper[2]);
+        } else if (type == 5) {
+            // SDF: the shipped object leaves lo at the entry-initialized 0.0f
+            // (PTX 18419: bra BB38_8 with f289 = 0f00000000 from 18400).
+            lox = 0.0f; loy = 0.0f; loz = 0.0f;
+            hix = g.x; hiy = g.x; hiz = g.x;
+        } else if (type == 4) {
+            const char* mesh = reinterpret_cast<const char*>(triangleMeshes) + ((int)g.w - 1) * 144;
+            const float* lower = reinterpret_cast<const float*>(mesh + 120);
+            const float* upper = reinterpret_cast<const float*>(mesh + 132);
+            lox = __fmul_rn(g.x, lower[0]); loy = __fmul_rn(g.y, lower[1]); loz = __fmul_rn(g.z, lower[2]);
+            hix = __fmul_rn(g.x, upper[0]); hiy = __fmul_rn(g.y, upper[1]); hiz = __fmul_rn(g.z, upper[2]);
+        } else {
+            lox = 0.0f; loy = 0.0f; loz = 0.0f;
+            hix = 0.0f; hiy = 0.0f; hiz = 0.0f;
+        }
+    } else if (type == 2) {
+        lox = -g.x; loy = -g.y; loz = -g.z;
+        hix = g.x; hiy = g.y; hiz = g.z;
+    } else if (type == 1) {
+        // capsule (PTX 18424-18434): lo.x = (-hh) - r, lo.y = -0.0f - r,
+        // hi.x = hh + r, hi.y = r + 0.0f, hi.z = hi.y
+        const float hh = g.y;
+        const float r = g.x;
+        lox = __fsub_rn(-hh, r);
+        loy = __fsub_rn(-0.0f, r);
+        loz = loy;
+        hix = __fadd_rn(hh, r);
+        hiy = __fadd_rn(r, 0.0f);
+        hiz = hiy;
+    } else {
+        // sphere (type 0, PTX 18513: neg f289 then BB38_8)
+        lox = -g.x; loy = lox; loz = lox;
+        hix = g.x; hiy = g.x; hiz = g.x;
     }
 
-    float3 prevLower, prevUpper;
-    {
-        float m[3][3];
-        rotation(prevRotations[i], m);
-        const float3 centerOff = make_float3(
-            halfExtent.x * m[0][0] + halfExtent.y * m[1][0] + halfExtent.z * m[2][0],
-            halfExtent.x * m[0][1] + halfExtent.y * m[1][1] + halfExtent.z * m[2][1],
-            halfExtent.x * m[0][2] + halfExtent.y * m[1][2] + halfExtent.z * m[2][2]);
-        const float3 full = sub3(hi, lo);
-        const float3 e = make_float3(
-            fabsf(full.x * m[0][0]) + fabsf(full.y * m[1][0]) + fabsf(full.z * m[2][0]),
-            fabsf(full.x * m[0][1]) + fabsf(full.y * m[1][1]) + fabsf(full.z * m[2][1]),
-            fabsf(full.x * m[0][2]) + fabsf(full.y * m[1][2]) + fabsf(full.z * m[2][2]));
-        const float3 c =
-            add3(toFloat3(reinterpret_cast<const float4*>(prevPositions)[i]), centerOff);
-        prevLower = sub3(c, scale3(e, 0.5f));
-        prevUpper = add3(c, scale3(e, 0.5f));
-    }
+    // quaternion basis, shipped w-form with *0.0f terms (PTX 18522-18562)
+    const float x = rotations[i].x, y = rotations[i].y, z = rotations[i].z, w = rotations[i].w;
+    const float f54 = __fadd_rn(w, w);
+    const float f55 = __fmaf_rn(w, f54, -1.0f);
+    const float f56 = __fmul_rn(f55, 0.0f);
+    const float f58 = __fmul_rn(y, 0.0f);
+    const float f60 = __fmul_rn(z, 0.0f);
+    const float f63 = __fmul_rn(x, 0.0f);
+    const float f61 = __fsub_rn(f58, f60);
+    const float f64 = __fsub_rn(z, f63);
+    const float f65 = __fsub_rn(f63, y);
+    const float f66 = __fmul_rn(w, f61);
+    const float f67 = __fmul_rn(f64, w);
+    const float f68 = __fmul_rn(f65, w);
+    const float f69 = __fmaf_rn(f66, 2.0f, f55);
+    const float f70 = __fmaf_rn(f67, 2.0f, f56);
+    const float f71 = __fmaf_rn(f68, 2.0f, f56);
+    const float f72 = __fadd_rn(x, f58);
+    const float f73 = __fadd_rn(f72, f60);
+    const float f74 = __fmul_rn(x, f73);
+    const float f75 = __fmul_rn(y, f73);
+    const float f76 = __fmul_rn(z, f73);
+    const float f77 = __fmaf_rn(f74, 2.0f, f69);
+    const float f78 = __fmaf_rn(f75, 2.0f, f70);
+    const float f79 = __fmaf_rn(f76, 2.0f, f71);
+    const float f80 = __fsub_rn(f58, z);
+    const float f81 = __fsub_rn(f60, f63);
+    const float f82 = __fsub_rn(x, f58);
+    const float f83 = __fmul_rn(f80, w);
+    const float f84 = __fmul_rn(w, f81);
+    const float f85 = __fmul_rn(f82, w);
+    const float f86 = __fmaf_rn(f83, 2.0f, f56);
+    const float f87 = __fmaf_rn(f84, 2.0f, f55);
+    const float f88 = __fmaf_rn(f85, 2.0f, f56);
+    const float f89 = __fadd_rn(f63, y);
+    const float f90 = __fadd_rn(f89, f60);
+    const float f91 = __fmul_rn(x, f90);
+    const float f92 = __fmul_rn(y, f90);
+    const float f93 = __fmul_rn(z, f90);
+    const float f94 = __fmaf_rn(f91, 2.0f, f86);
+    const float f95 = __fmaf_rn(f92, 2.0f, f87);
+    const float f96 = __fmaf_rn(f93, 2.0f, f88);
+    const float f97 = __fsub_rn(y, f60);
+    const float f98 = __fsub_rn(f60, x);
+    const float f99 = __fsub_rn(f63, f58);
+    const float f100 = __fmul_rn(w, f97);
+    const float f101 = __fmul_rn(w, f98);
+    const float f102 = __fmul_rn(f99, w);
+    const float f103 = __fmaf_rn(f100, 2.0f, f56);
+    const float f104 = __fmaf_rn(f101, 2.0f, f56);
+    const float f105 = __fmaf_rn(f102, 2.0f, f55);
+    const float f106 = __fadd_rn(f63, f58);
+    const float f107 = __fadd_rn(z, f106);
+    const float f108 = __fmul_rn(x, f107);
+    const float f109 = __fmul_rn(y, f107);
+    const float f110 = __fmul_rn(z, f107);
+    const float f111 = __fmaf_rn(f108, 2.0f, f103);
+    const float f112 = __fmaf_rn(f109, 2.0f, f104);
+    const float f113 = __fmaf_rn(f110, 2.0f, f105);
 
-    const float3 lower = make_float3(fminf(rotLower.x, prevLower.x), fminf(rotLower.y, prevLower.y),
-                                     fminf(rotLower.z, prevLower.z));
-    const float3 upper = make_float3(fmaxf(rotUpper.x, prevUpper.x), fmaxf(rotUpper.y, prevUpper.y),
-                                     fmaxf(rotUpper.z, prevUpper.z));
+    // full extents through the basis columns and the world box
+    // (PTX 18562-18655); local center = (hi+lo)*0.5f
+    const float fx = __fsub_rn(hix, lox);
+    const float fy = __fsub_rn(hiy, loy);
+    const float fz = __fsub_rn(hiz, loz);
+    const float f115 = __fmul_rn(fx, f77);
+    const float f116 = __fmul_rn(fx, f78);
+    const float f117 = __fmul_rn(fx, f79);
+    const float f119 = __fmul_rn(fy, f94);
+    const float f120 = __fmul_rn(fy, f95);
+    const float f121 = __fmul_rn(fy, f96);
+    const float f123 = __fmul_rn(fz, f111);
+    const float f124 = __fmul_rn(fz, f112);
+    const float f125 = __fmul_rn(fz, f113);
+    const float f126 = fabsf(f115);
+    const float f127 = fabsf(f119);
+    const float f128 = __fadd_rn(f126, f127);
+    const float f129 = fabsf(f123);
+    const float f130 = __fadd_rn(f128, f129);
+    const float f131 = fabsf(f116);
+    const float f132 = fabsf(f120);
+    const float f133 = __fadd_rn(f131, f132);
+    const float f134 = fabsf(f124);
+    const float f135 = __fadd_rn(f133, f134);
+    const float f136 = fabsf(f117);
+    const float f137 = fabsf(f121);
+    const float f138 = __fadd_rn(f136, f137);
+    const float f139 = fabsf(f125);
+    const float f140 = __fadd_rn(f138, f139);
+    const float f141 = __fadd_rn(hiy, loy);
+    const float f142 = __fmul_rn(f141, 0.5f);
+    const float f143 = __fadd_rn(hix, lox);
+    const float f144 = __fmul_rn(f143, 0.5f);
+    const float f145 = __fadd_rn(hiz, loz);
+    const float f146 = __fmul_rn(f145, 0.5f);
+    const float f147 = __fmul_rn(f142, f94);
+    const float f148 = __fmul_rn(f142, f95);
+    const float f149 = __fmul_rn(f142, f96);
+    const float f150 = __fmaf_rn(f144, f77, f147);
+    const float f151 = __fmaf_rn(f144, f78, f148);
+    const float f152 = __fmaf_rn(f144, f79, f149);
+    const float f153 = __fmaf_rn(f146, f111, f150);
+    const float f154 = __fmaf_rn(f146, f112, f151);
+    const float f155 = __fmaf_rn(f146, f113, f152);
+    const float4 pos = reinterpret_cast<const float4*>(positions)[i];
+    const float f157 = __fadd_rn(pos.x, f153);
+    const float f159 = __fadd_rn(pos.y, f154);
+    const float f161 = __fadd_rn(pos.z, f155);
+    const float f162 = __fmul_rn(f130, 0.5f);
+    const float f163 = __fmul_rn(f135, 0.5f);
+    const float f164 = __fmul_rn(f140, 0.5f);
+    const float rotLowerX = __fsub_rn(f157, f162);
+    const float rotLowerY = __fsub_rn(f159, f163);
+    const float rotLowerZ = __fsub_rn(f161, f164);
+    const float rotUpperX = __fadd_rn(f162, f157);
+    const float rotUpperY = __fadd_rn(f163, f159);
+    const float rotUpperZ = __fadd_rn(f164, f161);
 
-    reinterpret_cast<float4*>(lowerOut)[i] = toFloat4(lower, 0.0f);
-    reinterpret_cast<float4*>(upperOut)[i] = toFloat4(upper, 0.0f);
+    // previous transform (PTX 18656-18703, same chain on prevRotations)
+    const float px = prevRotations[i].x, py = prevRotations[i].y;
+    const float pz = prevRotations[i].z, pw = prevRotations[i].w;
+    const float g172 = __fadd_rn(pw, pw);
+    const float g173 = __fmaf_rn(pw, g172, -1.0f);
+    const float g174 = __fmul_rn(g173, 0.0f);
+    const float g176 = __fmul_rn(py, 0.0f);
+    const float g178 = __fmul_rn(pz, 0.0f);
+    const float g181 = __fmul_rn(px, 0.0f);
+    const float g179 = __fsub_rn(g176, g178);
+    const float g182 = __fsub_rn(pz, g181);
+    const float g183 = __fsub_rn(g181, py);
+    const float g184 = __fmul_rn(pw, g179);
+    const float g185 = __fmul_rn(g182, pw);
+    const float g186 = __fmul_rn(g183, pw);
+    const float g187 = __fmaf_rn(g184, 2.0f, g173);
+    const float g188 = __fmaf_rn(g185, 2.0f, g174);
+    const float g189 = __fmaf_rn(g186, 2.0f, g174);
+    const float g190 = __fadd_rn(px, g176);
+    const float g191 = __fadd_rn(g190, g178);
+    const float g192 = __fmul_rn(px, g191);
+    const float g193 = __fmul_rn(py, g191);
+    const float g194 = __fmul_rn(pz, g191);
+    const float g195 = __fmaf_rn(g192, 2.0f, g187);
+    const float g196 = __fmaf_rn(g193, 2.0f, g188);
+    const float g197 = __fmaf_rn(g194, 2.0f, g189);
+    const float g198 = __fsub_rn(g176, pz);
+    const float g199 = __fsub_rn(g178, g181);
+    const float g200 = __fsub_rn(px, g176);
+    const float g201 = __fmul_rn(g198, pw);
+    const float g202 = __fmul_rn(pw, g199);
+    const float g203 = __fmul_rn(g200, pw);
+    const float g204 = __fmaf_rn(g201, 2.0f, g174);
+    const float g205 = __fmaf_rn(g202, 2.0f, g173);
+    const float g206 = __fmaf_rn(g203, 2.0f, g174);
+    const float g207 = __fadd_rn(g181, py);
+    const float g208 = __fadd_rn(g207, g178);
+    const float g209 = __fmul_rn(px, g208);
+    const float g210 = __fmul_rn(py, g208);
+    const float g211 = __fmul_rn(pz, g208);
+    const float g212 = __fmaf_rn(g209, 2.0f, g204);
+    const float g213 = __fmaf_rn(g210, 2.0f, g205);
+    const float g214 = __fmaf_rn(g211, 2.0f, g206);
+    const float g215 = __fsub_rn(py, g178);
+    const float g216 = __fsub_rn(g178, px);
+    const float g217 = __fsub_rn(g181, g176);
+    const float g218 = __fmul_rn(pw, g215);
+    const float g219 = __fmul_rn(pw, g216);
+    const float g220 = __fmul_rn(g217, pw);
+    const float g221 = __fmaf_rn(g218, 2.0f, g174);
+    const float g222 = __fmaf_rn(g219, 2.0f, g174);
+    const float g223 = __fmaf_rn(g220, 2.0f, g173);
+    const float g224 = __fadd_rn(g181, px);
+    const float g225 = __fadd_rn(py, g224);
+    const float g226 = __fmul_rn(px, g225);
+    const float g227 = __fmul_rn(py, g225);
+    const float g228 = __fmul_rn(pz, g225);
+    const float g229 = __fmaf_rn(g226, 2.0f, g221);
+    const float g230 = __fmaf_rn(g227, 2.0f, g222);
+    const float g231 = __fmaf_rn(g228, 2.0f, g223);
+    const float g232 = __fmul_rn(fy, g195);
+    const float g233 = __fmul_rn(fy, g196);
+    const float g234 = __fmul_rn(fy, g197);
+    const float g235 = __fmul_rn(fz, g212);
+    const float g236 = __fmul_rn(fz, g213);
+    const float g237 = __fmul_rn(fz, g214);
+    const float g238 = __fmul_rn(fx, g229);
+    const float g239 = __fmul_rn(fx, g230);
+    const float g240 = __fmul_rn(fx, g231);
+    const float g241 = fabsf(g232);
+    const float g242 = fabsf(g235);
+    const float g243 = __fadd_rn(g241, g242);
+    const float g244 = fabsf(g238);
+    const float g245 = __fadd_rn(g243, g244);
+    const float g246 = fabsf(g233);
+    const float g247 = fabsf(g236);
+    const float g248 = __fadd_rn(g246, g247);
+    const float g249 = fabsf(g239);
+    const float g250 = __fadd_rn(g248, g249);
+    const float g251 = fabsf(g234);
+    const float g252 = fabsf(g237);
+    const float g253 = __fadd_rn(g251, g252);
+    const float g254 = fabsf(g240);
+    const float g255 = __fadd_rn(g253, g254);
+    const float g256 = __fmul_rn(f142, g212);
+    const float g257 = __fmul_rn(f142, g213);
+    const float g258 = __fmul_rn(f142, g214);
+    const float g259 = __fmaf_rn(f144, g195, g256);
+    const float g260 = __fmaf_rn(f144, g196, g257);
+    const float g261 = __fmaf_rn(f144, g197, g258);
+    const float g262 = __fmaf_rn(f146, g229, g259);
+    const float g263 = __fmaf_rn(f146, g230, g260);
+    const float g264 = __fmaf_rn(f146, g231, g261);
+    const float4 prevPos = reinterpret_cast<const float4*>(prevPositions)[i];
+    const float g266 = __fadd_rn(prevPos.x, g262);
+    const float g268 = __fadd_rn(prevPos.y, g263);
+    const float g270 = __fadd_rn(prevPos.z, g264);
+    const float g271 = __fmul_rn(g245, 0.5f);
+    const float g272 = __fmul_rn(g250, 0.5f);
+    const float g273 = __fmul_rn(g255, 0.5f);
+    const float prevLowerX = __fsub_rn(g266, g271);
+    const float prevLowerY = __fsub_rn(g268, g272);
+    const float prevLowerZ = __fsub_rn(g270, g273);
+    const float prevUpperX = __fadd_rn(g271, g266);
+    const float prevUpperY = __fadd_rn(g272, g268);
+    const float prevUpperZ = __fadd_rn(g273, g270);
+
+    // merge with selects in the shipped operand order (PTX 18704-18726)
+    const float outLowerX = (rotLowerX < prevLowerX) ? rotLowerX : prevLowerX;
+    const float outLowerY = (rotLowerY < prevLowerY) ? rotLowerY : prevLowerY;
+    const float outLowerZ = (rotLowerZ < prevLowerZ) ? rotLowerZ : prevLowerZ;
+    const float outUpperX = (rotUpperX > prevUpperX) ? rotUpperX : prevUpperX;
+    const float outUpperY = (rotUpperY > prevUpperY) ? rotUpperY : prevUpperY;
+    const float outUpperZ = (rotUpperZ > prevUpperZ) ? rotUpperZ : prevUpperZ;
+
+    reinterpret_cast<float4*>(lowerOut)[i] = make_float4(outLowerX, outLowerY, outLowerZ, 0.0f);
+    reinterpret_cast<float4*>(upperOut)[i] = make_float4(outUpperX, outUpperY, outUpperZ, 0.0f);
 }
-
 // flexdecomp: src/cuda/flex.cu:6187 _Z21ComputeTriangleBoundsPK8XVector4IfEPKiiPS0_S5_
 // Per-triangle AABB (PTX 22659-22745).
 __global__ void FLEX_KERNEL_API ComputeTriangleBounds(const XVector4<float>* positions, const int* indices,
