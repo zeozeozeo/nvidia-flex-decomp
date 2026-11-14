@@ -94,6 +94,12 @@ struct cudaChannelFormatDesc {
 };
 
 // DWARF: cudaResourceDesc, 64 bytes, resType at 0x0, union at 0x8
+// Windows/CUDA 13 ABI: the runtime adds a trailing `unsigned int flags`
+// (driver_types.h:1664, after the union) and reads it at every
+// cudaCreateTextureObject call - without it the runtime reads past this
+// struct and rejects the call with cudaErrorInvalidValue.  sizeof grows
+// 64 -> 72.  (The Linux/ELF path keeps the shipped CUDA 9.2 layout the
+// static gate pins.)
 struct cudaResourceDesc {
 	enum cudaResourceType resType;
 	union {
@@ -108,9 +114,14 @@ struct cudaResourceDesc {
 			size_t pitchInBytes;
 		} pitch2D;
 	} res;
+#if defined(_MSC_VER)
+	unsigned int flags;
+#endif
 };
 
 // DWARF: cudaTextureDesc, 64 bytes, readMode at 0x10, borderColor at 0x18
+// Windows/CUDA 13 ABI: two trailing ints (disableTrilinearOptimization,
+// seamlessCubemap; cuda_runtime_api.h:9230) - sizeof 64 -> 72.
 struct cudaTextureDesc {
 	enum cudaTextureAddressMode addressMode[3];
 	enum cudaTextureFilterMode filterMode;
@@ -123,6 +134,10 @@ struct cudaTextureDesc {
 	float mipmapLevelBias;
 	float minMipmapLevelClamp;
 	float maxMipmapLevelClamp;
+#if defined(_MSC_VER)
+	int disableTrilinearOptimization;
+	int seamlessCubemap;
+#endif
 };
 
 struct cudaResourceViewDesc;  // opaque: cudaCreateTextureObject's 4th argument (always null here)
@@ -141,8 +156,13 @@ cudaError_t cudaDestroyTextureObject(cudaTextureObject_t texObject);
 }  // extern "C"
 
 static_assert(sizeof(cudaChannelFormatDesc) == 20, "DWARF: cudaChannelFormatDesc 20 B");
+#if defined(_MSC_VER)
+static_assert(sizeof(cudaResourceDesc) == 72, "CUDA 13 ABI: cudaResourceDesc 72 B");
+static_assert(sizeof(cudaTextureDesc) == 72, "CUDA 13 ABI: cudaTextureDesc 72 B");
+#else
 static_assert(sizeof(cudaResourceDesc) == 64, "DWARF: cudaResourceDesc 64 B");
 static_assert(sizeof(cudaTextureDesc) == 64, "DWARF: cudaTextureDesc 64 B");
+#endif
 
 // ---------------------------------------------------------------------------
 // CUDA driver interface (cuda.h), resolved dynamically by CudaSafeDelayLoad.
