@@ -1452,10 +1452,17 @@ r166 = r166 + 4;
 p28 = ((int)(r166) < (int)(r4));
 if (p28) goto BB24_18;
 BB24_27:
-r112 = rd1+120;
+// PTX 7520-7534 (work/ptx-shipped/flex.sm30.ptx): these are ld.param LOADS
+// from the by-value FlexCollisionShapeData parameter, not address arithmetic.
+// Loading the field values (mNumShapes, mBVH.mRootNode, the shape texture
+// handles, mFlags) is required: the mNumShapes guard must fire when the
+// solver has no shapes, and tex1Dfetch needs the real cudaTextureObject_t
+// handles.  Computing rd1+OFF instead left the guard always false and made
+// every launch fetch through a bogus handle (sticky "illegal memory access").
+r112 = *reinterpret_cast<const unsigned int*>((rd1+120));
 p29 = ((int)(r112) == (int)(0));
 if (p29) goto BB24_95;
-rd68 = rd1+80;
+rd68 = *reinterpret_cast<const unsigned long long*>((rd1+80));
 rd69 = rd68;
 r114 = *reinterpret_cast<const unsigned int*>((rd69));
 *reinterpret_cast<unsigned int*>((rd4)) = r114;
@@ -1465,9 +1472,9 @@ rd11 = rd70;
 rd71 = *reinterpret_cast<const unsigned long long*>(gpb+536);
 rd13 = rd71;
 r34 = r3 & 2130706432;
-rd14 = rd1+72;
-rd15 = rd1+64;
-rd72 = rd1+56;
+rd14 = *reinterpret_cast<const unsigned long long*>((rd1+72));
+rd15 = *reinterpret_cast<const unsigned long long*>((rd1+64));
+rd72 = *reinterpret_cast<const unsigned long long*>((rd1+56));
 rd16 = rd72;
 r177 = 1;
 goto BB24_29;
@@ -2488,7 +2495,10 @@ rd24 = *reinterpret_cast<const unsigned long long*>(gpb+344);
 { float4 tx_ = tex1Dfetch<float4>((cudaTextureObject_t)rd24, (int)r2); f1=tx_.x; f2=tx_.y; f3=tx_.z; f172=tx_.w; }
 rd25 = *reinterpret_cast<const unsigned long long*>(gpb+352);
 { float4 tx_ = tex1Dfetch<float4>((cudaTextureObject_t)rd25, (int)r2); f4=tx_.x; f5=tx_.y; f6=tx_.z; f173=tx_.w; }
-r36 = rd1+120;
+// PTX 8638-8640 (work/ptx-shipped/flex.sm30.ptx): ld.param.u32 [%rd1+120]
+// loads shapes.mNumShapes; the zero-shapes guard must test the loaded value,
+// not the address of the parameter slot.
+r36 = *reinterpret_cast<const unsigned int*>((rd1+120));
 p2 = ((int)(r36) == (int)(0));
 r94 = 0;
 r87 = r94;
@@ -2517,14 +2527,19 @@ f9 = f176 - f180;
 f10 = f177 + f180;
 f11 = f178 + f180;
 f12 = f179 + f180;
-rd29 = rd1+80;
+// PTX 8654-8664 (work/ptx-shipped/flex.sm30.ptx): ld.param.u64 loads of
+// shapes.mBVH.mRootNode (offset 80, dereferenced below), shapes.mFlags
+// (offset 56) and the shape position/rotation texture handles (offsets
+// 64/72).  These must be field loads: rd1+OFF alone is a local-memory
+// address and using it as a texture handle faults every launch.
+rd29 = *reinterpret_cast<const unsigned long long*>((rd1+80));
 rd30 = rd29;
 r40 = *reinterpret_cast<const unsigned int*>((rd30));
 *reinterpret_cast<unsigned int*>((rd2)) = r40;
-rd31 = rd1+56;
+rd31 = *reinterpret_cast<const unsigned long long*>((rd1+56));
 rd3 = rd31;
-rd4 = rd1+64;
-rd5 = rd1+72;
+rd4 = *reinterpret_cast<const unsigned long long*>((rd1+64));
+rd5 = *reinterpret_cast<const unsigned long long*>((rd1+72));
 r4 = r1 << 3;
 r87 = 0;
 r88 = 1;
@@ -2593,7 +2608,9 @@ rd35 = *reinterpret_cast<const unsigned long long*>(gpb+504);
 rd11 = rd35;
 { const float* q_ = reinterpret_cast<const float*>(gpb+304); f181 = q_[0]; f182 = q_[1]; }
 r16 = *reinterpret_cast<const unsigned int*>(gpb+132);
-rd36 = rd1+16;
+// PTX 8748-8749 (work/ptx-shipped/flex.sm30.ptx): ld.param.u64 [%rd1+16]
+// loads shapes.mGeometry; rd12 must hold the pointer value.
+rd36 = *reinterpret_cast<const unsigned long long*>((rd1+16));
 rd12 = rd36;
 r90 = 0;
 rd53 = rd21;
