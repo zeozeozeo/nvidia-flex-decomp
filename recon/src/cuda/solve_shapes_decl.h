@@ -17,7 +17,11 @@
 // the symbol would be missing from libnvflex.so.  It must be on the first
 // declaration: nvcc rejects adding it in the definition TU.
 template <bool IsRigid>
+#if defined(_MSC_VER)
+__global__ void
+#else
 __global__ void __attribute__((visibility("default")))
+#endif
 SolveShapes(const int* shapeOffsets, const int* shapeIndices,
                             const float* shapePositions, const float* shapeRotations,
                             const float* shapePrevPositions, const int* shapeStarts,

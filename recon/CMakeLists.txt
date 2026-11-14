@@ -13,33 +13,65 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CUDA_STANDARD 17)
 set(CMAKE_CUDA_STANDARD_REQUIRED ON)
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
-# asserts stay enabled: the shipped objects were built without NDEBUG and the
-# static gate compares literal sets, so recon must match that configuration
-set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "-O3 -g")
-set(CMAKE_C_FLAGS_RELWITHDEBINFO "-O3 -g")
-set(CMAKE_CUDA_FLAGS_RELWITHDEBINFO "-O3 -g")
-# relocatable device code: the solver is reconstructed across several .cu files
-# that share __constant__ symbols (gParams/gBounds), which needs separable
-# compilation and a device link step.
-set(CMAKE_CUDA_FLAGS "${CMAKE_CUDA_FLAGS} -O3 -g -lineinfo -arch=sm_75 -rdc=true -Xcompiler -fPIC,-ffp-contract=off")
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3 -g -gdwarf-4 -fPIC -fstack-protector -march=x86-64 -mtune=generic -std=gnu++14 -ffp-contract=off -fvisibility=default")
-# Build-level compatibility for shipped FleX sources compiled by a modern
-# toolchain: platform.h relies on a transitive <sstream> include, and maths.cpp
-# declares XMatrix44<float>::kIdentity after its use. See recon/compat/.
-# Applied only to the shipped-source target so recovered headers never mix with
-# the verbatim FleX headers in one translation unit.
-set(FLEX_COMPAT_FLAGS "SHELL:-include kidentity_predeclare.h"
-    -I${CMAKE_CURRENT_SOURCE_DIR}/compat)
+
+if(WIN32)
+  # Windows/MSVC build (verified: CUDA 13.5 + VS18 cl 14.51, RTX 2060/sm_75).
+  # The PE ABI is the export surface in win32/<target>.def, generated
+  # mechanically from the shipped DLLs (tools/apitest/gen_exports.py);
+  # internal symbols are free.  Behavioural parity target is the shipped
+  # release DLL: asserts are OFF there (no "assert" strings in the binary),
+  # so the Windows build matches with NDEBUG.
+  set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
+  # static CRT: the shipped NvFlexReleaseCUDA_x64.dll imports no CRT
+  set(CMAKE_CXX_FLAGS_RELEASE "/O2 /Zi /DNDEBUG")
+  set(CMAKE_C_FLAGS_RELEASE "/O2 /Zi /DNDEBUG")
+  set(CMAKE_CUDA_FLAGS_RELEASE "-O3 -lineinfo -DNDEBUG")
+  # MSVC toolset pin: nvcc 13.5 miscompiles the CRT include guards against
+  # the VS18-native 14.52 toolset (vadefs.h/corecrt.h double definitions);
+  # 14.44 (the VS2022-lineage toolset installed alongside) is the supported
+  # host.  Set CMAKE_CXX_COMPILER and CUDA -ccbin to it at configure time.
+  set(CMAKE_CUDA_FLAGS "${CMAKE_CUDA_FLAGS} -Xcompiler=/O2,/Zi,/Zc:preprocessor")
+  # forced include: MSVC neutralizers for GCC-isms (see recon/compat/msvc.h)
+  # attached /FI form: nvcc splits -Xcompiler on commas and the path has no
+  # spaces, so no quoting is needed
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /Zc:preprocessor /FI${CMAKE_CURRENT_SOURCE_DIR}/compat/msvc.h")
+  set(CMAKE_CUDA_FLAGS "${CMAKE_CUDA_FLAGS} -Xcompiler=/FI${CMAKE_CURRENT_SOURCE_DIR}/compat/msvc.h")
+  set(FLEX_LINK_FLAGS "")
+  set(FLEX_COMPAT_FLAGS "-I${CMAKE_CURRENT_SOURCE_DIR}/compat")
+else()
+  # asserts stay enabled: the shipped objects were built without NDEBUG and the
+  # static gate compares literal sets, so recon must match that configuration
+  set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "-O3 -g")
+  set(CMAKE_C_FLAGS_RELWITHDEBINFO "-O3 -g")
+  set(CMAKE_CUDA_FLAGS_RELWITHDEBINFO "-O3 -g")
+  # relocatable device code: the solver is reconstructed across several .cu files
+  # that share __constant__ symbols (gParams/gBounds), which needs separable
+  # compilation and a device link step.
+  set(CMAKE_CUDA_FLAGS "${CMAKE_CUDA_FLAGS} -O3 -g -lineinfo -arch=sm_75 -rdc=true -Xcompiler -fPIC,-ffp-contract=off")
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3 -g -gdwarf-4 -fPIC -fstack-protector -march=x86-64 -mtune=generic -std=gnu++14 -ffp-contract=off -fvisibility=default")
+  # Build-level compatibility for shipped FleX sources compiled by a modern
+  # toolchain: platform.h relies on a transitive <sstream> include, and maths.cpp
+  # declares XMatrix44<float>::kIdentity after its use. See recon/compat/.
+  # Applied only to the shipped-source target so recovered headers never mix with
+  # the verbatim FleX headers in one translation unit.
+  set(FLEX_COMPAT_FLAGS "SHELL:-include kidentity_predeclare.h"
+      -I${CMAKE_CURRENT_SOURCE_DIR}/compat)
+  # link flags: intra-library calls must never interpose on the original library
+  set(FLEX_LINK_FLAGS "-Wl,-Bsymbolic-functions")
+endif()
 
 set(FLEX_INCLUDE_PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
 set(FLEX_INCLUDE_RECOVERED ${CMAKE_CURRENT_SOURCE_DIR}/include/nvflex)
 set(FLEX_INCLUDE_CORE ${CMAKE_CURRENT_SOURCE_DIR}/core ${CMAKE_CURRENT_SOURCE_DIR})
 
-# link flags: intra-library calls must never interpose on the original library
-set(FLEX_LINK_FLAGS "-Wl,-Bsymbolic-functions")
+find_package(CUDAToolkit REQUIRED)
 
 # ---- nvflex (CUDA solver) -------------------------------------------------
 set(NVFLEX_SOURCES "")
+if(WIN32)
+  # out-of-line emission of the four header-inline helpers the shipped DLLs export
+  list(APPEND NVFLEX_SOURCES src/cuda/win32_inline_exports.cpp)
+endif()
 foreach(f src/cuda/bvh.cu src/cuda/flex.cu src/cuda/sort.cu src/cuda/util.cpp)
   if(EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/${f})
     list(APPEND NVFLEX_SOURCES ${f})
@@ -60,6 +92,12 @@ if(NVFLEX_SOURCES)
   add_library(nvflex_static STATIC ${NVFLEX_SOURCES})
   set_target_properties(nvflex_static PROPERTIES CUDA_SEPARABLE_COMPILATION ON)
   target_include_directories(nvflex_static PRIVATE ${FLEX_INCLUDE_PUBLIC} ${FLEX_INCLUDE_RECOVERED})
+  if(WIN32)
+    # PE export surface pinned by the generated .def (shipped == recon, checked
+    # by tools/apitest/gen_exports.py --check and tools/apitest/coverage.py)
+    target_sources(nvflex PRIVATE win32/nvflex.def)
+    set_target_properties(nvflex PROPERTIES OUTPUT_NAME "NvFlexReleaseCUDA_x64" PREFIX "")
+  endif()
 endif()
 
 # Per-module flags reproducing the shipped object configuration (asserts).
@@ -75,6 +113,9 @@ endif()
 
 # ---- nvflexext -----------------------------------------------------------
 set(NVFLEXEXT_SOURCES "")
+if(WIN32)
+  list(APPEND NVFLEXEXT_SOURCES src/cuda/win32_inline_exports.cpp)
+endif()
 foreach(f
     extensions/flexExtCloth.cpp extensions/flexExtContainer.cpp
     extensions/flexExtMovingFrame.cpp extensions/flexExtRigid.cpp
@@ -93,6 +134,13 @@ if(NVFLEXEXT_SOURCES)
   target_compile_options(nvflexext PRIVATE $<$<COMPILE_LANGUAGE:CXX>:${FLEX_COMPAT_FLAGS}>)
   set_target_properties(nvflexext PROPERTIES CUDA_SEPARABLE_COMPILATION ON
                         CUDA_RESOLVE_DEVICE_SYMBOLS ON)
+  if(WIN32)
+    # the shipped ext DLL imports the core DLL (NvFlexReleaseCUDA_x64.dll);
+    # a PE DLL cannot leave symbols undefined, so link the recon core
+    target_link_libraries(nvflexext PRIVATE nvflex)
+    target_sources(nvflexext PRIVATE win32/nvflexext.def)
+    set_target_properties(nvflexext PROPERTIES OUTPUT_NAME "NvFlexExtReleaseCUDA_x64" PREFIX "")
+  endif()
 endif()
 
 # ---- nvflexdevice --------------------------------------------------------
@@ -108,4 +156,11 @@ if(NVFLEXDEVICE_SOURCES)
   target_include_directories(nvflexdevice PRIVATE ${FLEX_INCLUDE_PUBLIC} ${FLEX_INCLUDE_CORE})
   target_link_options(nvflexdevice PRIVATE ${FLEX_LINK_FLAGS})
   target_compile_options(nvflexdevice PRIVATE $<$<COMPILE_LANGUAGE:CXX>:${FLEX_COMPAT_FLAGS}>)
+  if(WIN32)
+    # CXX-only target: no cudart is linked automatically, but flexDevice.cpp
+    # calls the CUDA runtime API directly (like the shipped DLL)
+    target_link_libraries(nvflexdevice PRIVATE CUDA::cudart_static)
+    target_sources(nvflexdevice PRIVATE win32/nvflexdevice.def)
+    set_target_properties(nvflexdevice PROPERTIES OUTPUT_NAME "NvFlexDeviceRelease_x64" PREFIX "")
+  endif()
 endif()

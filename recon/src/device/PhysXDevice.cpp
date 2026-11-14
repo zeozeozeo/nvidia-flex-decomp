@@ -52,7 +52,9 @@ PHYSX_DEV_STATUS physxDevGetCudaOrdinalWrapper(int* cudaDevOrdinal)
 }
 
 // 3 instructions in the shipped release object (constant 0 return).
+#if !defined(_MSC_VER)
 __attribute__((optimize("O3")))
+#endif
 // flexdecomp: PhysXDevice.cpp:47 _ZN5physx32physxDevUsingDedicatedGPUWrapperEv
 PHYSX_DEV_STATUS physxDevUsingDedicatedGPUWrapper()
 {
@@ -62,7 +64,9 @@ PHYSX_DEV_STATUS physxDevUsingDedicatedGPUWrapper()
 
 // This wrapper is 2 instructions in the shipped release object
 // (`xor %eax,%eax; ret`), which the module's -O0 pragma would not produce.
+#if !defined(_MSC_VER)
 __attribute__((optimize("O3")))
+#endif
 // flexdecomp: PhysXDevice.cpp:54 _ZN5physx25physxDevSLIEnabledWrapperEPv
 bool physxDevSLIEnabledWrapper(void*)
 {

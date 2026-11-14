@@ -26,7 +26,7 @@
 void FlexLogFunc(NvFlexErrorCallback func, NvFlexErrorSeverity severity,
                  const char* msg, const char* file, int line, ...);
 void* FlexAlloc(NvFlexLibrary* lib, int size);
-void FlexDeviceMallocInternal(void** ptr, unsigned long size, const char* name,
+void FlexDeviceMallocInternal(void** ptr, size_t size, const char* name,
                               const char* file, int line);
 void FlexDeviceFreeInternal(void* ptr);
 cudaTextureObject_t CreateTexture(const Vec4* data, int size);
@@ -96,7 +96,10 @@ inline cudaMemcpyKind CopyKind(NvFlexBuffer* buffer, bool toDevice)
 }
 
 // Original anonymous-namespace spelling, flex.cu:5210 (ReadData, 5 args).
-__attribute__((noinline)) void ReadData(NvFlexBuffer* dstBuffer, int dstByteOffset, const void* srcPtr,
+#if !defined(_MSC_VER)
+__attribute__((noinline))
+#endif
+void ReadData(NvFlexBuffer* dstBuffer, int dstByteOffset, const void* srcPtr,
               int srcByteOffset, int byteSize)
 {
     NvFlexLibrary* lib = dstBuffer->lib;
@@ -148,7 +151,10 @@ __attribute__((noinline)) void ReadData(NvFlexBuffer* dstBuffer, int dstByteOffs
 }
 
 // Original anonymous-namespace spelling, flex.cu:5251 (WriteData, 5 args).
-__attribute__((noinline)) void WriteData(void* dstPtr, int dstByteOffset, NvFlexBuffer* srcBuffer,
+#if !defined(_MSC_VER)
+__attribute__((noinline))
+#endif
+void WriteData(void* dstPtr, int dstByteOffset, NvFlexBuffer* srcBuffer,
                int srcByteOffset, int byteSize)
 {
     NvFlexLibrary* lib = srcBuffer->lib;
@@ -173,7 +179,10 @@ __attribute__((noinline)) void WriteData(void* dstPtr, int dstByteOffset, NvFlex
 }
 
 // flex.cu:5297 (ReadData, 6 args).
-__attribute__((noinline)) void ReadData(NvFlexErrorCallback errorFunc, NvFlexBuffer* dstBuffer, const void* srcPtr,
+#if !defined(_MSC_VER)
+__attribute__((noinline))
+#endif
+void ReadData(NvFlexErrorCallback errorFunc, NvFlexBuffer* dstBuffer, const void* srcPtr,
               int srcLength, const NvFlexCopyDesc* desc, int elementWidth)
 {
     if (desc == 0)
@@ -209,7 +218,10 @@ __attribute__((noinline)) void ReadData(NvFlexErrorCallback errorFunc, NvFlexBuf
 }
 
 // flex.cu:5338 (WriteData, 6 args).
-__attribute__((noinline)) void WriteData(NvFlexErrorCallback errorFunc, void* dstPtr, int destLength,
+#if !defined(_MSC_VER)
+__attribute__((noinline))
+#endif
+void WriteData(NvFlexErrorCallback errorFunc, void* dstPtr, int destLength,
                NvFlexBuffer* srcBuffer, const NvFlexCopyDesc* desc, int elementWidth)
 {
     if (srcBuffer == 0)
@@ -1046,7 +1058,9 @@ void NvFlexGetNeighbors(NvFlexSolver* s, NvFlexBuffer* neighbors, NvFlexBuffer* 
 // flexdecomp: src/cuda/flex.cu:5726 NvFlexSetInflatables
 // the shipped object was compiled without loop vectorisation; keep the simple
 // scalar struct-fill loop (GCC 4.8 codegen)
+#if !defined(_MSC_VER)
 __attribute__((optimize("no-tree-vectorize")))
+#endif
 void NvFlexSetInflatables(NvFlexSolver* s, NvFlexBuffer* startTris, NvFlexBuffer* numTris,
                           NvFlexBuffer* restVolumes, NvFlexBuffer* overPressures,
                           NvFlexBuffer* constraintScales, int n)

@@ -1,0 +1,46 @@
+; Export surface for the recon Windows build, generated mechanically from the
+; shipped DLL by tools/apitest/gen_exports.py.  Do not edit by hand; regenerate
+; with: python tools/apitest/gen_exports.py
+LIBRARY NvFlexExtReleaseCUDA_x64.dll
+EXPORTS
+
+    NvFlexExtAllocParticles
+    NvFlexExtCreateClothFromMesh
+    NvFlexExtCreateContainer
+    NvFlexExtCreateForceFieldCallback
+    NvFlexExtCreateInstance
+    NvFlexExtCreateRigidFromMesh
+    NvFlexExtCreateSoftFromMesh
+    NvFlexExtCreateSoftJoint
+    NvFlexExtCreateSoftMeshSkinning
+    NvFlexExtCreateTearingClothFromMesh
+    NvFlexExtCreateWeldedMeshIndices
+    NvFlexExtDestroyAsset
+    NvFlexExtDestroyContainer
+    NvFlexExtDestroyForceFieldCallback
+    NvFlexExtDestroyInstance
+    NvFlexExtDestroySoftJoint
+    NvFlexExtDestroyTearingCloth
+    NvFlexExtFreeParticles
+    NvFlexExtGetActiveList
+    NvFlexExtMapParticleData
+    NvFlexExtMapShapeData
+    NvFlexExtMapTriangleData
+    NvFlexExtMovingFrameApply
+    NvFlexExtMovingFrameInit
+    NvFlexExtMovingFrameUpdate
+    NvFlexExtNotifyAssetChanged
+    NvFlexExtPullFromDevice
+    NvFlexExtPushToDevice
+    NvFlexExtSetForceFields
+    NvFlexExtSoftJointSetTransform
+    NvFlexExtTearClothMesh
+    NvFlexExtTickContainer
+    NvFlexExtUnmapParticleData
+    NvFlexExtUnmapShapeData
+    NvFlexExtUnmapTriangleData
+    NvFlexExtUpdateInstances
+    NvFlexMakePhase
+    NvFlexMakePhaseWithChannels
+    NvFlexMakeShapeFlags
+    NvFlexMakeShapeFlagsWithChannels

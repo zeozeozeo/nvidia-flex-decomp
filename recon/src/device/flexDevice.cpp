@@ -19,7 +19,11 @@
 
 #include "NvFlexDevice.h"
 
+#if defined(_MSC_VER)
+#include <windows.h>
+#else
 #include <dlfcn.h>
+#endif
 #include <stddef.h>
 
 #include "PhysXDevice.h"
@@ -39,7 +43,11 @@
 #pragma GCC optimize ("O0")
 #endif
 
+#if defined(_MSC_VER)
+#define FLEX_FORCEINLINE __forceinline
+#else
 #define FLEX_FORCEINLINE inline __attribute__((always_inline))
+#endif
 
 // ---- cuda.h subset (external/CUDA/9.2.148-linux/include/cuda.h) ------------
 
@@ -143,7 +151,11 @@ namespace physx
 // flexdecomp: flexDevice.cpp:84 - folded form (release object)
 static FLEX_FORCEINLINE void* GetProcAddressImpl(void* handle, const char* name)
 {
+#if defined(_MSC_VER)
+	return (void*)::GetProcAddress((HMODULE)handle, name);
+#else
 	return dlsym(handle, name);
+#endif
 }
 
 // flexdecomp: flexDevice.cpp:84 _ZL14GetProcAddressPvPKc
@@ -166,7 +178,9 @@ static FLEX_FORCEINLINE int GetSuggestedDeviceOrdinalImpl()
 // noipa keeps this symbol's own body: without it GCC folds the function into
 // NvFlexDeviceGetSuggestedOrdinal(), which has the identical inlined body,
 // and the debug object's stand-alone 18-instruction body would vanish.
+#if !defined(_MSC_VER)
 __attribute__((noipa))
+#endif
 static int GetSuggestedDeviceOrdinal()
 {
 	return GetSuggestedDeviceOrdinalImpl();
@@ -176,7 +190,12 @@ static int GetSuggestedDeviceOrdinal()
 static FLEX_FORCEINLINE bool CudaSafeDelayLoadImpl(int deviceOrdinal, CUcontext* outContext)
 {
 	// flexdecomp: flexDevice.cpp:114 - "libcuda.so" at .rodata+0x11, RTLD_NOW
+	// (the shipped Windows DLL loads nvcuda.dll; same resolution path)
+#if defined(_MSC_VER)
+	void* hCudaDriver = (void*)LoadLibraryA("nvcuda.dll");
+#else
 	void* hCudaDriver = dlopen("libcuda.so", RTLD_NOW);
+#endif
 
 	// flexdecomp: flexDevice.cpp:117/119
 	if (hCudaDriver == NULL)

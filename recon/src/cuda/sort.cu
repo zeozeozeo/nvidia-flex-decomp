@@ -301,12 +301,20 @@ __device__ __forceinline__ void RadixDownsweep(int* d_keys_in, int* d_keys_out,
 #define FLEX_SORT_KERNEL_DOWNSWEEP _ZN3cub24RadixSortDownsweepKernelINS_23DeviceRadixSortDispatchILb0EiiiE18PtxDownsweepPolicyELb0EiiiEEvPT1_S5_PT2_S7_PT3_S8_iibbNS_13GridEvenShareIS8_EE
 #define FLEX_SORT_KERNEL_DOWNSWEEP_ALT _ZN3cub24RadixSortDownsweepKernelINS_23DeviceRadixSortDispatchILb0EiiiE21PtxAltDownsweepPolicyELb0EiiiEEvPT1_S5_PT2_S7_PT3_S8_iibbNS_13GridEvenShareIS8_EE
 
+#if defined(_MSC_VER)
+extern "C" __global__ void
+#else
 extern "C" __global__ __attribute__((visibility("default"))) void
+#endif
 _ZN3cub11EmptyKernelIvEEvv()
 {
 }
 
+#if defined(_MSC_VER)
+extern "C" __global__ void
+#else
 extern "C" __global__ __attribute__((visibility("default"))) void
+#endif
 _ZN3cub22RadixSortUpsweepKernelINS_23DeviceRadixSortDispatchILb0EiiiE16PtxUpsweepPolicyELb0EiiEEvPT1_PT2_S6_iibNS_13GridEvenShareIS6_EE(
     int* d_keys, int* d_spine, int num_items, int current_bit, int num_bits,
     bool first_pass, cub::GridEvenShare<int> even_share)
@@ -316,7 +324,11 @@ _ZN3cub22RadixSortUpsweepKernelINS_23DeviceRadixSortDispatchILb0EiiiE16PtxUpswee
     RadixUpsweep(d_keys, d_spine, current_bit, num_bits, even_share);
 }
 
+#if defined(_MSC_VER)
+extern "C" __global__ void
+#else
 extern "C" __global__ __attribute__((visibility("default"))) void
+#endif
 _ZN3cub22RadixSortUpsweepKernelINS_23DeviceRadixSortDispatchILb0EiiiE19PtxAltUpsweepPolicyELb0EiiEEvPT1_PT2_S6_iibNS_13GridEvenShareIS6_EE(
     int* d_keys, int* d_spine, int num_items, int current_bit, int num_bits,
     bool first_pass, cub::GridEvenShare<int> even_share)
@@ -326,14 +338,22 @@ _ZN3cub22RadixSortUpsweepKernelINS_23DeviceRadixSortDispatchILb0EiiiE19PtxAltUps
     RadixUpsweep(d_keys, d_spine, current_bit, num_bits, even_share);
 }
 
+#if defined(_MSC_VER)
+extern "C" __global__ void
+#else
 extern "C" __global__ __attribute__((visibility("default"))) void
+#endif
 _ZN3cub19RadixSortScanKernelINS_23DeviceRadixSortDispatchILb0EiiiE13PtxScanPolicyEiEEvPT0_i(
     int* d_spine, int num_counts)
 {
     RadixScan(d_spine, num_counts);
 }
 
+#if defined(_MSC_VER)
+extern "C" __global__ void
+#else
 extern "C" __global__ __attribute__((visibility("default"))) void
+#endif
 _ZN3cub24RadixSortDownsweepKernelINS_23DeviceRadixSortDispatchILb0EiiiE18PtxDownsweepPolicyELb0EiiiEEvPT1_S5_PT2_S7_PT3_S8_iibbNS_13GridEvenShareIS8_EE(
     int* d_keys_in, int* d_keys_out, int* d_values_in, int* d_values_out, int* d_spine,
     int num_items, int current_bit, int num_bits, bool first_pass, bool last_pass,
@@ -346,7 +366,11 @@ _ZN3cub24RadixSortDownsweepKernelINS_23DeviceRadixSortDispatchILb0EiiiE18PtxDown
                    current_bit, num_bits, even_share);
 }
 
+#if defined(_MSC_VER)
+extern "C" __global__ void
+#else
 extern "C" __global__ __attribute__((visibility("default"))) void
+#endif
 _ZN3cub24RadixSortDownsweepKernelINS_23DeviceRadixSortDispatchILb0EiiiE21PtxAltDownsweepPolicyELb0EiiiEEvPT1_S5_PT2_S7_PT3_S8_iibbNS_13GridEvenShareIS8_EE(
     int* d_keys_in, int* d_keys_out, int* d_values_in, int* d_values_out, int* d_spine,
     int num_items, int current_bit, int num_bits, bool first_pass, bool last_pass,
@@ -365,7 +389,9 @@ _ZN3cub24RadixSortDownsweepKernelINS_23DeviceRadixSortDispatchILb0EiiiE21PtxAltD
 // symbol), and so does the reconstruction: SortCellIndices must stay a thin
 // driver, not an inlined copy of the dispatch.
 template <typename Key, typename Value>
+#if !defined(_MSC_VER)
 __attribute__((noinline, noclone))
+#endif
 cudaError_t cub::DeviceRadixSort::SortPairs(void*                d_temp_storage,
                                             size_t&              temp_storage_bytes,
                                             DoubleBuffer<Key>&   d_keys,

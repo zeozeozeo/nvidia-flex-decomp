@@ -49,10 +49,17 @@ void FreeBVH(BVH& bvh);
 
 // linear BVH builder member (bvh.cu); declared as a free function because the
 // recovered type carries data members only.
+#if !defined(_MSC_VER)
 void LinearBVHBuilderGPUBuild(const LinearBVHBuilderGPU* self, NvFlexLibrary* lib,
                               BVH& bvh, const Vec4* itemLowers, const Vec4* itemUppers,
                               const int* itemPriorities, int numItems, Bounds* totalBounds)
     __asm__("_ZN19LinearBVHBuilderGPU5BuildEP13NvFlexLibraryR3BVHPK8XVector4IfES7_PKiiP6Bounds");
+#else
+extern "C" void LinearBVHBuilderGPUBuild(LinearBVHBuilderGPU* self, NvFlexLibrary* lib,
+                                         BVH& bvh, const Vec4* itemLowers, const Vec4* itemUppers,
+                                         const int* itemPriorities, int numItems,
+                                         Bounds* totalBounds);
+#endif
 
 // this module (flex.part1.cu / flex.part3.cu)
 void NvFlexSetFence(NvFlexLibrary* lib);
@@ -125,7 +132,9 @@ typedef std::pair<CudaTimerNameMap::iterator, CudaTimerNameMap::iterator> CudaTi
 // The shipped getTimer is a 30-instruction wrapper: the tree search is out of
 // line (_Rb_tree::equal_range). GCC 15 inlines the header template into the
 // caller, so it is kept out of line here to preserve the same shape.
+#if !defined(_MSC_VER)
 __attribute__((noinline))
+#endif
 CudaTimerNameRange timerNameRange(CudaTimerNameMap& map, const char* name)
 {
     return map.equal_range(name);
@@ -156,7 +165,9 @@ inline DeviceBufferVec4& staticTriBuffer(unsigned char* storage)
     return *reinterpret_cast<DeviceBufferVec4*>(storage);
 }
 
+#if !defined(_MSC_VER)
 __attribute__((noinline))
+#endif
 void pushRegisteredId(std::vector<unsigned int>& ids, unsigned int id)
 {
     ids.push_back(id);
@@ -251,8 +262,10 @@ void NvFlexSetParams(NvFlexSolver* s, const NvFlexParams* params)
 {
     // The random seed globals live in the demo/application layer of the SDK
     // (undefined data symbols in cudaflex.o); the sampler below reseeds them.
-    extern int seed1;
-    extern int seed2;
+    // shipped Windows build: ?seed1@@3IA / ?seed2@@3IA (unsigned int) per
+    // NvFlexDebugCUDA_x64.dll.pdb publics; Linux nm could not distinguish
+    extern unsigned int seed1;
+    extern unsigned int seed2;
 
     const float fluidRestDistance = params->fluidRestDistance;
 

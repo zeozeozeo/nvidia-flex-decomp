@@ -45,43 +45,110 @@ static const char* const kSourceFile = "../../../src/cuda/bvh.cu";
 // nvflex.util entry points (recovered; symbols are those cudabvh.o imports)
 // ---------------------------------------------------------------------------
 
+#if defined(_MSC_VER)
+void FlexDeviceMallocInternal(void** ptr, size_t size, const char* name,
+                              const char* file, int line);
+#else
 extern "C" void FlexDeviceMallocInternal(void** ptr, size_t size, const char* name,
                                          const char* file, int line)
     asm("_Z24FlexDeviceMallocInternalPPvmPKcS2_i");
+#endif
+
+#if defined(_MSC_VER)
+void FlexDeviceFreeInternal(void* ptr);
+#else
 extern "C" void FlexDeviceFreeInternal(void* ptr) asm("_Z22FlexDeviceFreeInternalPv");
+#endif
+
+#if defined(_MSC_VER)
+cudaTextureObject_t CreateTexture(const Vec4* data, int size);
+#else
 extern "C" cudaTextureObject_t CreateTexture(const void* data, int size)
     asm("_Z13CreateTexturePK8XVector4IfEi");
+#endif
+
+#if defined(_MSC_VER)
+void DestroyTexture(cudaTextureObject_t texture);
+#else
 extern "C" void DestroyTexture(cudaTextureObject_t texture) asm("_Z14DestroyTexturey");
+#endif
+
 
 // nvflex.sort
+#if defined(_MSC_VER)
+void SortCellIndices(NvFlexLibrary* lib, int* keys, int* indices, int n, int numBits);
+#else
 extern "C" void SortCellIndices(NvFlexLibrary* lib, int* keys, int* indices, int n, int numBits)
     asm("_Z15SortCellIndicesP13NvFlexLibraryPiS1_ii");
+#endif
+
 
 // nvflex.bvh device kernels (defined in bvh.part1.cu).  These are the host
 // wrappers nvcc emits beside each `__device_stub__` symbol.
+#if defined(_MSC_VER)
+void CalculateMortonCodes(const Vec4* lowers, const Vec4* uppers,
+                          const int* priorities, int numItems,
+                          const Vec3* totalLower, const Vec3* totalInvEdges,
+                          int* indices, int* keys);
+#else
 extern "C" void CalculateMortonCodes(const Vec4* lowers, const Vec4* uppers,
                                      const int* priorities, int numItems,
                                      const Vec3* totalLower, const Vec3* totalInvEdges,
                                      int* indices, int* keys)
     asm("_Z20CalculateMortonCodesPK8XVector4IfES2_PKiiPK8XVector3IfES8_PiS9_");
+#endif
+
+#if defined(_MSC_VER)
+void CalculateKeyDeltas(const int* keys, int* deltas, int n);
+#else
 extern "C" void CalculateKeyDeltas(const int* keys, int* deltas, int n)
     asm("_Z18CalculateKeyDeltasPKiPii");
+#endif
+
+#if defined(_MSC_VER)
+void BuildLeaves(const Vec4* lowers, const Vec4* uppers, int numItems,
+                 const int* indices, int* rangeLefts, int* rangeRights,
+                 PackedNodeHalf* nodeLowers, PackedNodeHalf* nodeUppers);
+#else
 extern "C" void BuildLeaves(const Vec4* lowers, const Vec4* uppers, int numItems,
                             const int* indices, int* rangeLefts, int* rangeRights,
                             PackedNodeHalf* nodeLowers, PackedNodeHalf* nodeUppers)
     asm("_Z11BuildLeavesPK8XVector4IfES2_iPKiPiS5_P14PackedNodeHalfS7_");
+#endif
+
+#if defined(_MSC_VER)
+void BuildHierarchy(int numItems, int* rootNode, const int* deltas,
+                    int* numChildren, volatile int* rangeLefts,
+                    volatile int* rangeRights, volatile PackedNodeHalf* nodeLowers,
+                    volatile PackedNodeHalf* nodeUppers);
+#else
 extern "C" void BuildHierarchy(int numItems, int* rootNode, const int* deltas,
                                int* numChildren, volatile int* rangeLefts,
                                volatile int* rangeRights, volatile PackedNodeHalf* nodeLowers,
                                volatile PackedNodeHalf* nodeUppers)
     asm("_Z14BuildHierarchyiPiPKiS_PViS3_PV14PackedNodeHalfS6_");
+#endif
+
+#if defined(_MSC_VER)
+void ComputeTotalBounds(const Vec4* lowers, const Vec4* uppers, Vec3* totalLower,
+                        Vec3* totalUpper, int numItems);
+#else
 extern "C" void ComputeTotalBounds(const Vec4* lowers, const Vec4* uppers, Vec3* totalLower,
                                    Vec3* totalUpper, int numItems)
     asm("_Z18ComputeTotalBoundsPK8XVector4IfES2_P8XVector3IfES5_i");
+#endif
+
+#if defined(_MSC_VER)
+void ComputeTotalInvEdges(const Vec3* totalLower, const Vec3* totalUpper,
+                          Vec3* totalInvEdges);
+#else
 extern "C" void ComputeTotalInvEdges(const Vec3* totalLower, const Vec3* totalUpper,
                                      Vec3* totalInvEdges)
     asm("_Z20ComputeTotalInvEdgesPK8XVector3IfES2_PS0_");
+#endif
 
+
+#if !defined(_MSC_VER)
 // glibc's FORTIFY-checked printf (the shipped object was built with
 // _FORTIFY_SOURCE and calls this symbol, not printf)
 extern "C" int __printf_chk(int flag, const char* format, ...);
@@ -90,11 +157,19 @@ extern "C" int __printf_chk(int flag, const char* format, ...);
 // file, line and function literals are reproduced verbatim
 extern "C" void __assert_fail(const char* assertion, const char* file, unsigned int line,
                               const char* function) __THROW __attribute__((noreturn));
+#endif
+// (under MSVC both are compiled out by recon/compat/msvc.h no-op macros)
 
 // nvflex.util logging
+#if defined(_MSC_VER)
+void FlexLogFunc(NvFlexErrorCallback cb, NvFlexErrorSeverity severity,
+                 const char* msg, const char* file, int line, ...);
+#else
 extern "C" void FlexLogFunc(NvFlexErrorCallback cb, NvFlexErrorSeverity severity,
                             const char* msg, const char* file, int line, ...)
     asm("_Z11FlexLogFuncPFv19NvFlexErrorSeverityPKcS1_iES_S1_S1_iz");
+#endif
+
 
 // ---------------------------------------------------------------------------
 // Local helpers
@@ -161,7 +236,10 @@ struct PartitionPredicateMedianCmp
 // The shipped object holds the selection algorithm in its own symbol
 // (__introselect<int*, PartitionPredicateMedian>) instead of folding it into
 // PartitionObjectsMedian; keep it out of line for the same code shape.
-__attribute__((noinline)) void Introselect(int* first, int* nth, int* last,
+#if !defined(_MSC_VER)
+__attribute__((noinline))
+#endif
+void Introselect(int* first, int* nth, int* last,
                                            PartitionPredicateMedianCmp comp)
 {
     std::nth_element(first, nth, last, comp);
@@ -201,8 +279,12 @@ void ResizeBVH(BVH& bvh, int numNodes)
                                  sizeof(PackedNodeHalf) * numToAlloc, "&bvh.mNodeUppers",
                                  kSourceFile, __LINE__);
 
-        bvh.mNodeLowersTex = CreateTexture(bvh.mNodeLowers, numToAlloc * sizeof(PackedNodeHalf));
-        bvh.mNodeUppersTex = CreateTexture(bvh.mNodeUppers, numToAlloc * sizeof(PackedNodeHalf));
+        // (the shipped call resolves to the Vec4-flavoured CreateTexture via the
+        // Itanium asm label; the reinterpretation is explicit under MSVC)
+        bvh.mNodeLowersTex = CreateTexture(reinterpret_cast<const Vec4*>(bvh.mNodeLowers),
+                                           numToAlloc * sizeof(PackedNodeHalf));
+        bvh.mNodeUppersTex = CreateTexture(reinterpret_cast<const Vec4*>(bvh.mNodeUppers),
+                                           numToAlloc * sizeof(PackedNodeHalf));
 
         bvh.mMaxNodes = numToAlloc;
 
@@ -796,8 +878,12 @@ void CloneBVH(const BVH& hostBVH, BVH& deviceBVH)
 // flexdecomp: src/cuda/bvh.cu:0 _ZN19LinearBVHBuilderGPUC1Ev  (line absent from DWARF)
 // The shipped object's constructor body carries the complete-object (C1)
 // symbol; the base-object form C2 sits at the same address as an alias.
+#if defined(_MSC_VER)
+extern "C" void LinearBVHBuilderGPUConstruct(LinearBVHBuilderGPU* this_);
+#else
 extern "C" void LinearBVHBuilderGPUConstruct(LinearBVHBuilderGPU* this_)
     asm("_ZN19LinearBVHBuilderGPUC1Ev");
+#endif
 
 extern "C" void LinearBVHBuilderGPUConstruct(LinearBVHBuilderGPU* this_)
 {
@@ -820,12 +906,18 @@ extern "C" void LinearBVHBuilderGPUConstruct(LinearBVHBuilderGPU* this_)
                              "&mTotalInvEdges", kSourceFile, __LINE__);
 }
 
+#if !defined(_MSC_VER)
 extern "C" void LinearBVHBuilderGPUConstructC2(LinearBVHBuilderGPU* this_)
     asm("_ZN19LinearBVHBuilderGPUC2Ev") __attribute__((alias("_ZN19LinearBVHBuilderGPUC1Ev")));
+#endif  // PE build: internal symbols are free
 
 // flexdecomp: src/cuda/bvh.cu:0 _ZN19LinearBVHBuilderGPUD1Ev  (line absent from DWARF)
+#if defined(_MSC_VER)
+extern "C" void LinearBVHBuilderGPUDestroy(LinearBVHBuilderGPU* this_);
+#else
 extern "C" void LinearBVHBuilderGPUDestroy(LinearBVHBuilderGPU* this_)
     asm("_ZN19LinearBVHBuilderGPUD1Ev");
+#endif
 
 extern "C" void LinearBVHBuilderGPUDestroy(LinearBVHBuilderGPU* this_)
 {
@@ -840,15 +932,24 @@ extern "C" void LinearBVHBuilderGPUDestroy(LinearBVHBuilderGPU* this_)
     FlexDeviceFreeInternal(this_->mTotalInvEdges);
 }
 
+#if !defined(_MSC_VER)
 extern "C" void LinearBVHBuilderGPUDestroyC2(LinearBVHBuilderGPU* this_)
     asm("_ZN19LinearBVHBuilderGPUD2Ev") __attribute__((alias("_ZN19LinearBVHBuilderGPUD1Ev")));
+#endif  // PE build: internal symbols are free
 
 // flexdecomp: src/cuda/bvh.cu:657 _ZN19LinearBVHBuilderGPU5BuildEP13NvFlexLibraryR3BVHPK8XVector4IfES7_PKiiP6Bounds
+#if defined(_MSC_VER)
+extern "C" void LinearBVHBuilderGPUBuild(LinearBVHBuilderGPU*, NvFlexLibrary* lib, BVH& bvh,
+                                         const Vec4* itemLowers, const Vec4* itemUppers,
+                                         const int* itemPriorities, int numItems,
+                                         Bounds* totalBounds);
+#else
 extern "C" void LinearBVHBuilderGPUBuild(LinearBVHBuilderGPU*, NvFlexLibrary* lib, BVH& bvh,
                                          const Vec4* itemLowers, const Vec4* itemUppers,
                                          const int* itemPriorities, int numItems,
                                          Bounds* totalBounds)
     asm("_ZN19LinearBVHBuilderGPU5BuildEP13NvFlexLibraryR3BVHPK8XVector4IfES7_PKiiP6Bounds");
+#endif
 
 extern "C" void LinearBVHBuilderGPUBuild(LinearBVHBuilderGPU* this_, NvFlexLibrary* lib, BVH& bvh,
                                          const Vec4* itemLowers, const Vec4* itemUppers,

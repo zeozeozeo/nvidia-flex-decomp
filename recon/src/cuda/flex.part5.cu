@@ -14,7 +14,14 @@
 // unit; declared extern here).
 // The shipped 9.2 objects export the launch wrappers GLOBAL DEFAULT; modern
 // nvcc emits them hidden, so every kernel carries an explicit visibility.
+#if defined(_MSC_VER)
+// PE ABI: kernels need no export; win32/nvflex.def pins the 81 API exports.
+#define FLEX_KERNEL_API
+#else
+// The shipped 9.2 objects export the launch wrappers GLOBAL DEFAULT; modern
+// nvcc emits them hidden, so every kernel carries an explicit visibility.
 #define FLEX_KERNEL_API __attribute__((visibility("default")))
+#endif
 
 extern __constant__ KernelParams gParams;
 extern __constant__ KernelBounds gBounds;  // KernelBounds{float kLower[3]; float kUpper[3];}

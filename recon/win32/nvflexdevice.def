@@ -1,0 +1,9 @@
+; Export surface for the recon Windows build, generated mechanically from the
+; shipped DLL by tools/apitest/gen_exports.py.  Do not edit by hand; regenerate
+; with: python tools/apitest/gen_exports.py
+LIBRARY NvFlexDeviceRelease_x64.dll
+EXPORTS
+
+    ?NvFlexDeviceCreateCudaContext@@YA_NH@Z
+    ?NvFlexDeviceDestroyCudaContext@@YAXXZ
+    ?NvFlexDeviceGetSuggestedOrdinal@@YAHXZ

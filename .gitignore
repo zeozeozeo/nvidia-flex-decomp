@@ -5,6 +5,8 @@ state/evidence/
 build/
 recon/build/
 recon/build-dx/
+recon/build-win/
+recon/build-win-dbg/
 tools/parity/gen/
 __pycache__/
 *.pyc

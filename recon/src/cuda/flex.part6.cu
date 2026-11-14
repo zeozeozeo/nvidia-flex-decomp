@@ -12,7 +12,14 @@
 
 // Kernels must keep the shipped object's GLOBAL DEFAULT visibility: modern
 // nvcc marks launch wrappers hidden, the 9.2 build did not.
+#if defined(_MSC_VER)
+// PE ABI: kernels need no export; win32/nvflex.def pins the 81 API exports.
+#define FLEX_KERNEL_API
+#else
+// The shipped 9.2 objects export the launch wrappers GLOBAL DEFAULT; modern
+// nvcc emits them hidden, so every kernel carries an explicit visibility.
 #define FLEX_KERNEL_API __attribute__((visibility("default")))
+#endif
 
 // Constant buffers are defined once in the module's host translation unit.
 extern __constant__ KernelParams gParams;

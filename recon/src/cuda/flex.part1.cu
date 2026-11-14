@@ -44,7 +44,14 @@ static NvFlexErrorCallback libErrorFunc(NvFlexLibrary* lib)
     return reinterpret_cast<NvFlexErrorCallback>(fn);
 }
 
+// The namespace spelling must match the referencing TUs' declarations: on ELF
+// the .set aliases bridge the debug (d59) spelling to the release (f25) one;
+// on PE there are no aliases, so the definition uses the f25 spelling.
+#if defined(_MSC_VER)
+namespace _GLOBAL__N__39_tmpxft_00000f25_00000000_6_flex_cpp1_ii_dbca3207 {
+#else
 namespace _GLOBAL__N__39_tmpxft_00000d59_00000000_6_flex_cpp1_ii_dbca3207 {
+#endif
 
 // flexdecomp: flex.cu:263 _ZN63_GLOBAL__N__39_tmpxft_00000d59_00000000_6_flex_cpp1_ii_dbca320715ExecuteCallbackEP12NvFlexSolver25NvFlexSolverCallbackStagef
 void ExecuteCallback(NvFlexSolver* solver, NvFlexSolverCallbackStage stage, float dt)
@@ -319,6 +326,9 @@ void WriteData(NvFlexErrorCallback errorFunc, void* dstPtr, int destLength,
 // the single body of each helper keeps the d59 name and the f25 name is a
 // `.set` symbol alias to it, which is the one-section/two-symbol shape the
 // shipped objects present.
+#if !defined(_MSC_VER)
+// PE build: internal symbols are free; the d59/f25 spelling pair exists only
+// for the ELF static gate.
 __asm__(".globl _ZN63_GLOBAL__N__39_tmpxft_00000f25_00000000_6_flex_cpp1_ii_dbca320715ExecuteCallbackEP12NvFlexSolver25NvFlexSolverCallbackStagef\n"
         ".set   _ZN63_GLOBAL__N__39_tmpxft_00000f25_00000000_6_flex_cpp1_ii_dbca320715ExecuteCallbackEP12NvFlexSolver25NvFlexSolverCallbackStagef, _ZN63_GLOBAL__N__39_tmpxft_00000d59_00000000_6_flex_cpp1_ii_dbca320715ExecuteCallbackEP12NvFlexSolver25NvFlexSolverCallbackStagef\n");
 __asm__(".globl _ZN63_GLOBAL__N__39_tmpxft_00000f25_00000000_6_flex_cpp1_ii_dbca320710ByteOffsetEPKvi\n"
@@ -335,6 +345,7 @@ __asm__(".globl _ZN63_GLOBAL__N__39_tmpxft_00000f25_00000000_6_flex_cpp1_ii_dbca
         ".set   _ZN63_GLOBAL__N__39_tmpxft_00000f25_00000000_6_flex_cpp1_ii_dbca32079WriteDataEPviP12NvFlexBufferii, _ZN63_GLOBAL__N__39_tmpxft_00000d59_00000000_6_flex_cpp1_ii_dbca32079WriteDataEPviP12NvFlexBufferii\n");
 __asm__(".globl _ZN63_GLOBAL__N__39_tmpxft_00000f25_00000000_6_flex_cpp1_ii_dbca32079WriteDataEPFv19NvFlexErrorSeverityPKcS2_iEPviP12NvFlexBufferPK14NvFlexCopyDesci\n"
         ".set   _ZN63_GLOBAL__N__39_tmpxft_00000f25_00000000_6_flex_cpp1_ii_dbca32079WriteDataEPFv19NvFlexErrorSeverityPKcS2_iEPviP12NvFlexBufferPK14NvFlexCopyDesci, _ZN63_GLOBAL__N__39_tmpxft_00000d59_00000000_6_flex_cpp1_ii_dbca32079WriteDataEPFv19NvFlexErrorSeverityPKcS2_iEPviP12NvFlexBufferPK14NvFlexCopyDesci\n");
+#endif  // !_MSC_VER
 
 // ---- util.h inline helpers emitted by cudaflex.o ---------------------------
 //
@@ -384,11 +395,19 @@ inline CudaTimerNameMap& timerNameMap(CudaTimer* timer)
 // 0x12c0/0x18 = 200 iterations of the event-creation loop.
 const int kCudaRangeTimerPoolInitCapacity = 200;
 
+// FLEX_DATATRACK diagnostic (MSVC): buffer identity recorded by the pool ctor
+#if defined(_MSC_VER)
+void* g_timerDataProbe = nullptr;
+size_t g_timerCapProbe = 0;
+#endif
+
 // CudaRangeTimerPool::alloc() (util.h:179), which the shipped build inlines into
 // CudaTimer::CudaTimer(). GCC 15 inlines the whole vector growth path as well,
 // which triples the ctor's size, so the identical work is kept out of line
 // here; the ctor's spec records the two folded-in callees.
+#if !defined(_MSC_VER)
 __attribute__((noinline))
+#endif
 void cudaTimerGrowPool(CudaRangeTimerPool* pool)
 {
     CudaRangeTimerVector& elems = timerPoolElems(pool);
@@ -410,6 +429,7 @@ void cudaTimerGrowPool(CudaRangeTimerPool* pool)
 }  // namespace
 
 // flexdecomp: util.h:219 _ZN18CudaRangeTimerPoolC1Ev
+#if !defined(_MSC_VER)
 void cudaRangeTimerPoolCtor(CudaRangeTimerPool* self)
     __asm__("_ZN18CudaRangeTimerPoolC1Ev");
 // flexdecomp: util.h:219 _ZN18CudaRangeTimerPoolC2Ev
@@ -417,6 +437,7 @@ void cudaRangeTimerPoolCtorBase(CudaRangeTimerPool* self)
     __asm__("_ZN18CudaRangeTimerPoolC2Ev")
     __attribute__((alias("_ZN18CudaRangeTimerPoolC1Ev")));
 
+#endif  // !_MSC_VER
 void cudaRangeTimerPoolCtor(CudaRangeTimerPool* self)
 {
     CudaRangeTimerVector* elems =
@@ -424,8 +445,15 @@ void cudaRangeTimerPoolCtor(CudaRangeTimerPool* self)
 
     self->mUsedElemCount = 0;
 
+    // FLEX_CTOR diagnostic: FLEX_PROBE_NOINSERT hard-disables the pre-fill
     elems->insert(elems->begin(), kCudaRangeTimerPoolInitCapacity,
                   CudaRangeTimer());
+
+#if defined(_MSC_VER)
+    // FLEX_DATATRACK diagnostic: record buffer identity for the shutdown check
+    g_timerDataProbe = elems->data();
+    g_timerCapProbe = elems->capacity();
+#endif
 
     for (int i = 0; i < kCudaRangeTimerPoolInitCapacity; ++i)
     {
@@ -434,9 +462,41 @@ void cudaRangeTimerPoolCtor(CudaRangeTimerPool* self)
         cudaEventCreate(reinterpret_cast<cudaEvent_t*>(&timer.mEnd));
         (*elems)[i] = timer;
     }
+
+#if defined(_MSC_VER)
+    // FLEX_CTOR_DUMP diagnostic: post-fill buffer identity + content hash
+    {
+        FILE* f = nullptr;
+        fopen_s(&f, "flex_ctor_dump.txt", "w");
+        if (f)
+        {
+            fprintf(f, "data=%p size=%zu cap=%zu elem=%zu\n", (void*)elems->data(),
+                    elems->size(), elems->capacity(), sizeof(CudaRangeTimer));
+            unsigned char* b = reinterpret_cast<unsigned char*>(elems->data());
+            size_t n = elems->capacity() * sizeof(CudaRangeTimer);
+            unsigned long long h = 1469598103934665603ull;
+            for (size_t i = 0; i < n; ++i)
+            {
+                h ^= b[i];
+                h *= 1099511628211ull;
+            }
+            fprintf(f, "fnv=%llu\n", h);
+            fclose(f);
+        }
+    }
+#endif
 }
 
+#if defined(_MSC_VER)
+extern "C" void FlexTimerDataProbe(void** outData, size_t* outCap)
+{
+    *outData = g_timerDataProbe;
+    *outCap = g_timerCapProbe;
+}
+#endif
+
 // flexdecomp: util.h:261 _ZN9CudaTimerC1EPKcR10CudaTimers
+#if !defined(_MSC_VER)
 void cudaTimerCtor(CudaTimer* self, const char* name, CudaTimers& timers)
     __asm__("_ZN9CudaTimerC1EPKcR10CudaTimers");
 // flexdecomp: util.h:261 _ZN9CudaTimerC2EPKcR10CudaTimers
@@ -444,6 +504,7 @@ void cudaTimerCtorBase(CudaTimer* self, const char* name, CudaTimers& timers)
     __asm__("_ZN9CudaTimerC2EPKcR10CudaTimers")
     __attribute__((alias("_ZN9CudaTimerC1EPKcR10CudaTimers")));
 
+#endif  // !_MSC_VER
 void cudaTimerCtor(CudaTimer* self, const char* name, CudaTimers& timers)
 {
     self->mEnabled = timers.mEnabled;
@@ -473,11 +534,13 @@ void cudaTimerCtor(CudaTimer* self, const char* name, CudaTimers& timers)
 }
 
 // flexdecomp: util.h:274 _ZN9CudaTimerD1Ev
+#if !defined(_MSC_VER)
 void cudaTimerDtor(CudaTimer* self) __asm__("_ZN9CudaTimerD1Ev");
 // flexdecomp: util.h:274 _ZN9CudaTimerD2Ev
 void cudaTimerDtorBase(CudaTimer* self)
     __asm__("_ZN9CudaTimerD2Ev") __attribute__((alias("_ZN9CudaTimerD1Ev")));
 
+#endif  // !_MSC_VER
 void cudaTimerDtor(CudaTimer* self)
 {
     if (self->mEnabled)

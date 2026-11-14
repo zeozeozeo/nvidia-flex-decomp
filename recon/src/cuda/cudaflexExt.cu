@@ -27,6 +27,10 @@
 
 #include <cuda.h>
 #include <cuda_runtime_api.h>
+#if defined(_MSC_VER)
+// C++17 device compile: MSVC removed std::unary_function (see compat/std_cpp17_shim.h)
+#include "../../compat/std_cpp17_shim.h"
+#endif
 
 #include <vector>
 #include <limits>

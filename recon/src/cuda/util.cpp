@@ -34,7 +34,17 @@ typedef CUctx_st* CUcontext;
 #include <cstddef>
 #include <cstdio>
 #include <cstring>
+
+#if defined(_MSC_VER)
+// Windows/PE build: the CUDA driver is nvcuda.dll, loaded through the loader
+// API (the shipped Windows DLL imports GetProcAddress from KERNEL32; the
+// Linux build dlopen()s libcuda.so instead).
+#define WIN32_LEAN_AND_MEAN
+#define NOMINMAX
+#include <windows.h>
+#else
 #include <dlfcn.h>
+#endif
 
 // ---------------------------------------------------------------------------
 // CUDA runtime interface (cuda_runtime_api.h, CUDA 9.2 ABI)
@@ -202,10 +212,21 @@ void FlexLogFunc(NvFlexErrorCallback func, NvFlexErrorSeverity type, const char*
 // same, so CudaSafeDelayLoad calls dlsym directly (object parity with
 // libnvflex_rel.so).  The debug object's out-of-line copy is the ledger's
 // provenance for the unit, which is therefore debug-only.
+#if defined(_MSC_VER)
+// Windows: the helper is the KERNEL32 GetProcAddress import (the shipped
+// Windows DLL resolves driver entry points through it).  The static overload
+// keeps the void* call sites unchanged; the ::-qualified call inside reaches
+// the Windows API.
+static void* GetProcAddress(void* handle, const char* name)
+{
+	return (void*)::GetProcAddress((HMODULE)handle, name);
+}
+#else
 static void* GetProcAddress(void* handle, const char* name)
 {
 	return dlsym(handle, name);
 }
+#endif
 
 // flexdecomp: src/cuda/util.cpp:90 _Z17CreateCudaContextiPP8CUctx_st
 // disasm 0x12e: cudaSetDevice(ordinal); cuCtxGetCurrent_f(outContext); return true;
@@ -220,9 +241,16 @@ bool CreateCudaContext(int deviceOrdinal, CUcontext* outContext)
 // flexdecomp: src/cuda/util.cpp:114 _Z17CudaSafeDelayLoadPFv19NvFlexErrorSeverityPKcS1_iEiPP8CUctx_st
 // disasm 0x15e..0x4bb. Returns true only when this call created a context;
 // an already-current context is handed back through outContext with false.
-bool CudaSafeDelayLoad(NvFlexErrorCallback errorFunc, int deviceOrdinal, CUcontext* outContext)
+	bool CudaSafeDelayLoad(NvFlexErrorCallback errorFunc, int deviceOrdinal, CUcontext* outContext)
 {
+#if defined(_MSC_VER)
+	// Windows: nvcuda.dll replaces libcuda.so (same exported entry-point names:
+	// cuInit, cuCtxSetCurrent, cuCtxGetCurrent, cuCtxCreate, cuCtxDestroy,
+	// cuDeviceGet, cuDriverGetVersion are all present in the driver DLL).
+	void* hCudaDriver = (void*)LoadLibraryA("nvcuda.dll");
+#else
 	void* hCudaDriver = dlopen("libcuda.so", RTLD_NOW);
+#endif
 
 	if (hCudaDriver == 0) {
 		if (errorFunc)
@@ -459,6 +487,7 @@ void* FlexAlloc(NvFlexLibrary* lib, int size)
 // The shipped object aliases the C1/C2 (and D1/D2) symbol pairs at one address
 // (nm: 0x894 / 0x9f8); the alias reproduces that exactly.
 // ---------------------------------------------------------------------------
+#if !defined(_MSC_VER)
 extern "C" {
 
 void NvFlexBuffer_construct(NvFlexBuffer* self, int elementSize, int byteStride, int type,
@@ -475,6 +504,14 @@ void* NvFlexBuffer_map(NvFlexBuffer* self) __asm__("_ZN12NvFlexBuffer3mapEv");
 void NvFlexBuffer_unmap(NvFlexBuffer* self) __asm__("_ZN12NvFlexBuffer5unmapEv");
 
 }  // extern "C"
+#else
+// PE build: plain C++ linkage; flex.part2.cu declares these without asm labels
+void NvFlexBuffer_construct(NvFlexBuffer* self, int elementSize, int byteStride, int type,
+                            NvFlexLibrary* lib);
+void NvFlexBuffer_destroy(NvFlexBuffer* self);
+void* NvFlexBuffer_map(NvFlexBuffer* self);
+void NvFlexBuffer_unmap(NvFlexBuffer* self);
+#endif
 
 // flexdecomp: src/cuda/util.cpp:471 (util.h:138) _ZN12NvFlexBufferC2EiiiP13NvFlexLibrary
 // DWARF prototype: NvFlexBuffer(NvFlexBuffer* this, int elementSize, int byteStride, int type,

@@ -23,10 +23,28 @@
 
 #include <cuda.h>
 #include <cuda_runtime.h>
+#if defined(_MSC_VER)
+// cuda_gl_interop.h on Windows requires the OpenGL typedefs from the app
+// (GL/gl.h itself needs windows.h).  This is the documented include chain;
+// hand-declared typedefs do not survive cudafe's parse.  NOMINMAX keeps the
+// windows.h min/max macros away from the recovered sources.
+#ifndef WIN32_LEAN_AND_MEAN
+#define WIN32_LEAN_AND_MEAN
+#endif
+#ifndef NOMINMAX
+#define NOMINMAX
+#endif
+#include <windows.h>
+#include <GL/gl.h>
+#endif
 #include <cuda_gl_interop.h>
 
 #include <cmath>
 #include <cstring>
+#include <cstddef>
+#if defined(_MSC_VER)
+#include <crtdbg.h>
+#endif
 #include <map>
 #include <new>
 #include <vector>
@@ -55,11 +73,28 @@ cudaTextureObject_t CreateTexture(const Vec4* buffer, int sizeInBytes);
 void DestroyTexture(cudaTextureObject_t tex);
 
 // nvflex.bvh (LinearBVHBuilderGPU ctor/dtor carry the shipped C1/D1 mangling)
+#if defined(_MSC_VER)
+// PE build: plain C++ linkage, no ELF symbol renaming
+extern "C" void LinearBVHBuilderGPUConstruct(LinearBVHBuilderGPU* self);
+extern "C" void LinearBVHBuilderGPUDestroy(LinearBVHBuilderGPU* self);
+#else
 void LinearBVHBuilderGPUConstruct(LinearBVHBuilderGPU* self) __asm__("_ZN19LinearBVHBuilderGPUC1Ev");
 void LinearBVHBuilderGPUDestroy(LinearBVHBuilderGPU* self) __asm__("_ZN19LinearBVHBuilderGPUD1Ev");
+#endif
 void FreeBVH(BVH& bvh);
 
 // util.h inline members emitted out of line in this module
+#if defined(_MSC_VER)
+// PE build: plain C++ linkage, no ELF symbol renaming
+void cudaRangeTimerPoolCtor(CudaRangeTimerPool* self);
+void cudaTimerCtor(CudaTimer* self, const char* name, CudaTimers& timers);
+void cudaTimerDtor(CudaTimer* self);
+void NvFlexBuffer_construct(NvFlexBuffer* self, int elementCount, int elementByteStride, int type,
+                            NvFlexLibrary* lib);
+void NvFlexBuffer_destroy(NvFlexBuffer* self);
+void* NvFlexBuffer_map(NvFlexBuffer* self);
+void NvFlexBuffer_unmap(NvFlexBuffer* self);
+#else
 void cudaRangeTimerPoolCtor(CudaRangeTimerPool* self) __asm__("_ZN18CudaRangeTimerPoolC1Ev");
 void cudaTimerCtor(CudaTimer* self, const char* name, CudaTimers& timers)
     __asm__("_ZN9CudaTimerC1EPKcR10CudaTimers");
@@ -69,6 +104,7 @@ void NvFlexBuffer_construct(NvFlexBuffer* self, int elementCount, int elementByt
 void NvFlexBuffer_destroy(NvFlexBuffer* self) __asm__("_ZN12NvFlexBufferD1Ev");
 void* NvFlexBuffer_map(NvFlexBuffer* self) __asm__("_ZN12NvFlexBuffer3mapEv");
 void NvFlexBuffer_unmap(NvFlexBuffer* self) __asm__("_ZN12NvFlexBuffer5unmapEv");
+#endif
 
 // nvflex.sort
 void SortCellIndices(NvFlexLibrary* lib, int* cellIds, int* indices, int numParticles,
@@ -81,7 +117,14 @@ void NvFlexDestroyDistanceField(NvFlexLibrary* lib, NvFlexDistanceFieldId field)
 void NvFlexDestroyConvexMesh(NvFlexLibrary* lib, NvFlexConvexMeshId mesh);
 
 // flex.part1.cu (anonymous namespace of the original CUDA-generated wrapper)
-namespace _GLOBAL__N__39_tmpxft_00000d59_00000000_6_flex_cpp1_ii_dbca3207 {
+// MSVC: the definition TU (flex.part1.cu) uses the f25 spelling on the PE
+// path (no ELF .set aliases), so the qualified references below must match.
+#if defined(_MSC_VER)
+#define FLEX_EXECUTE_CALLBACK_NS _GLOBAL__N__39_tmpxft_00000f25_00000000_6_flex_cpp1_ii_dbca3207
+#else
+#define FLEX_EXECUTE_CALLBACK_NS _GLOBAL__N__39_tmpxft_00000d59_00000000_6_flex_cpp1_ii_dbca3207
+#endif
+namespace FLEX_EXECUTE_CALLBACK_NS {
 void ExecuteCallback(NvFlexSolver* solver, NvFlexSolverCallbackStage stage, float dt);
 }
 
@@ -561,7 +604,7 @@ void Update(NvFlexSolver* s, float dt, int substep, int numSubsteps)
     }
 
     // 4060
-    _GLOBAL__N__39_tmpxft_00000d59_00000000_6_flex_cpp1_ii_dbca3207::ExecuteCallback(
+    FLEX_EXECUTE_CALLBACK_NS::ExecuteCallback(
         s, eNvFlexStageSubstepBegin, dt);
 
     // 4113-4118 Collide Triangles
@@ -599,7 +642,7 @@ void Update(NvFlexSolver* s, float dt, int substep, int numSubsteps)
     // 4153: constraint iterations
     for (int i = 0; i < params.numIterations; ++i)
     {
-        _GLOBAL__N__39_tmpxft_00000d59_00000000_6_flex_cpp1_ii_dbca3207::ExecuteCallback(
+        FLEX_EXECUTE_CALLBACK_NS::ExecuteCallback(
             s, eNvFlexStageIterationStart, dt);
 
         // 4158-4178 Calculate Density
@@ -739,7 +782,7 @@ void Update(NvFlexSolver* s, float dt, int substep, int numSubsteps)
                 s->mStaticContactPlanes, s->mStaticContactVelocities, s->mDensities, 0);
         }
 
-        _GLOBAL__N__39_tmpxft_00000d59_00000000_6_flex_cpp1_ii_dbca3207::ExecuteCallback(
+        FLEX_EXECUTE_CALLBACK_NS::ExecuteCallback(
             s, eNvFlexStageIterationEnd, dt);
     }
 
@@ -749,10 +792,10 @@ void Update(NvFlexSolver* s, float dt, int substep, int numSubsteps)
         UpdateVelocities<<<kNumBlocks, kNumThreads>>>(n, sortedPositions, sortedNewPositions,
                                                       sortedNewVelocities, 1.0f / dt);
 
-        _GLOBAL__N__39_tmpxft_00000d59_00000000_6_flex_cpp1_ii_dbca3207::ExecuteCallback(
+        FLEX_EXECUTE_CALLBACK_NS::ExecuteCallback(
             s, eNvFlexStageSubstepEnd, dt);
         if (substep == numSubsteps - 1)
-            _GLOBAL__N__39_tmpxft_00000d59_00000000_6_flex_cpp1_ii_dbca3207::ExecuteCallback(
+            FLEX_EXECUTE_CALLBACK_NS::ExecuteCallback(
                 s, eNvFlexStageUpdateEnd, (float)numSubsteps * dt);
 
         if (params.vorticityConfinement <= 0.0f)
@@ -906,15 +949,34 @@ NvFlexLibrary* NvFlexInit(int version, NvFlexErrorCallback errorFunc, NvFlexInit
             lib->mCudaContext = 0;
             lib->mCudaOwner = false;
 
-            // timers.mNameToTimerMap is an empty std::map<const char*,int,ltstr>:
-            // a self-referential _Rb_tree header (colour red, parent/left/right =
-            // &header, node count 0).
+            // timers.mNameToTimerMap is an empty std::map<const char*,int,ltstr>.
+            // Linux/ELF: the shipped libstdc++ layout is fabricated directly (a
+            // self-referential _Rb_tree header: colour red, parent/left/right =
+            // &header, node count 0).  MSVC's std::map is a single _Myhead
+            // pointer, so the fabricated header would misparse at shutdown
+            // (timerNameMap(...).clear() dereferences it): placement-construct
+            // a real MSVC map instead.  The slot is alignas(8), sizeof 48.
             CudaTimers& timers = lib->mTimers;
+#if defined(_MSC_VER)
+            // FLEX_CRT_HEAP_CHECK=1: validate the whole heap on every alloc/free
+            // (debug aid; catches the corrupting operation red-handed)
+            if (GetEnvironmentVariableA("FLEX_CRT_HEAP_CHECK", nullptr, 0))
+            {
+                _CrtSetReportMode(_CRT_ERROR, _CRTDBG_MODE_FILE);
+                _CrtSetReportFile(_CRT_ERROR, _CRTDBG_FILE_STDERR);
+                _CrtSetReportMode(_CRT_ASSERT, _CRTDBG_MODE_FILE);
+                _CrtSetReportFile(_CRT_ASSERT, _CRTDBG_FILE_STDERR);
+                _CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_CHECK_ALWAYS_DF |
+                               _CRTDBG_DELAY_FREE_MEM_DF);
+            }
+            ::new (static_cast<void*>(timers.mNameToTimerMap)) NameToTimerMap();
+#else
             std::memset(timers.mNameToTimerMap, 0, sizeof(timers.mNameToTimerMap));
             timers.mNameToTimerMap[0] = 1;  // _S_red
             void* header = timers.mNameToTimerMap;
             std::memcpy(timers.mNameToTimerMap + 16, &header, sizeof(header));
             std::memcpy(timers.mNameToTimerMap + 24, &header, sizeof(header));
+#endif
             timers.mTimerPool = 0;
 
             lib->mSortTemp = 0;
@@ -998,17 +1060,31 @@ NvFlexLibrary* NvFlexInit(int version, NvFlexErrorCallback errorFunc, NvFlexInit
                                         (unsigned long)err,
                                         "cudaEventCreate(&lib->mMemoryFence)");
 
-                        CudaRangeTimerPool* timerPool = static_cast<CudaRangeTimerPool*>(
-                            ::operator new(sizeof(CudaRangeTimerPool)));
-                        cudaRangeTimerPoolCtor(timerPool);
-                        lib->mTimers.mTimerPool = timerPool;
-                        lib->mTimers.mEnabled = false;
+                        // FLEX_INIT_MASK diagnostic bits: 1 convex, 2 triMesh,
+                        // 4 sdf, 8 timerPool+map, 16 device query/allocs
+                        unsigned int initMask = 0xFFFF;
+#if defined(_MSC_VER)
+                        {
+                            char ibuf[16];
+                            if (GetEnvironmentVariableA("FLEX_INIT_MASK", ibuf, sizeof(ibuf)))
+                                initMask = (unsigned int)strtoul(ibuf, nullptr, 16);
+                        }
+#endif
+                        if (initMask & 8)
+                        {
+                            CudaRangeTimerPool* timerPool = static_cast<CudaRangeTimerPool*>(
+                                ::operator new(sizeof(CudaRangeTimerPool)));
+                            cudaRangeTimerPoolCtor(timerPool);
+                            lib->mTimers.mTimerPool = timerPool;
+                            lib->mTimers.mEnabled = false;
+                        }
 
                         // 0x1000 convexes, 32 planes each, 0x1000 meshes, 0x400 SDFs
                         FlexConvexMeshData& convex = lib->mConvexMeshData;
                         convex.mNumConvexes = 0;
                         convex.mMaxConvexes = 0x1000;
                         convex.mMaxPlanesPerConvex = 0x20;
+                        if (initMask & 1)
                         FlexDeviceMallocInternal(reinterpret_cast<void**>(&convex.mPlanes),
                                                  0x200000, "&mPlanes", kLibrarySourceFile, 0x23);
                         FlexDeviceMallocInternal(
@@ -1018,32 +1094,45 @@ NvFlexLibrary* NvFlexInit(int version, NvFlexErrorCallback errorFunc, NvFlexInit
                         convex.mPlanesTex = CreateTexture(
                             convex.mPlanes,
                             convex.mMaxPlanesPerConvex * convex.mMaxConvexes * 16);
-                        convex.mFreeList = new int[convex.mMaxConvexes];
-                        for (int i = 0; i < convex.mMaxConvexes; ++i)
-                            convex.mFreeList[i] = i;
+                        if (initMask & 1)
+                        {
+                            convex.mFreeList = new int[convex.mMaxConvexes];
+                            for (int i = 0; i < convex.mMaxConvexes; ++i)
+                                convex.mFreeList[i] = i;
+                        }
 
                         FlexTriangleMeshData& meshes = lib->mTriangleMeshData;
                         meshes.mNumMeshes = 0;
                         meshes.mMaxMeshes = 0x1000;
+                        if (!(initMask & 2))
+                            meshes.mMaxMeshes = 0;
                         FlexDeviceMallocInternal(
                             reinterpret_cast<void**>(&meshes.mMeshTableDevice), 0x90000,
                             "&mMeshTableDevice", kLibrarySourceFile, 0x82);
-                        meshes.mMeshTableHost =
-                            new FlexTriangleMeshInternal[meshes.mMaxMeshes]();
-                        meshes.mFreeList = new int[meshes.mMaxMeshes];
-                        for (int i = 0; i < meshes.mMaxMeshes; ++i)
-                            meshes.mFreeList[i] = i;
+                        if (initMask & 2)
+                        {
+                            meshes.mMeshTableHost =
+                                new FlexTriangleMeshInternal[meshes.mMaxMeshes]();
+                            meshes.mFreeList = new int[meshes.mMaxMeshes];
+                            for (int i = 0; i < meshes.mMaxMeshes; ++i)
+                                meshes.mFreeList[i] = i;
+                        }
 
                         FlexSDFData& sdf = lib->mSDFData;
                         sdf.mNumSDFs = 0;
                         sdf.mMaxSDFs = 0x400;
+                        if (!(initMask & 4))
+                            sdf.mMaxSDFs = 0;
                         FlexDeviceMallocInternal(reinterpret_cast<void**>(&sdf.mSDFTableDevice),
                                                  0xa000, "&mSDFTableDevice", kLibrarySourceFile,
                                                  0xe5);
-                        sdf.mSDFTableHost = new FlexSDFInternal[sdf.mMaxSDFs]();
-                        sdf.mFreeList = new int[sdf.mMaxSDFs];
-                        for (int i = 0; i < sdf.mMaxSDFs; ++i)
-                            sdf.mFreeList[i] = i;
+                        if (initMask & 4)
+                        {
+                            sdf.mSDFTableHost = new FlexSDFInternal[sdf.mMaxSDFs]();
+                            sdf.mFreeList = new int[sdf.mMaxSDFs];
+                            for (int i = 0; i < sdf.mMaxSDFs; ++i)
+                                sdf.mFreeList[i] = i;
+                        }
 
                         return lib;
                     }
@@ -1085,6 +1174,11 @@ NvFlexLibrary* NvFlexInit(int version, NvFlexErrorCallback errorFunc, NvFlexInit
     return 0;
 }
 
+#if defined(_MSC_VER)
+// FLEX_DATATRACK diagnostic: buffer identity recorded by flex.part1.cu ctor
+extern "C" void FlexTimerDataProbe(void** outData, size_t* outCap);
+#endif
+
 // ---------------------------------------------------------------------------
 // flexdecomp: src/cuda/flex.cu:4689 NvFlexShutdown
 // ---------------------------------------------------------------------------
@@ -1106,6 +1200,65 @@ void NvFlexShutdown(NvFlexLibrary* lib)
     while (!convexMeshes.empty())
         NvFlexDestroyConvexMesh(lib, convexMeshes[0]);
 
+    // Windows/PE path aligned with the shipped NvFlexReleaseCUDA_x64.dll
+    // disassembly (0x18001fd40): the shipped build frees the device-side
+    // library buffers, the BVH builder, the fence event and the timer pool,
+    // and deliberately leaks the host-side free lists, the mesh/SDF host
+    // tables and the timer vector buffer (freed at process exit by the OS).
+    // The ELF path below keeps the full reconstructed teardown.
+#if defined(_MSC_VER)
+    FlexDeviceFreeInternal(lib->mConvexMeshData.mPlanes);
+    FlexDeviceFreeInternal(lib->mConvexMeshData.mConvexes);
+    lib->mConvexMeshData.mNumConvexes = 0;
+
+    FlexDeviceFreeInternal(lib->mTriangleMeshData.mMeshTableDevice);
+
+    {
+        Vec4Buffer* lowers = reinterpret_cast<Vec4Buffer*>(lib->mStaticTriLowers);
+        DestroyTexture(lowers->mTexture);
+        lowers->mTexture = 0;
+        FlexDeviceFreeInternal(lowers->mPtr);
+        lowers->mPtr = 0;
+        lowers->mCapacity = 0;
+
+        Vec4Buffer* uppers = reinterpret_cast<Vec4Buffer*>(lib->mStaticTriUppers);
+        DestroyTexture(uppers->mTexture);
+        uppers->mTexture = 0;
+        FlexDeviceFreeInternal(uppers->mPtr);
+        uppers->mPtr = 0;
+        uppers->mCapacity = 0;
+    }
+
+    if (lib->mBVHBuilder != 0)
+    {
+        LinearBVHBuilderGPUDestroy(lib->mBVHBuilder);
+        ::operator delete(lib->mBVHBuilder);
+    }
+
+    FlexDeviceFreeInternal(lib->mCellStarts);
+    FlexDeviceFreeInternal(lib->mCellEnds);
+
+    cudaError_t err = cudaEventDestroy(reinterpret_cast<cudaEvent_t>(lib->mMemoryFence));
+    if (err && libErrorFunc(lib))
+        FlexLogFunc(libErrorFunc(lib), eNvFlexLogError, "Cuda error: %d in %s", kFlexSourceFile,
+                    0x1263, (unsigned long)err, "cudaEventDestroy(lib->mMemoryFence)");
+
+    if (lib->mTimers.mTimerPool != 0)
+        ::operator delete(lib->mTimers.mTimerPool);
+
+    timerNameMap(&lib->mTimers).clear();
+
+    if (solvers.data())
+        ::operator delete(solvers.data());
+    if (triangleMeshes.data())
+        ::operator delete(triangleMeshes.data());
+    if (sdfs.data())
+        ::operator delete(sdfs.data());
+    if (convexMeshes.data())
+        ::operator delete(convexMeshes.data());
+
+    ::operator delete(lib);
+#else
     DestroyTexture(lib->mConvexMeshData.mPlanesTex);
     FlexDeviceFreeInternal(lib->mConvexMeshData.mPlanes);
     FlexDeviceFreeInternal(lib->mConvexMeshData.mConvexes);
@@ -1183,6 +1336,9 @@ void NvFlexShutdown(NvFlexLibrary* lib)
     if (lib->mTimers.mTimerPool != 0)
     {
         CudaRangeTimerVector& elems = timerPoolElems(lib->mTimers.mTimerPool);
+#if defined(FLEX_KEEP_DATATRACK)
+        // (datatrack diagnostics removed with the MSVC teardown alignment)
+#endif
         for (size_t i = 0; i < elems.size(); ++i)
         {
             cudaEventDestroy(reinterpret_cast<cudaEvent_t>(elems[i].mBegin));
@@ -1205,11 +1361,9 @@ void NvFlexShutdown(NvFlexLibrary* lib)
         ::operator delete(convexMeshes.data());
 
     ::operator delete(lib);
+#endif
 }
 
-// ---------------------------------------------------------------------------
-// flexdecomp: src/cuda/flex.cu:4722 _Z14NvFlexSetFenceP13NvFlexLibrary
-// ---------------------------------------------------------------------------
 void NvFlexSetFence(NvFlexLibrary* lib)
 {
     cudaError_t err = cudaEventRecord(reinterpret_cast<cudaEvent_t>(lib->mMemoryFence), 0);

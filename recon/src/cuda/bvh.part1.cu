@@ -19,7 +19,14 @@
 // `T` in NvFlexDebugCUDA_x64.a and in the relinked library).  Restoring default
 // visibility keeps the exported symbol set identical; it does not affect the
 // mangled name, the PTX entry or intra-DSO references.
+#if defined(_MSC_VER)
+// PE ABI: kernels need no export; win32/nvflex.def pins the 81 API exports.
+#define FLEX_KERNEL_API
+#else
+// The shipped 9.2 objects export the launch wrappers GLOBAL DEFAULT; modern
+// nvcc emits them hidden, so every kernel carries an explicit visibility.
 #define FLEX_KERNEL_API __attribute__((visibility("default")))
+#endif
 
 // ---------------------------------------------------------------------------
 // flexdecomp: src/cuda/bvh.cu:69 Morton3<1024>
@@ -389,5 +396,11 @@ namespace cub
 	// that use so the shipped weak symbol stays part of the ABI.
 	typedef void (*EmptyKernelPtr)();
 
+#if !defined(_MSC_VER)
 	__attribute__((used)) static EmptyKernelPtr kEmptyKernel = EmptyKernel<void>;
+#else
+	// PE build: kernels are not exported (win32/nvflex.def pins the ABI); the
+	// odr-use of the instantiation is what matters, not the GCC 'used' attr.
+	static EmptyKernelPtr kEmptyKernel = EmptyKernel<void>;
+#endif
 }
