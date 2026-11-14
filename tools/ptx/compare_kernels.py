@@ -62,10 +62,11 @@ ROUND_RE = re.compile(r"\.(rn|rz|rp|rm)(\.f\d+)?$")
 
 def norm_op(op: str) -> str:
     """Group arch-mechanical variants; keep rounding/width suffixes."""
-    for pref in (".sync", ".aligned", ".relaxed", ".acquire", ".release",
-                 ".volatile", ".wt", ".cg", ".ca", ".cs", ".lu", ".cv"):
-        if op.endswith(pref):
-            op = op[: -len(pref)]
+    # .ftz (sm_30 flushes denormals) and .rn (default rounding, explicit on
+    # sm_75) are semantics-preserving forms for normal-range floats; strip
+    # them so form differences don't mask real contraction differences.
+    # .rz/.rp/.rm keep their distinct entries (they change results).
+    op = op.replace(".ftz", "").replace(".rn.", ".")
     if op.startswith("membar"):
         return "membar"
     if op.startswith("bar."):
@@ -133,9 +134,10 @@ def recon_ptx(module: str, out_dir: Path) -> Path | None:
             print(f"  skip missing {src}")
             continue
         r = subprocess.run(
-            ["nvcc", "-ptx", "-O3", "-arch=sm_75",
+            ["nvcc", "-ptx", "-O3", "-arch=sm_75", "-D_MSC_VER=1944",
              "-I", str(RECON / "include"), "-I", str(RECON / "include" / "nvflex"),
-             "-I", str(RECON / "core"), "-o", str(out_dir / "tmp.ptx"), str(p)],
+             "-I", str(RECON / "core"), "-I", str(RECON / "src" / "cuda"),
+             "-o", str(out_dir / "tmp.ptx"), str(p)],
             capture_output=True, text=True)
         if r.returncode != 0:
             print(f"FAIL nvcc -ptx {src}:\n{r.stderr[-3000:]}")

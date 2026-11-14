@@ -100,3 +100,5 @@ set_target_properties(flex_apitest PROPERTIES
 target_compile_options(flex_apitest PRIVATE
   /O2 /Zi /Zc:preprocessor /EHsc
 )
+# /DEBUG so the crash reporter's exe-offset stacks symbolize
+target_link_options(flex_apitest PRIVATE /DEBUG /OPT:REF /OPT:ICF)

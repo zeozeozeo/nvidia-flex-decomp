@@ -32,6 +32,7 @@ inline uint32_t boolU32(bool v) { return v ? 1u : 0u; }
 
 NvFlexInitDesc makeInitDesc(int deviceIndex) {
   NvFlexInitDesc d;
+  memset(&d, 0, sizeof(d));  // zero padding bytes too (compared bitwise)
   d.deviceIndex = deviceIndex;
   d.enableExtensions = false;
   d.renderDevice = nullptr;
